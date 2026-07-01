@@ -4,6 +4,8 @@ import io
 import json
 from itertools import combinations
 from collections import Counter
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 
 import pandas as pd
 import requests
@@ -20,29 +22,7 @@ LOTO6_COLUMNS = ["draw_no", "date", "main1", "main2", "main3", "main4", "main5",
 LOTO7_COLUMNS = ["draw_no", "date", "main1", "main2", "main3", "main4", "main5", "main6", "main7", "bonus1", "bonus2"]
 
 
-def download_text(url: str) -> str:
-    headers = {
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/126.0.0.0 Safari/537.36"
-        ),
-        "Accept": "text/csv,text/plain,*/*",
-        "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
-        "Referer": "https://www.mizuhobank.co.jp/takarakuji/check/loto/index.html",
-    }
-
-    response = requests.get(url, headers=headers, timeout=30)
-
-    if response.status_code == 403:
-        raise RuntimeError(
-            f"403 Forbidden: {url} was blocked from GitHub Actions. "
-            "Try fallback source or manual CSV upload."
-        )
-
-    response.raise_for_status()
-
-    content = response.content
+def decode_content(content: bytes) -> str:
     for encoding in ["utf-8-sig", "cp932", "shift_jis", "utf-8"]:
         try:
             return content.decode(encoding)
@@ -50,6 +30,67 @@ def download_text(url: str) -> str:
             continue
 
     raise UnicodeDecodeError("unknown", content, 0, 1, "Could not decode response")
+
+
+def get_headers() -> dict:
+    return {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/126.0.0.0 Safari/537.36"
+        ),
+        "Accept": "text/csv,text/plain,text/html,*/*",
+        "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+    }
+
+
+def download_from_mkmode(kind: str) -> str:
+    """
+    kind: 'loto6' or 'loto7'
+    mk-modeの一覧ページから LOTO6_ALL.csv / LOTO7_ALL.csv のリンクを探して取得する。
+    """
+    headers = get_headers()
+    page_url = f"https://www.mk-mode.com/rails/loto/{kind}"
+
+    page_response = requests.get(page_url, headers=headers, timeout=30)
+    page_response.raise_for_status()
+
+    html = decode_content(page_response.content)
+    soup = BeautifulSoup(html, "html.parser")
+
+    target_name = f"{kind.upper()}_ALL.csv"
+
+    for a in soup.find_all("a"):
+        text = a.get_text(strip=True)
+        href = a.get("href", "")
+
+        if target_name in text or target_name in href:
+            csv_url = urljoin(page_url, href)
+            csv_response = requests.get(csv_url, headers=headers, timeout=30)
+            csv_response.raise_for_status()
+            return decode_content(csv_response.content)
+
+    raise RuntimeError(f"Could not find {target_name} link on {page_url}")
+
+
+def download_text(url: str) -> str:
+    headers = get_headers()
+
+    response = requests.get(url, headers=headers, timeout=30)
+
+    if response.status_code == 403:
+        if "loto6" in url:
+            print("Official LOTO6 CSV was blocked. Falling back to mk-mode.")
+            return download_from_mkmode("loto6")
+
+        if "loto7" in url:
+            print("Official LOTO7 CSV was blocked. Falling back to mk-mode.")
+            return download_from_mkmode("loto7")
+
+        raise RuntimeError(f"403 Forbidden: {url}")
+
+    response.raise_for_status()
+    return decode_content(response.content)
 
 
 def read_csv_text(text: str) -> pd.DataFrame:
