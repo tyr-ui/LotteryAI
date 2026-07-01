@@ -894,6 +894,22 @@ def main() -> None:
         "loto7_backtest": loto7_backtest,
     }
 
+    print("\n=== LOTO6 NEXT PREDICTION ===")
+    for p in loto6_prediction:
+        print(f'{p["pattern_id"]}: {p["numbers"]} score={p["score"]}')
+
+    print("\n=== LOTO6 BACKTEST ===")
+    print(json.dumps(loto6_backtest, ensure_ascii=False, indent=2))
+
+    print("\n=== LOTO7 NEXT PREDICTION ===")
+    for p in loto7_prediction:
+        print(f'{p["pattern_id"]}: {p["numbers"]} score={p["score"]}')
+
+    print("\n=== LOTO7 BACKTEST ===")
+    print(json.dumps(loto7_backtest, ensure_ascii=False, indent=2))
+
+    print("\n=== FULL SUMMARY JSON ===")
+
     print(json.dumps(summary, ensure_ascii=False, indent=2))
 
 
