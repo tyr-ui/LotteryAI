@@ -1,0 +1,2 @@
+# LotteryAI
+Private
