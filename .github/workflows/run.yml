@@ -5,6 +5,13 @@ on:
   push:
     branches:
       - main
+  schedule:
+    # JST 21:30 = UTC 12:30
+    # Monday/Thursday: Loto6, Friday: Loto7
+    - cron: "30 12 * * 1,4,5"
+    # JST 23:30 = UTC 14:30
+    # Retry after data source update delay
+    - cron: "30 14 * * 1,4,5"
 
 permissions:
   contents: write
@@ -27,9 +34,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run LotteryAI optimizer
+      - name: Run LotteryAI pipeline
         run: |
-          python src/optimizer.py
+          python src/run_pipeline.py
 
       - name: Commit output files
         run: |
@@ -39,11 +46,13 @@ jobs:
           git add output/optimizer_result.json
           git add output/prediction_optimizer_loto6.json
           git add output/prediction_optimizer_loto7.json
+          git add output/evaluation_history.json
+          git add output/evaluation_summary.json
 
           if git diff --cached --quiet; then
             echo "No output changes to commit."
           else
-            git commit -m "Update optimizer output [skip ci]"
+            git commit -m "Update LotteryAI output [skip ci]"
             git push
           fi
 
