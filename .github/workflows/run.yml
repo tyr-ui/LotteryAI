@@ -24,9 +24,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run LotteryAI validation
+      - name: Run LotteryAI model comparison
         run: |
-          python src/main.py
+          python src/compare.py
 
       - name: Upload output files
         uses: actions/upload-artifact@v4
