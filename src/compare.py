@@ -91,6 +91,63 @@ MODEL_PRESETS = {
     },
 }
 
+def local_consecutive_count(nums: tuple[int, ...]) -> int:
+    nums = sorted(nums)
+    return sum(1 for a, b in zip(nums, nums[1:]) if b == a + 1)
+
+
+def local_block_counts(nums: tuple[int, ...], max_num: int) -> list[int]:
+    if max_num == 43:
+        blocks = [(1, 10), (11, 21), (22, 32), (33, 43)]
+    else:
+        blocks = [(1, 9), (10, 18), (19, 27), (28, 37)]
+
+    return [
+        sum(1 for n in nums if lo <= n <= hi)
+        for lo, hi in blocks
+    ]
+
+
+def is_reasonable_candidate(
+    nums: tuple[int, ...],
+    max_num: int,
+    pick_count: int
+) -> bool:
+    """
+    極端な偏りを除外する。
+    特にロト7で 1〜9 に4個以上入るような候補を除外する。
+    """
+    nums = tuple(sorted(nums))
+
+    block_counts = local_block_counts(nums, max_num)
+
+    # 1つのブロックに4個以上集中する候補は除外
+    if max(block_counts) >= 4:
+        return False
+
+    odd_count = sum(n % 2 for n in nums)
+    low_count = sum(n <= (max_num // 2) for n in nums)
+    con_count = local_consecutive_count(nums)
+
+    if pick_count == 6:
+        # ロト6：奇偶・低高が極端な候補を除外
+        if odd_count not in [2, 3, 4]:
+            return False
+        if low_count not in [2, 3, 4]:
+            return False
+
+    if pick_count == 7:
+        # ロト7：奇偶・低高が極端な候補を除外
+        if odd_count not in [2, 3, 4, 5]:
+            return False
+        if low_count not in [2, 3, 4, 5]:
+            return False
+
+    # 連番が多すぎる候補を除外
+    if con_count >= 3:
+        return False
+
+    return True
 
 def component_scores(nums: tuple[int, ...], max_num: int, ctx: dict) -> dict:
     freq_score = float(np.mean([ctx["global_norm"][n] for n in nums]))
@@ -217,10 +274,22 @@ def predict_by_model(
         seed=seed,
     )
 
+    # v3: 極端な分布の候補を除外
+    filtered_candidates = [
+        nums for nums in candidates
+        if is_reasonable_candidate(nums, max_num, pick_count)
+    ]
+
+    # フィルターで候補が減りすぎた場合だけ、元候補に戻す
+    if len(filtered_candidates) >= top_k:
+        candidates_to_score = filtered_candidates
+    else:
+        candidates_to_score = candidates
+
     estimated_probability = 1 / math.comb(max_num, pick_count)
 
     scored = []
-    for nums in candidates:
+    for nums in candidates_to_score:
         if model_name == "random":
             score = 0.0
             detail = component_scores(nums, max_num, ctx)
@@ -233,6 +302,8 @@ def predict_by_model(
             "raw_tuple": nums,
             "score": float(score),
             "score_detail": detail,
+            "block_counts": local_block_counts(nums, max_num),
+            "consecutive_count": local_consecutive_count(nums),
         })
 
     scored.sort(key=lambda x: x["score"], reverse=True)
@@ -246,6 +317,8 @@ def predict_by_model(
             "score": round(float(item["score"]), 6),
             "estimated_probability": estimated_probability,
             "model": model_name,
+            "block_counts": item["block_counts"],
+            "consecutive_count": item["consecutive_count"],
             "score_detail": {
                 k: round(float(v), 6)
                 for k, v in item["score_detail"].items()
@@ -355,14 +428,74 @@ def compare_models(
 
 def select_prediction_model(model_comparison: list[dict]) -> str:
     """
-    ランダムが短期的に1位になった場合、そのまま採用すると再現性が低い。
-    そのため、予測用モデルは非randomの最上位を優先する。
+    v3:
+    avg_matches だけで採用せず、
+    2個以上・3個以上一致率も見る。
+    randomが短期的に上振れしても、そのまま採用しない。
+    delay単独は偏りやすいため、少しだけペナルティを入れる。
     """
+    random_avg = None
     for item in model_comparison:
-        if item["model"] != "random":
-            return item["model"]
+        if item["model"] == "random":
+            random_avg = item["avg_matches"]
+            break
 
-    return "random"
+    candidates = []
+
+    for item in model_comparison:
+        model = item["model"]
+
+        if model == "random":
+            continue
+
+        avg = item["avg_matches"] or 0.0
+        hit2 = item["hit_rate_2match"] or 0.0
+        hit3 = item["hit_rate_3match"] or 0.0
+        hit4 = item["hit_rate_4match"] or 0.0
+
+        score = (
+            avg
+            + 0.25 * hit2
+            + 0.60 * hit3
+            + 0.80 * hit4
+        )
+
+        # ハイブリッドは過剰適合しにくいので少し加点
+        if model in ["hybrid_v1", "hybrid_no_delay"]:
+            score += 0.03
+
+        # delay単独は候補が偏りやすいので少し減点
+        if model == "delay":
+            score -= 0.04
+
+        # ランダムより明らかに悪い場合は大きく減点
+        if random_avg is not None and avg < random_avg - 0.08:
+            score -= 0.20
+
+        candidates.append({
+            "model": model,
+            "selection_score": score,
+            "avg_matches": avg,
+            "hit_rate_2match": hit2,
+            "hit_rate_3match": hit3,
+            "hit_rate_4match": hit4,
+        })
+
+    candidates.sort(key=lambda x: x["selection_score"], reverse=True)
+
+    if not candidates:
+        return "hybrid_no_delay"
+
+    best = candidates[0]
+
+    # どのモデルもランダムより弱い場合は、安定型のhybrid_no_delayに戻す
+    if random_avg is not None and best["avg_matches"] < random_avg - 0.03:
+        for c in candidates:
+            if c["model"] == "hybrid_no_delay":
+                return "hybrid_no_delay"
+        return best["model"]
+
+    return best["model"]
 
 
 def load_lottery_data() -> tuple[pd.DataFrame, pd.DataFrame]:
