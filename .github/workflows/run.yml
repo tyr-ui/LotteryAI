@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -27,6 +30,22 @@ jobs:
       - name: Run LotteryAI optimizer
         run: |
           python src/optimizer.py
+
+      - name: Commit output files
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add output/optimizer_result.json
+          git add output/prediction_optimizer_loto6.json
+          git add output/prediction_optimizer_loto7.json
+
+          if git diff --cached --quiet; then
+            echo "No output changes to commit."
+          else
+            git commit -m "Update optimizer output [skip ci]"
+            git push
+          fi
 
       - name: Upload output files
         uses: actions/upload-artifact@v4
