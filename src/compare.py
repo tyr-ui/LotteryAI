@@ -114,20 +114,21 @@ def is_reasonable_candidate(
     pick_count: int
 ) -> bool:
     """
+    v4:
     極端な偏りを除外する。
-    特にロト7で 1〜9 に4個以上入るような候補を除外する。
+    特にロト7で1桁数字が多すぎる、連番が多すぎる、同一ブロックに寄りすぎる候補を除外。
     """
     nums = tuple(sorted(nums))
 
     block_counts = local_block_counts(nums, max_num)
 
-    # 1つのブロックに4個以上集中する候補は除外
-    if max(block_counts) >= 4:
-        return False
-
     odd_count = sum(n % 2 for n in nums)
     low_count = sum(n <= (max_num // 2) for n in nums)
     con_count = local_consecutive_count(nums)
+
+    # 1つのブロックに4個以上集中する候補は除外
+    if max(block_counts) >= 4:
+        return False
 
     if pick_count == 6:
         # ロト6：奇偶・低高が極端な候補を除外
@@ -136,18 +137,56 @@ def is_reasonable_candidate(
         if low_count not in [2, 3, 4]:
             return False
 
-    if pick_count == 7:
-        # ロト7：奇偶・低高が極端な候補を除外
-        if odd_count not in [2, 3, 4, 5]:
-            return False
-        if low_count not in [2, 3, 4, 5]:
+        # ロト6も連番2組以上は除外
+        if con_count >= 2:
             return False
 
-    # 連番が多すぎる候補を除外
-    if con_count >= 3:
-        return False
+    if pick_count == 7:
+        # ロト7：1〜9ブロックは最大2個までに制限
+        # 例：[3,4,5,...] のような形を避ける
+        if block_counts[0] >= 3:
+            return False
+
+        # ロト7：奇偶・低高が極端な候補を除外
+        if odd_count not in [3, 4]:
+            return False
+        if low_count not in [3, 4]:
+            return False
+
+        # ロト7：連番2組以上を除外
+        # 3-4-5 のような3連番は con_count=2 になるため除外される
+        if con_count >= 2:
+            return False
 
     return True
+    
+    def select_diverse_top(scored: list[dict], pick_count: int, top_k: int) -> list[dict]:
+    """
+    v4:
+    上位スコアだけでなく、5口同士が似すぎないようにする。
+    ロト6は共通数字3個まで、ロト7も共通数字3個まで。
+    """
+    selected = []
+
+    max_common = 3
+
+    for item in scored:
+        nums = set(item["numbers"])
+
+        if all(len(nums & set(existing["numbers"])) <= max_common for existing in selected):
+            selected.append(item)
+
+        if len(selected) >= top_k:
+            break
+
+    if len(selected) < top_k:
+        for item in scored:
+            if item not in selected:
+                selected.append(item)
+            if len(selected) >= top_k:
+                break
+
+    return selected
 
 def component_scores(nums: tuple[int, ...], max_num: int, ctx: dict) -> dict:
     freq_score = float(np.mean([ctx["global_norm"][n] for n in nums]))
@@ -428,11 +467,9 @@ def compare_models(
 
 def select_prediction_model(model_comparison: list[dict]) -> str:
     """
-    v3:
-    avg_matches だけで採用せず、
-    2個以上・3個以上一致率も見る。
-    randomが短期的に上振れしても、そのまま採用しない。
-    delay単独は偏りやすいため、少しだけペナルティを入れる。
+    v4:
+    avg_matches だけで採用せず、2個以上・3個以上一致率も加味する。
+    delay単独は偏りやすいので、明確に優位な場合以外はhybrid系を優先する。
     """
     random_avg = None
     for item in model_comparison:
@@ -456,21 +493,21 @@ def select_prediction_model(model_comparison: list[dict]) -> str:
         score = (
             avg
             + 0.25 * hit2
-            + 0.60 * hit3
-            + 0.80 * hit4
+            + 0.70 * hit3
+            + 1.00 * hit4
         )
 
-        # ハイブリッドは過剰適合しにくいので少し加点
+        # ハイブリッドは偏りにくいので加点
         if model in ["hybrid_v1", "hybrid_no_delay"]:
-            score += 0.03
+            score += 0.06
 
-        # delay単独は候補が偏りやすいので少し減点
+        # delay単独は偏りやすいので減点
         if model == "delay":
-            score -= 0.04
+            score -= 0.12
 
-        # ランダムより明らかに悪い場合は大きく減点
-        if random_avg is not None and avg < random_avg - 0.08:
-            score -= 0.20
+        # ランダムより明確に悪い場合は減点
+        if random_avg is not None and avg < random_avg - 0.05:
+            score -= 0.25
 
         candidates.append({
             "model": model,
@@ -488,12 +525,19 @@ def select_prediction_model(model_comparison: list[dict]) -> str:
 
     best = candidates[0]
 
-    # どのモデルもランダムより弱い場合は、安定型のhybrid_no_delayに戻す
-    if random_avg is not None and best["avg_matches"] < random_avg - 0.03:
-        for c in candidates:
-            if c["model"] == "hybrid_no_delay":
-                return "hybrid_no_delay"
-        return best["model"]
+    # delayが1位でも、hybrid系との差が小さいならhybrid系を採用
+    if best["model"] == "delay":
+        hybrid_candidates = [
+            c for c in candidates
+            if c["model"] in ["hybrid_no_delay", "hybrid_v1"]
+        ]
+
+        if hybrid_candidates:
+            hybrid_best = max(hybrid_candidates, key=lambda x: x["selection_score"])
+
+            # delayの平均一致優位が0.18未満なら、偏り回避でhybridを採用
+            if best["avg_matches"] - hybrid_best["avg_matches"] < 0.18:
+                return hybrid_best["model"]
 
     return best["model"]
 
