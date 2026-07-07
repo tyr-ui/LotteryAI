@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import os
 from datetime import datetime, timezone
 
 import numpy as np
@@ -33,6 +34,23 @@ def save_json(path: Path, data) -> None:
         encoding="utf-8",
     )
 
+def is_scheduled_no_new_data(previous_output: dict, loto6_val: dict, loto7_val: dict) -> bool:
+    if os.getenv("GITHUB_EVENT_NAME") != "schedule":
+        return False
+
+    if not previous_output:
+        return False
+
+    previous_loto6_latest = previous_output.get("loto6", {}).get("latest_draw_no")
+    previous_loto7_latest = previous_output.get("loto7", {}).get("latest_draw_no")
+
+    current_loto6_latest = loto6_val.get("latest_draw_no")
+    current_loto7_latest = loto7_val.get("latest_draw_no")
+
+    return (
+        previous_loto6_latest == current_loto6_latest
+        and previous_loto7_latest == current_loto7_latest
+    )
 
 def get_actual_numbers(df, draw_no: int, main_cols: list[str]) -> list[int] | None:
     hit = df[df["draw_no"] == draw_no]
@@ -193,7 +211,15 @@ def main() -> None:
 
     loto6_val = validate_lottery(loto6, loto6_cols, ["bonus"], 1, 43)
     loto7_val = validate_lottery(loto7, loto7_cols, ["bonus1", "bonus2"], 1, 37)
-
+    
+    if is_scheduled_no_new_data(previous_output, loto6_val, loto7_val):
+        print("\n=== NO NEW DATA ===")
+        print("Scheduled run detected, but latest draw numbers have not changed.")
+        print(f'LOTO6 latest_draw_no remains {loto6_val["latest_draw_no"]}.')
+        print(f'LOTO7 latest_draw_no remains {loto7_val["latest_draw_no"]}.')
+        print("Output files were not rewritten.")
+        return
+        
     previous_evaluation_loto6 = evaluate_previous_for_type(
         draw_type="loto6",
         previous_section=previous_output.get("loto6"),
