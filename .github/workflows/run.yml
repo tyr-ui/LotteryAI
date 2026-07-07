@@ -12,6 +12,9 @@ on:
     # JST 23:30 = UTC 14:30
     # Retry after data source update delay
     - cron: "30 14 * * 1,4,5"
+    # JST next morning 08:30 = UTC 23:30
+    # Final retry after overnight data source update
+    - cron: "30 23 * * 1,4,5"
 
 permissions:
   contents: write
