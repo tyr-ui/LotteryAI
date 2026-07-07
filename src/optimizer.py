@@ -100,21 +100,64 @@ def generate_candidates(pick_count, min_num, max_num, ctx, cfg, candidate_count,
     return list(candidates)
 
 
-def select_diverse(scored, top_k, max_common):
-    selected = []
-    for item in scored:
-        s = set(item["numbers"])
-        if all(len(s & set(x["numbers"])) <= max_common for x in selected):
-            selected.append(item)
-        if len(selected) >= top_k:
-            break
+def select_diverse(scored, top_k, max_common, max_number_usage=3):
+    """
+    Select top candidates while controlling portfolio concentration.
 
-    if len(selected) < top_k:
-        for item in scored:
-            if item not in selected:
-                selected.append(item)
-            if len(selected) >= top_k:
-                break
+    max_common:
+        Maximum shared numbers between any two patterns.
+
+    max_number_usage:
+        Maximum times the same number can appear across all selected patterns.
+        Example: max_number_usage=3 means number 6 can appear in at most 3 of P1-P5.
+    """
+    selected = []
+    usage = {}
+
+    def can_add(item, strict_usage=True):
+        nums = set(item["numbers"])
+
+        # Pairwise overlap control.
+        for existing in selected:
+            if len(nums & set(existing["numbers"])) > max_common:
+                return False
+
+        # Whole-portfolio number concentration control.
+        if strict_usage:
+            for n in nums:
+                if usage.get(n, 0) >= max_number_usage:
+                    return False
+
+        return True
+
+    def add_item(item):
+        selected.append(item)
+        for n in item["numbers"]:
+            usage[n] = usage.get(n, 0) + 1
+
+    # First pass: strict overlap + strict number usage.
+    for item in scored:
+        if can_add(item, strict_usage=True):
+            add_item(item)
+        if len(selected) >= top_k:
+            return selected
+
+    # Second pass: keep overlap control, relax number usage if too few candidates.
+    for item in scored:
+        if item in selected:
+            continue
+        if can_add(item, strict_usage=False):
+            add_item(item)
+        if len(selected) >= top_k:
+            return selected
+
+    # Final fallback: always return top_k if possible.
+    for item in scored:
+        if item not in selected:
+            add_item(item)
+        if len(selected) >= top_k:
+            return selected
+
     return selected
 
 
@@ -143,7 +186,13 @@ def predict(df, main_cols, min_num, max_num, pick_count, cfg, candidate_count, s
         scored.sort(key=lambda x: x["score"], reverse=True)
 
     max_common = 3 if cfg is None else cfg["f"]["max_common"]
-    selected = select_diverse(scored, top_k, max_common)
+    max_number_usage = 3 if cfg is None else cfg["f"].get("max_number_usage", 3)
+selected = select_diverse(
+    scored,
+    top_k,
+    max_common,
+    max_number_usage=max_number_usage,
+)
 
     out = []
     for i, item in enumerate(selected, start=1):
