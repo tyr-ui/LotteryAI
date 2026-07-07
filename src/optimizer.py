@@ -187,12 +187,12 @@ def predict(df, main_cols, min_num, max_num, pick_count, cfg, candidate_count, s
 
     max_common = 3 if cfg is None else cfg["f"]["max_common"]
     max_number_usage = 3 if cfg is None else cfg["f"].get("max_number_usage", 3)
-selected = select_diverse(
+    selected = select_diverse(
     scored,
     top_k,
     max_common,
     max_number_usage=max_number_usage,
-)
+    )
 
     out = []
     for i, item in enumerate(selected, start=1):
