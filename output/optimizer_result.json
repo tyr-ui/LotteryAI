@@ -1,14 +1,119 @@
 {
   "status": "ok",
   "note": "run_pipeline evaluates the previous prediction if the target draw is now available, then creates the next prediction.",
-  "generated_at": "2026-07-07T02:59:45.441872+00:00",
+  "generated_at": "2026-07-09T19:33:09.194669+00:00",
   "previous_evaluation": {
     "loto6": {
       "draw_type": "loto6",
-      "status": "pending",
-      "target_draw_no": 2118,
-      "latest_draw_no": 2117,
-      "message": "まだ前回予想対象回の結果がデータに反映されていません。"
+      "status": "evaluated",
+      "draw_no": 2118,
+      "actual_numbers": [
+        1,
+        5,
+        8,
+        35,
+        36,
+        37
+      ],
+      "evaluated_at": "2026-07-09T19:01:40.006905+00:00",
+      "predictions": [
+        {
+          "pattern_id": "P1",
+          "numbers": [
+            2,
+            6,
+            21,
+            24,
+            37,
+            42
+          ],
+          "matches": 1,
+          "matched_numbers": [
+            37
+          ],
+          "score": 0.798549,
+          "model": "recent_pair_strict"
+        },
+        {
+          "pattern_id": "P2",
+          "numbers": [
+            2,
+            6,
+            18,
+            27,
+            35,
+            43
+          ],
+          "matches": 1,
+          "matched_numbers": [
+            35
+          ],
+          "score": 0.798003,
+          "model": "recent_pair_strict"
+        },
+        {
+          "pattern_id": "P3",
+          "numbers": [
+            1,
+            6,
+            18,
+            28,
+            37,
+            43
+          ],
+          "matches": 2,
+          "matched_numbers": [
+            1,
+            37
+          ],
+          "score": 0.784552,
+          "model": "recent_pair_strict"
+        },
+        {
+          "pattern_id": "P4",
+          "numbers": [
+            5,
+            8,
+            18,
+            27,
+            36,
+            43
+          ],
+          "matches": 3,
+          "matched_numbers": [
+            5,
+            8,
+            36
+          ],
+          "score": 0.782228,
+          "model": "recent_pair_strict"
+        },
+        {
+          "pattern_id": "P5",
+          "numbers": [
+            2,
+            5,
+            21,
+            26,
+            36,
+            37
+          ],
+          "matches": 3,
+          "matched_numbers": [
+            5,
+            36,
+            37
+          ],
+          "score": 0.766057,
+          "model": "recent_pair_strict"
+        }
+      ],
+      "best_match_count": 3,
+      "avg_match_count": 2.0,
+      "hit_rate_1match": 1.0,
+      "hit_rate_2match": 0.6,
+      "hit_rate_3match": 0.4,
+      "hit_rate_4match": 0.0
     },
     "loto7": {
       "draw_type": "loto7",
@@ -20,12 +125,12 @@
   },
   "evaluation_summary": {
     "loto6": {
-      "evaluated_draws": 1,
-      "avg_best_match_count": 1.0,
-      "avg_all_pattern_matches": 0.4,
-      "max_best_match_count": 1,
-      "best_draw_no": 2117,
-      "latest_evaluated_draw_no": 2117
+      "evaluated_draws": 2,
+      "avg_best_match_count": 2.0,
+      "avg_all_pattern_matches": 1.2,
+      "max_best_match_count": 3,
+      "best_draw_no": 2118,
+      "latest_evaluated_draw_no": 2118
     },
     "loto7": {
       "evaluated_draws": 0,
@@ -36,12 +141,12 @@
     }
   },
   "loto6": {
-    "latest_draw_no": 2117,
-    "next_draw_no": 2118,
-    "rows": 2117,
+    "latest_draw_no": 2118,
+    "next_draw_no": 2119,
+    "rows": 2118,
     "validation": {
-      "rows": 2117,
-      "latest_draw_no": 2117,
+      "rows": 2118,
+      "latest_draw_no": 2118,
       "missing_cells": 0,
       "duplicate_draw_no": 0,
       "duplicate_date": 0,
@@ -63,15 +168,15 @@
       {
         "config": "recent_pair_strict",
         "tested_periods": 45,
-        "avg_matches": 1.0,
+        "avg_matches": 0.9778,
         "hit_rate_1match": 0.6889,
-        "hit_rate_2match": 0.2667,
+        "hit_rate_2match": 0.2444,
         "hit_rate_3match": 0.0444,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.154415,
+        "selection_score": 1.117755,
         "random_avg": 0.8889,
-        "random_uplift": 0.1111,
+        "random_uplift": 0.0889,
         "weights": {
           "freq": 0.14,
           "recent": 0.34,
@@ -144,15 +249,15 @@
       {
         "config": "no_delay_strict",
         "tested_periods": 45,
-        "avg_matches": 0.9111,
+        "avg_matches": 0.8889,
         "hit_rate_1match": 0.6222,
-        "hit_rate_2match": 0.2444,
+        "hit_rate_2match": 0.2222,
         "hit_rate_3match": 0.0444,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.04271,
+        "selection_score": 1.00608,
         "random_avg": 0.8889,
-        "random_uplift": 0.0222,
+        "random_uplift": 0.0,
         "weights": {
           "freq": 0.24,
           "recent": 0.26,
@@ -169,44 +274,17 @@
         }
       },
       {
-        "config": "no_delay_loose",
+        "config": "delay_light_strict",
         "tested_periods": 45,
-        "avg_matches": 0.8444,
-        "hit_rate_1match": 0.6,
-        "hit_rate_2match": 0.2,
+        "avg_matches": 0.8889,
+        "hit_rate_1match": 0.6667,
+        "hit_rate_2match": 0.1778,
         "hit_rate_3match": 0.0444,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 0.929345,
+        "selection_score": 0.97776,
         "random_avg": 0.8889,
-        "random_uplift": -0.0445,
-        "weights": {
-          "freq": 0.24,
-          "recent": 0.26,
-          "pair": 0.24,
-          "triplet": 0.08,
-          "delay": 0.0,
-          "dist": 0.18
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 3,
-          "max_con": 2,
-          "max_common": 4
-        }
-      },
-      {
-        "config": "delay_light_strict",
-        "tested_periods": 45,
-        "avg_matches": 0.8444,
-        "hit_rate_1match": 0.6667,
-        "hit_rate_2match": 0.1556,
-        "hit_rate_3match": 0.0222,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 0.893265,
-        "random_avg": 0.8889,
-        "random_uplift": -0.0445,
+        "random_uplift": 0.0,
         "weights": {
           "freq": 0.18,
           "recent": 0.2,
@@ -220,6 +298,33 @@
           "max_first": 2,
           "max_con": 1,
           "max_common": 3
+        }
+      },
+      {
+        "config": "no_delay_loose",
+        "tested_periods": 45,
+        "avg_matches": 0.8222,
+        "hit_rate_1match": 0.6,
+        "hit_rate_2match": 0.1778,
+        "hit_rate_3match": 0.0444,
+        "hit_rate_4match": 0.0,
+        "hit_rate_5match": 0.0,
+        "selection_score": 0.642715,
+        "random_avg": 0.8889,
+        "random_uplift": -0.0667,
+        "weights": {
+          "freq": 0.24,
+          "recent": 0.26,
+          "pair": 0.24,
+          "triplet": 0.08,
+          "delay": 0.0,
+          "dist": 0.18
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 3,
+          "max_con": 2,
+          "max_common": 4
         }
       },
       {
@@ -296,14 +401,14 @@
       {
         "pattern_id": "P1",
         "numbers": [
-          2,
           6,
-          21,
-          24,
-          37,
-          42
+          8,
+          18,
+          27,
+          35,
+          43
         ],
-        "score": 0.798549,
+        "score": 0.781089,
         "model": "recent_pair_strict",
         "block_counts": [
           2,
@@ -317,14 +422,14 @@
       {
         "pattern_id": "P2",
         "numbers": [
-          2,
-          6,
+          5,
+          8,
           18,
           27,
-          35,
-          43
+          36,
+          39
         ],
-        "score": 0.798003,
+        "score": 0.778245,
         "model": "recent_pair_strict",
         "block_counts": [
           2,
@@ -338,14 +443,14 @@
       {
         "pattern_id": "P3",
         "numbers": [
-          1,
+          2,
           6,
-          18,
-          28,
+          21,
+          24,
           37,
-          43
+          42
         ],
-        "score": 0.784552,
+        "score": 0.777286,
         "model": "recent_pair_strict",
         "block_counts": [
           2,
@@ -359,14 +464,14 @@
       {
         "pattern_id": "P4",
         "numbers": [
-          5,
-          8,
-          18,
-          27,
-          36,
-          43
+          1,
+          6,
+          21,
+          26,
+          35,
+          42
         ],
-        "score": 0.782228,
+        "score": 0.772902,
         "model": "recent_pair_strict",
         "block_counts": [
           2,
@@ -382,12 +487,12 @@
         "numbers": [
           2,
           5,
-          21,
+          18,
           26,
-          36,
-          37
+          35,
+          43
         ],
-        "score": 0.766057,
+        "score": 0.767116,
         "model": "recent_pair_strict",
         "block_counts": [
           2,
@@ -395,7 +500,7 @@
           1,
           2
         ],
-        "consecutive_count": 1,
+        "consecutive_count": 0,
         "estimated_probability": 1.6402977862213017e-07
       }
     ]
