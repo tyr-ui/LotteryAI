@@ -1,134 +1,127 @@
 {
   "status": "ok",
   "note": "run_pipeline evaluates the previous prediction if the target draw is now available, then creates the next prediction.",
-  "generated_at": "2026-07-10T18:34:28.398737+00:00",
+  "generated_at": "2026-07-13T18:46:56.478878+00:00",
   "previous_evaluation": {
     "loto6": {
       "draw_type": "loto6",
-      "status": "pending",
-      "target_draw_no": 2119,
-      "latest_draw_no": 2118,
-      "message": "まだ前回予想対象回の結果がデータに反映されていません。"
-    },
-    "loto7": {
-      "draw_type": "loto7",
       "status": "evaluated",
-      "draw_no": 685,
+      "draw_no": 2119,
       "actual_numbers": [
-        1,
-        5,
-        16,
+        15,
+        18,
         20,
-        21,
         22,
-        31
+        30,
+        38
       ],
-      "evaluated_at": "2026-07-10T18:11:30.150061+00:00",
+      "evaluated_at": "2026-07-13T18:23:46.508841+00:00",
       "predictions": [
         {
           "pattern_id": "P1",
           "numbers": [
-            7,
-            9,
-            14,
-            15,
-            22,
-            29,
-            34
+            6,
+            8,
+            18,
+            27,
+            35,
+            43
           ],
           "matches": 1,
           "matched_numbers": [
-            22
+            18
           ],
-          "score": 0.671759,
-          "model": "balanced_strict"
+          "score": 0.781089,
+          "model": "recent_pair_strict"
         },
         {
           "pattern_id": "P2",
           "numbers": [
-            4,
-            9,
-            13,
+            5,
+            8,
             18,
-            22,
-            34,
-            35
+            27,
+            36,
+            39
           ],
           "matches": 1,
           "matched_numbers": [
-            22
+            18
           ],
-          "score": 0.662643,
-          "model": "balanced_strict"
+          "score": 0.778245,
+          "model": "recent_pair_strict"
         },
         {
           "pattern_id": "P3",
           "numbers": [
-            4,
-            7,
-            12,
-            15,
-            26,
-            34,
-            35
+            2,
+            6,
+            21,
+            24,
+            37,
+            42
           ],
           "matches": 0,
           "matched_numbers": [],
-          "score": 0.640165,
-          "model": "balanced_strict"
+          "score": 0.777286,
+          "model": "recent_pair_strict"
         },
         {
           "pattern_id": "P4",
           "numbers": [
+            1,
             6,
-            9,
-            10,
-            15,
-            22,
-            31,
-            35
+            21,
+            26,
+            35,
+            42
           ],
-          "matches": 2,
-          "matched_numbers": [
-            22,
-            31
-          ],
-          "score": 0.635476,
-          "model": "balanced_strict"
+          "matches": 0,
+          "matched_numbers": [],
+          "score": 0.772902,
+          "model": "recent_pair_strict"
         },
         {
           "pattern_id": "P5",
           "numbers": [
-            4,
-            7,
-            13,
-            17,
-            24,
-            29,
-            30
+            2,
+            5,
+            18,
+            26,
+            35,
+            43
           ],
-          "matches": 0,
-          "matched_numbers": [],
-          "score": 0.574659,
-          "model": "balanced_strict"
+          "matches": 1,
+          "matched_numbers": [
+            18
+          ],
+          "score": 0.767116,
+          "model": "recent_pair_strict"
         }
       ],
-      "best_match_count": 2,
-      "avg_match_count": 0.8,
+      "best_match_count": 1,
+      "avg_match_count": 0.6,
       "hit_rate_1match": 0.6,
-      "hit_rate_2match": 0.2,
+      "hit_rate_2match": 0.0,
       "hit_rate_3match": 0.0,
       "hit_rate_4match": 0.0
+    },
+    "loto7": {
+      "draw_type": "loto7",
+      "status": "pending",
+      "target_draw_no": 686,
+      "latest_draw_no": 685,
+      "message": "まだ前回予想対象回の結果がデータに反映されていません。"
     }
   },
   "evaluation_summary": {
     "loto6": {
-      "evaluated_draws": 2,
-      "avg_best_match_count": 2.0,
-      "avg_all_pattern_matches": 1.2,
+      "evaluated_draws": 3,
+      "avg_best_match_count": 1.6667,
+      "avg_all_pattern_matches": 1.0,
       "max_best_match_count": 3,
       "best_draw_no": 2118,
-      "latest_evaluated_draw_no": 2118
+      "latest_evaluated_draw_no": 2119
     },
     "loto7": {
       "evaluated_draws": 1,
@@ -140,12 +133,12 @@
     }
   },
   "loto6": {
-    "latest_draw_no": 2118,
-    "next_draw_no": 2119,
-    "rows": 2118,
+    "latest_draw_no": 2119,
+    "next_draw_no": 2120,
+    "rows": 2119,
     "validation": {
-      "rows": 2118,
-      "latest_draw_no": 2118,
+      "rows": 2119,
+      "latest_draw_no": 2119,
       "missing_cells": 0,
       "duplicate_draw_no": 0,
       "duplicate_date": 0,
@@ -156,8 +149,8 @@
     "random_baseline": {
       "config": "random",
       "tested_periods": 45,
-      "avg_matches": 0.8889,
-      "hit_rate_1match": 0.6222,
+      "avg_matches": 0.8667,
+      "hit_rate_1match": 0.6,
       "hit_rate_2match": 0.2444,
       "hit_rate_3match": 0.0222,
       "hit_rate_4match": 0.0,
@@ -167,15 +160,15 @@
       {
         "config": "recent_pair_strict",
         "tested_periods": 45,
-        "avg_matches": 0.9778,
-        "hit_rate_1match": 0.6889,
+        "avg_matches": 1.0,
+        "hit_rate_1match": 0.7111,
         "hit_rate_2match": 0.2444,
         "hit_rate_3match": 0.0444,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.117755,
-        "random_avg": 0.8889,
-        "random_uplift": 0.0889,
+        "selection_score": 1.155495,
+        "random_avg": 0.8667,
+        "random_uplift": 0.1333,
         "weights": {
           "freq": 0.14,
           "recent": 0.34,
@@ -200,9 +193,9 @@
         "hit_rate_3match": 0.0667,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.098965,
-        "random_avg": 0.8889,
-        "random_uplift": 0.0667,
+        "selection_score": 1.106735,
+        "random_avg": 0.8667,
+        "random_uplift": 0.0889,
         "weights": {
           "freq": 0.3,
           "recent": 0.18,
@@ -227,9 +220,9 @@
         "hit_rate_3match": 0.0667,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.092305,
-        "random_avg": 0.8889,
-        "random_uplift": 0.0667,
+        "selection_score": 1.100075,
+        "random_avg": 0.8667,
+        "random_uplift": 0.0889,
         "weights": {
           "freq": 0.18,
           "recent": 0.2,
@@ -254,9 +247,9 @@
         "hit_rate_3match": 0.0444,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.00608,
-        "random_avg": 0.8889,
-        "random_uplift": 0.0,
+        "selection_score": 1.01385,
+        "random_avg": 0.8667,
+        "random_uplift": 0.0222,
         "weights": {
           "freq": 0.24,
           "recent": 0.26,
@@ -281,9 +274,9 @@
         "hit_rate_3match": 0.0444,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 0.97776,
-        "random_avg": 0.8889,
-        "random_uplift": 0.0,
+        "selection_score": 0.98553,
+        "random_avg": 0.8667,
+        "random_uplift": 0.0222,
         "weights": {
           "freq": 0.18,
           "recent": 0.2,
@@ -300,33 +293,6 @@
         }
       },
       {
-        "config": "no_delay_loose",
-        "tested_periods": 45,
-        "avg_matches": 0.8222,
-        "hit_rate_1match": 0.6,
-        "hit_rate_2match": 0.1778,
-        "hit_rate_3match": 0.0444,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 0.642715,
-        "random_avg": 0.8889,
-        "random_uplift": -0.0667,
-        "weights": {
-          "freq": 0.24,
-          "recent": 0.26,
-          "pair": 0.24,
-          "triplet": 0.08,
-          "delay": 0.0,
-          "dist": 0.18
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 3,
-          "max_con": 2,
-          "max_common": 4
-        }
-      },
-      {
         "config": "balanced_strict",
         "tested_periods": 45,
         "avg_matches": 0.8222,
@@ -335,9 +301,9 @@
         "hit_rate_3match": 0.0222,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 0.641615,
-        "random_avg": 0.8889,
-        "random_uplift": -0.0667,
+        "selection_score": 0.899385,
+        "random_avg": 0.8667,
+        "random_uplift": -0.0445,
         "weights": {
           "freq": 0.22,
           "recent": 0.24,
@@ -362,9 +328,9 @@
         "hit_rate_3match": 0.0222,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 0.631615,
-        "random_avg": 0.8889,
-        "random_uplift": -0.0667,
+        "selection_score": 0.889385,
+        "random_avg": 0.8667,
+        "random_uplift": -0.0445,
         "weights": {
           "freq": 0.22,
           "recent": 0.24,
@@ -372,6 +338,33 @@
           "triplet": 0.08,
           "delay": 0.08,
           "dist": 0.16
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 3,
+          "max_con": 2,
+          "max_common": 4
+        }
+      },
+      {
+        "config": "no_delay_loose",
+        "tested_periods": 45,
+        "avg_matches": 0.8,
+        "hit_rate_1match": 0.5778,
+        "hit_rate_2match": 0.1778,
+        "hit_rate_3match": 0.0444,
+        "hit_rate_4match": 0.0,
+        "hit_rate_5match": 0.0,
+        "selection_score": 0.620515,
+        "random_avg": 0.8667,
+        "random_uplift": -0.0667,
+        "weights": {
+          "freq": 0.24,
+          "recent": 0.26,
+          "pair": 0.24,
+          "triplet": 0.08,
+          "delay": 0.0,
+          "dist": 0.18
         },
         "filters": {
           "max_block": 3,
@@ -400,14 +393,14 @@
       {
         "pattern_id": "P1",
         "numbers": [
-          6,
+          5,
           8,
           18,
-          27,
+          26,
           35,
           43
         ],
-        "score": 0.781089,
+        "score": 0.773974,
         "model": "recent_pair_strict",
         "block_counts": [
           2,
@@ -428,7 +421,7 @@
           36,
           39
         ],
-        "score": 0.778245,
+        "score": 0.772602,
         "model": "recent_pair_strict",
         "block_counts": [
           2,
@@ -442,14 +435,14 @@
       {
         "pattern_id": "P3",
         "numbers": [
-          2,
+          1,
           6,
-          21,
-          24,
+          18,
+          28,
           37,
-          42
+          43
         ],
-        "score": 0.777286,
+        "score": 0.770531,
         "model": "recent_pair_strict",
         "block_counts": [
           2,
@@ -463,14 +456,14 @@
       {
         "pattern_id": "P4",
         "numbers": [
-          1,
+          2,
           6,
           21,
-          26,
-          35,
+          24,
+          37,
           42
         ],
-        "score": 0.772902,
+        "score": 0.7639,
         "model": "recent_pair_strict",
         "block_counts": [
           2,
@@ -484,14 +477,14 @@
       {
         "pattern_id": "P5",
         "numbers": [
-          2,
           5,
-          18,
+          8,
+          15,
           26,
-          35,
-          43
+          37,
+          42
         ],
-        "score": 0.767116,
+        "score": 0.753525,
         "model": "recent_pair_strict",
         "block_counts": [
           2,
