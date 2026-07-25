@@ -7,8 +7,14 @@ import numpy as np
 import pandas as pd
 
 from main import (
-    download_game_csv, read_csv_text, normalize_loto6, normalize_loto7,
-    validate_lottery, build_model_context, shape_score,
+    download_game_csv,
+    read_csv_text,
+    normalize_loto6,
+    normalize_loto7,
+    normalize_miniloto,
+    validate_lottery,
+    build_model_context,
+    shape_score,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,8 +40,22 @@ def consecutive_count(nums):
 
 
 def block_counts(nums, max_num):
-    blocks = [(1, 10), (11, 21), (22, 32), (33, 43)] if max_num == 43 else [(1, 9), (10, 18), (19, 27), (28, 37)]
-    return [sum(1 for n in nums if lo <= n <= hi) for lo, hi in blocks]
+    if max_num == 43:
+        # ロト6
+        blocks = [(1, 10), (11, 21), (22, 32), (33, 43)]
+    elif max_num == 37:
+        # ロト7
+        blocks = [(1, 9), (10, 18), (19, 27), (28, 37)]
+    elif max_num == 31:
+        # ミニロト
+        blocks = [(1, 8), (9, 16), (17, 24), (25, 31)]
+    else:
+        raise ValueError(f"Unsupported max_num: {max_num}")
+
+    return [
+        sum(1 for n in nums if lo <= n <= hi)
+        for lo, hi in blocks
+    ]
 
 
 def is_reasonable(nums, max_num, pick_count, cfg):
@@ -53,9 +73,16 @@ def is_reasonable(nums, max_num, pick_count, cfg):
     odd = sum(n % 2 for n in nums)
     low = sum(n <= max_num // 2 for n in nums)
 
+    if pick_count == 5:
+        return odd in (2, 3) and low in (2, 3)
+
     if pick_count == 6:
         return odd in (2, 3, 4) and low in (2, 3, 4)
-    return odd in (3, 4) and low in (3, 4)
+
+    if pick_count == 7:
+        return odd in (3, 4) and low in (3, 4)
+
+    raise ValueError(f"Unsupported pick_count: {pick_count}")
 
 
 def component_scores(nums, max_num, ctx):
@@ -280,14 +307,22 @@ def optimize(df, main_cols, min_num, max_num, pick_count, train_window, tested_p
     }
 
 
-def load_data():
+def load_data(include_miniloto=False):
     loto6 = normalize_loto6(
         read_csv_text(download_game_csv("loto6"))
     )
     loto7 = normalize_loto7(
         read_csv_text(download_game_csv("loto7"))
     )
-    return loto6, loto7
+
+    if not include_miniloto:
+        return loto6, loto7
+
+    miniloto = normalize_miniloto(
+        read_csv_text(download_game_csv("miniloto"))
+    )
+
+    return loto6, loto7, miniloto
 
 
 def print_result(title, latest, next_draw, result):
@@ -312,20 +347,83 @@ def print_result(title, latest, next_draw, result):
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    loto6, loto7 = load_data()
+    loto6, loto7, miniloto = load_data(include_miniloto=True)
 
-    loto6_cols = ["main1", "main2", "main3", "main4", "main5", "main6"]
-    loto7_cols = ["main1", "main2", "main3", "main4", "main5", "main6", "main7"]
+    loto6_cols = [
+        "main1", "main2", "main3",
+        "main4", "main5", "main6",
+    ]
+    loto7_cols = [
+        "main1", "main2", "main3", "main4",
+        "main5", "main6", "main7",
+    ]
+    miniloto_cols = [
+        "main1", "main2", "main3",
+        "main4", "main5",
+    ]
 
-    loto6_val = validate_lottery(loto6, loto6_cols, ["bonus"], 1, 43)
-    loto7_val = validate_lottery(loto7, loto7_cols, ["bonus1", "bonus2"], 1, 37)
+    loto6_val = validate_lottery(
+        loto6,
+        loto6_cols,
+        ["bonus"],
+        1,
+        43,
+    )
+    loto7_val = validate_lottery(
+        loto7,
+        loto7_cols,
+        ["bonus1", "bonus2"],
+        1,
+        37,
+    )
+    miniloto_val = validate_lottery(
+        miniloto,
+        miniloto_cols,
+        ["bonus"],
+        1,
+        31,
+    )
 
-    loto6_result = optimize(loto6, loto6_cols, 1, 43, 6, 500, 45, 300, 10000)
-    loto7_result = optimize(loto7, loto7_cols, 1, 37, 7, 240, 45, 300, 10000)
+    loto6_result = optimize(
+        loto6,
+        loto6_cols,
+        1,
+        43,
+        6,
+        500,
+        45,
+        300,
+        10000,
+    )
+    loto7_result = optimize(
+        loto7,
+        loto7_cols,
+        1,
+        37,
+        7,
+        240,
+        45,
+        300,
+        10000,
+    )
+    miniloto_result = optimize(
+        miniloto,
+        miniloto_cols,
+        1,
+        31,
+        5,
+        500,
+        45,
+        300,
+        10000,
+    )
 
     output = {
         "status": "ok",
-        "note": "optimizer automatically searches multiple weight/filter configs against a random baseline.",
+        "note": (
+            "optimizer automatically searches multiple weight/filter "
+            "configs against a random baseline."
+        ),
         "loto6": {
             "latest_draw_no": loto6_val["latest_draw_no"],
             "next_draw_no": loto6_val["latest_draw_no"] + 1,
@@ -340,27 +438,127 @@ def main():
             "validation": loto7_val,
             **loto7_result,
         },
+        "miniloto": {
+            "latest_draw_no": miniloto_val["latest_draw_no"],
+            "next_draw_no": miniloto_val["latest_draw_no"] + 1,
+            "rows": miniloto_val["rows"],
+            "validation": miniloto_val,
+            **miniloto_result,
+        },
     }
 
-    (OUTPUT_DIR / "optimizer_result.json").write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
-    (OUTPUT_DIR / "prediction_optimizer_loto6.json").write_text(json.dumps(loto6_result["prediction"], ensure_ascii=False, indent=2), encoding="utf-8")
-    (OUTPUT_DIR / "prediction_optimizer_loto7.json").write_text(json.dumps(loto7_result["prediction"], ensure_ascii=False, indent=2), encoding="utf-8")
+    (
+        OUTPUT_DIR / "optimizer_result.json"
+    ).write_text(
+        json.dumps(
+            output,
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
-    print_result("LOTO6", output["loto6"]["latest_draw_no"], output["loto6"]["next_draw_no"], loto6_result)
-    print_result("LOTO7", output["loto7"]["latest_draw_no"], output["loto7"]["next_draw_no"], loto7_result)
+    (
+        OUTPUT_DIR / "prediction_optimizer_loto6.json"
+    ).write_text(
+        json.dumps(
+            loto6_result["prediction"],
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    (
+        OUTPUT_DIR / "prediction_optimizer_loto7.json"
+    ).write_text(
+        json.dumps(
+            loto7_result["prediction"],
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    (
+        OUTPUT_DIR / "prediction_optimizer_miniloto.json"
+    ).write_text(
+        json.dumps(
+            miniloto_result["prediction"],
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    print_result(
+        "LOTO6",
+        output["loto6"]["latest_draw_no"],
+        output["loto6"]["next_draw_no"],
+        loto6_result,
+    )
+    print_result(
+        "LOTO7",
+        output["loto7"]["latest_draw_no"],
+        output["loto7"]["next_draw_no"],
+        loto7_result,
+    )
+    print_result(
+        "MINILOTO",
+        output["miniloto"]["latest_draw_no"],
+        output["miniloto"]["next_draw_no"],
+        miniloto_result,
+    )
 
     print("\n=== SHORT JSON ===")
-    print(json.dumps({
-        "status": "ok",
-        "loto6_latest_draw_no": output["loto6"]["latest_draw_no"],
-        "loto6_next_draw_no": output["loto6"]["next_draw_no"],
-        "loto6_selected_config": loto6_result["selected_config"],
-        "loto6_prediction": [p["numbers"] for p in loto6_result["prediction"]],
-        "loto7_latest_draw_no": output["loto7"]["latest_draw_no"],
-        "loto7_next_draw_no": output["loto7"]["next_draw_no"],
-        "loto7_selected_config": loto7_result["selected_config"],
-        "loto7_prediction": [p["numbers"] for p in loto7_result["prediction"]],
-    }, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            {
+                "status": "ok",
+                "loto6_latest_draw_no": (
+                    output["loto6"]["latest_draw_no"]
+                ),
+                "loto6_next_draw_no": (
+                    output["loto6"]["next_draw_no"]
+                ),
+                "loto6_selected_config": (
+                    loto6_result["selected_config"]
+                ),
+                "loto6_prediction": [
+                    p["numbers"]
+                    for p in loto6_result["prediction"]
+                ],
+                "loto7_latest_draw_no": (
+                    output["loto7"]["latest_draw_no"]
+                ),
+                "loto7_next_draw_no": (
+                    output["loto7"]["next_draw_no"]
+                ),
+                "loto7_selected_config": (
+                    loto7_result["selected_config"]
+                ),
+                "loto7_prediction": [
+                    p["numbers"]
+                    for p in loto7_result["prediction"]
+                ],
+                "miniloto_latest_draw_no": (
+                    output["miniloto"]["latest_draw_no"]
+                ),
+                "miniloto_next_draw_no": (
+                    output["miniloto"]["next_draw_no"]
+                ),
+                "miniloto_selected_config": (
+                    miniloto_result["selected_config"]
+                ),
+                "miniloto_prediction": [
+                    p["numbers"]
+                    for p in miniloto_result["prediction"]
+                ],
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":
