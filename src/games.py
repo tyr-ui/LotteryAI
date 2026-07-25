@@ -131,7 +131,7 @@ LOTTO_GAMES = {
         ],
         "allowed_odd_counts": [2, 3],
         "allowed_low_counts": [2, 3],
-        "train_window": 400,
+        "train_window": 500,
         "tested_periods": 45,
         "backtest_candidates": 300,
         "final_candidates": 10000,
