@@ -814,17 +814,21 @@ def main() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    loto6_text = download_text(LOTO6_URL)
-    loto7_text = download_text(LOTO7_URL)
+    loto6_text = download_game_csv("loto6")
+    loto7_text = download_game_csv("loto7")
+    miniloto_text = download_game_csv("miniloto")
 
     loto6_raw = read_csv_text(loto6_text)
     loto7_raw = read_csv_text(loto7_text)
+    miniloto_raw = read_csv_text(miniloto_text)
 
     loto6 = normalize_loto6(loto6_raw)
     loto7 = normalize_loto7(loto7_raw)
+    miniloto = normalize_miniloto(miniloto_raw)
 
     loto6.to_csv(DATA_DIR / "loto6.csv", index=False, encoding="utf-8")
     loto7.to_csv(DATA_DIR / "loto7.csv", index=False, encoding="utf-8")
+    miniloto.to_csv(DATA_DIR / "miniloto.csv", index=False, encoding="utf-8")
 
     loto6_main_cols = ["main1", "main2", "main3", "main4", "main5", "main6"]
     loto7_main_cols = ["main1", "main2", "main3", "main4", "main5", "main6", "main7"]
