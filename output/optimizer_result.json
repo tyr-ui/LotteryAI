@@ -1,7 +1,7 @@
 {
   "status": "ok",
   "note": "run_pipeline evaluates the previous prediction if the target draw is now available, then creates the next prediction.",
-  "generated_at": "2026-07-25T14:14:25.916790+00:00",
+  "generated_at": "2026-07-25T15:20:47.553951+00:00",
   "previous_evaluation": {
     "loto6": {
       "draw_type": "loto6",
@@ -19,8 +19,10 @@
     },
     "miniloto": {
       "draw_type": "miniloto",
-      "status": "no_previous_output",
-      "message": "前回のoptimizer_result.jsonがないため、答え合わせ対象がありません。"
+      "status": "pending",
+      "target_draw_no": 1397,
+      "latest_draw_no": 1396,
+      "message": "まだ前回予想対象回の結果がデータに反映されていません。"
     }
   },
   "evaluation_summary": {
