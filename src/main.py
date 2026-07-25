@@ -12,13 +12,15 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+from games import LOTTO_GAMES
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data" / "raw"
 OUTPUT_DIR = ROOT / "output"
 
-LOTO6_URL = "https://www.mizuhobank.co.jp/retail/takarakuji/loto/loto6/csv/loto6.csv"
-LOTO7_URL = "https://www.mizuhobank.co.jp/retail/takarakuji/loto/loto7/csv/loto7.csv"
+LOTO6_URL = LOTTO_GAMES["loto6"]["official_url"]
+LOTO7_URL = LOTTO_GAMES["loto7"]["official_url"]
+MINILOTO_URL = LOTTO_GAMES["miniloto"]["official_url"]
 
 LOTO6_COLUMNS = [
     "draw_no", "date",
