@@ -85,17 +85,32 @@ def download_from_mkmode(kind: str) -> str:
 def download_text(url: str) -> str:
     headers = get_headers()
     response = requests.get(url, headers=headers, timeout=30)
+    response.raise_for_status()
+    return decode_content(response.content)
+
+
+def download_game_csv(game_name: str) -> str:
+    if game_name not in LOTTO_GAMES:
+        raise ValueError(f"Unknown game name: {game_name}")
+
+    game = LOTTO_GAMES[game_name]
+    official_url = game["official_url"]
+    fallback_kind = game.get("fallback_kind")
+
+    headers = get_headers()
+    response = requests.get(official_url, headers=headers, timeout=30)
 
     if response.status_code == 403:
-        if "loto6" in url:
-            print("Official LOTO6 CSV was blocked. Falling back to mk-mode.")
-            return download_from_mkmode("loto6")
+        if not fallback_kind:
+            raise RuntimeError(
+                f"Official CSV was blocked and no fallback is configured: {game_name}"
+            )
 
-        if "loto7" in url:
-            print("Official LOTO7 CSV was blocked. Falling back to mk-mode.")
-            return download_from_mkmode("loto7")
-
-        raise RuntimeError(f"403 Forbidden: {url}")
+        print(
+            f'Official {game["display_name"]} CSV was blocked. '
+            f"Falling back to mk-mode."
+        )
+        return download_from_mkmode(fallback_kind)
 
     response.raise_for_status()
     return decode_content(response.content)
