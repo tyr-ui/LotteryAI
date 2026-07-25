@@ -7,8 +7,7 @@ import numpy as np
 import pandas as pd
 
 from main import (
-    LOTO6_URL, LOTO7_URL,
-    download_text, read_csv_text, normalize_loto6, normalize_loto7,
+    download_game_csv, read_csv_text, normalize_loto6, normalize_loto7,
     validate_lottery, build_model_context, shape_score,
 )
 
@@ -282,8 +281,12 @@ def optimize(df, main_cols, min_num, max_num, pick_count, train_window, tested_p
 
 
 def load_data():
-    loto6 = normalize_loto6(read_csv_text(download_text(LOTO6_URL)))
-    loto7 = normalize_loto7(read_csv_text(download_text(LOTO7_URL)))
+    loto6 = normalize_loto6(
+        read_csv_text(download_game_csv("loto6"))
+    )
+    loto7 = normalize_loto7(
+        read_csv_text(download_game_csv("loto7"))
+    )
     return loto6, loto7
 
 
