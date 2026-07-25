@@ -34,6 +34,11 @@ LOTO7_COLUMNS = [
     "bonus1", "bonus2"
 ]
 
+MINILOTO_COLUMNS = [
+    "draw_no", "date",
+    "main1", "main2", "main3", "main4", "main5",
+    "bonus"
+]
 
 def decode_content(content: bytes) -> str:
     for encoding in ["utf-8-sig", "cp932", "shift_jis", "utf-8"]:
@@ -229,6 +234,35 @@ def normalize_loto7(df: pd.DataFrame) -> pd.DataFrame:
 
     return clean_numeric(out, LOTO7_COLUMNS)
 
+def normalize_miniloto(df: pd.DataFrame) -> pd.DataFrame:
+    df = normalize_columns(df)
+
+    if all(c in df.columns for c in MINILOTO_COLUMNS):
+        out = df[MINILOTO_COLUMNS].copy()
+    else:
+        mapping = {
+            "draw_no": find_col(df, ["draw_no", "回別", "回号", "開催回"]),
+            "date": find_col(df, ["date", "抽せん日", "抽選日"]),
+            "main1": find_col(df, ["main1", "本数字1", "第1数字"]),
+            "main2": find_col(df, ["main2", "本数字2", "第2数字"]),
+            "main3": find_col(df, ["main3", "本数字3", "第3数字"]),
+            "main4": find_col(df, ["main4", "本数字4", "第4数字"]),
+            "main5": find_col(df, ["main5", "本数字5", "第5数字"]),
+            "bonus": find_col(df, ["bonus", "ボーナス数字", "ボーナス"]),
+        }
+
+        if all(mapping.values()):
+            out = pd.DataFrame({k: df[v] for k, v in mapping.items()})
+        else:
+            if df.shape[1] < 8:
+                raise ValueError(
+                    f"MINILOTO CSV has too few columns: {list(df.columns)}"
+                )
+
+            out = df.iloc[:, :8].copy()
+            out.columns = MINILOTO_COLUMNS
+
+    return clean_numeric(out, MINILOTO_COLUMNS)
 
 def validate_lottery(
     df: pd.DataFrame,
