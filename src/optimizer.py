@@ -427,8 +427,12 @@ def _prediction_to_legacy(
     新predictorのPredictionResultを既存JSON形式へ変換する。
     """
     estimated_probability = (
-        1 / math.comb(context.max_num, context.pick_count)
+    1
+    / math.comb(
+        context.max_num - context.min_num + 1,
+        context.pick_count,
     )
+)
 
     converted: list[dict[str, object]] = []
 
@@ -454,7 +458,7 @@ def _prediction_to_legacy(
                 "model": model_name,
                 "block_counts": list(shape.block_counts),
                 "consecutive_count": int(
-                    shape.consecutive_count
+                shape.consecutive_pairs
                 ),
                 "repeat_count": repeat_count,
                 "estimated_probability": (
