@@ -32,7 +32,9 @@ CONFIGS = [
     {"name": "recent_pair_strict", "w": {"freq": .14, "recent": .34, "pair": .26, "triplet": .06, "delay": .00, "dist": .20}, "s": {"g": .25, "r": .75, "d": .00}, "f": {"max_block": 3, "max_first": 2, "max_con": 1, "max_common": 3}},
     {"name": "delay_light_strict", "w": {"freq": .18, "recent": .20, "pair": .20, "triplet": .05, "delay": .15, "dist": .22}, "s": {"g": .30, "r": .35, "d": .35}, "f": {"max_block": 3, "max_first": 2, "max_con": 1, "max_common": 3}},
     {"name": "dist_heavy_strict", "w": {"freq": .18, "recent": .20, "pair": .20, "triplet": .04, "delay": .04, "dist": .34}, "s": {"g": .40, "r": .45, "d": .15}, "f": {"max_block": 3, "max_first": 2, "max_con": 1, "max_common": 3}},
-]
+    {"name": "repeat_light_strict", "w": {"freq": .14, "recent": .30, "pair": .24, "triplet": .06, "delay": .00, "dist": .18, "repeat": .08}, "s": {"g": .25, "r": .75, "d": .00}, "f": {"max_block": 3, "max_first": 2, "max_con": 1, "max_common": 3}},
+    {"name": "repeat_medium_strict", "w": {"freq": .14, "recent": .27, "pair": .22, "triplet": .05, "delay": .00, "dist": .17, "repeat": .15}, "s": {"g": .25, "r": .75, "d": .00}, "f": {"max_block": 3, "max_first": 2, "max_con": 1, "max_common": 3}},
+    ]
 
 
 def consecutive_count(nums):
@@ -100,15 +102,76 @@ def is_reasonable(nums, max_num, pick_count, cfg):
 
 
 def component_scores(nums, max_num, ctx):
-    pairs = [ctx["pairs"].get(tuple(sorted(p)), 0) / ctx["max_pair"] for p in combinations(nums, 2)]
-    triples = [ctx["triples"].get(tuple(sorted(t)), 0) / ctx["max_triple"] for t in combinations(nums, 3)]
+    pairs = [
+        ctx["pairs"].get(
+            tuple(sorted(pair)),
+            0,
+        ) / ctx["max_pair"]
+        for pair in combinations(nums, 2)
+    ]
+
+    triples = [
+        ctx["triples"].get(
+            tuple(sorted(triple)),
+            0,
+        ) / ctx["max_triple"]
+        for triple in combinations(nums, 3)
+    ]
+
+    last_draw_numbers = set(
+        ctx.get("last_draw_numbers", [])
+    )
+
+    repeat_score = (
+        len(set(nums) & last_draw_numbers)
+        / len(nums)
+        if nums
+        else 0.0
+    )
+
     return {
-        "freq": float(np.mean([ctx["global_norm"][n] for n in nums])),
-        "recent": float(np.mean([ctx["recent_norm"][n] for n in nums])),
-        "delay": float(np.mean([ctx["delay_norm"][n] for n in nums])),
-        "pair": float(np.mean(pairs)) if pairs else 0.0,
-        "triplet": float(np.mean(triples)) if triples else 0.0,
-        "dist": float(shape_score(tuple(nums), max_num, ctx["shape_stats"])),
+        "freq": float(
+            np.mean(
+                [
+                    ctx["global_norm"][n]
+                    for n in nums
+                ]
+            )
+        ),
+        "recent": float(
+            np.mean(
+                [
+                    ctx["recent_norm"][n]
+                    for n in nums
+                ]
+            )
+        ),
+        "delay": float(
+            np.mean(
+                [
+                    ctx["delay_norm"][n]
+                    for n in nums
+                ]
+            )
+        ),
+        "pair": (
+            float(np.mean(pairs))
+            if pairs
+            else 0.0
+        ),
+        "triplet": (
+            float(np.mean(triples))
+            if triples
+            else 0.0
+        ),
+        "dist": float(
+            shape_score(
+                tuple(nums),
+                max_num,
+                ctx["shape_stats"],
+            )
+        ),
+        "repeat": float(repeat_score),
     }
 
 
@@ -355,11 +418,18 @@ def backtest(
     for idx in range(start, len(df)):
         if context_cache is None:
             train = df.iloc[:idx].copy()
+
             ctx = build_model_context(
                 train,
                 main_cols,
                 min_num,
                 max_num,
+            )
+
+            ctx["last_draw_numbers"] = (
+                train.iloc[-1][main_cols]
+                .astype(int)
+                .tolist()
             )
         else:
             ctx = context_cache[idx]
@@ -489,12 +559,20 @@ def optimize(
     for idx in range(start, len(df)):
         train = df.iloc[:idx].copy()
 
-        context_cache[idx] = build_model_context(
+        ctx = build_model_context(
             train,
             main_cols,
             min_num,
             max_num,
         )
+
+        ctx["last_draw_numbers"] = (
+            train.iloc[-1][main_cols]
+            .astype(int)
+            .tolist()
+        )
+
+        context_cache[idx] = ctx
 
     random_result = backtest(
         df,
@@ -561,6 +639,12 @@ def optimize(
         main_cols,
         min_num,
         max_num,
+    )
+
+    final_ctx["last_draw_numbers"] = (
+        df.iloc[-1][main_cols]
+        .astype(int)
+        .tolist()
     )
 
     prediction = predict(
