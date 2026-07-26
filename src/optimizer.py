@@ -6,6 +6,7 @@ from itertools import combinations
 import numpy as np
 import pandas as pd
 
+from games import LOTTO_GAMES
 from main import (
     download_game_csv,
     read_csv_text,
@@ -40,21 +41,21 @@ def consecutive_count(nums):
 
 
 def block_counts(nums, max_num):
-    if max_num == 43:
-        # ロト6
-        blocks = [(1, 10), (11, 21), (22, 32), (33, 43)]
-    elif max_num == 37:
-        # ロト7
-        blocks = [(1, 9), (10, 18), (19, 27), (28, 37)]
-    elif max_num == 31:
-        # ミニロト
-        blocks = [(1, 8), (9, 16), (17, 24), (25, 31)]
-    else:
+    game_config = next(
+        (
+            config
+            for config in LOTTO_GAMES.values()
+            if config["max_num"] == max_num
+        ),
+        None,
+    )
+
+    if game_config is None:
         raise ValueError(f"Unsupported max_num: {max_num}")
 
     return [
         sum(1 for n in nums if lo <= n <= hi)
-        for lo, hi in blocks
+        for lo, hi in game_config["block_ranges"]
     ]
 
 
