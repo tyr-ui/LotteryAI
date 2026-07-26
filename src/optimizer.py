@@ -201,73 +201,250 @@ def select_diverse(scored, top_k, max_common, max_number_usage=3):
     return selected
 
 
-def predict(df, main_cols, min_num, max_num, pick_count, cfg, candidate_count, seed, top_k=5, random_mode=False):
-    ctx = build_model_context(df, main_cols, min_num, max_num)
-    candidates = generate_candidates(pick_count, min_num, max_num, ctx, cfg, candidate_count, seed, uniform=random_mode)
+def predict(
+    df,
+    main_cols,
+    min_num,
+    max_num,
+    pick_count,
+    cfg,
+    candidate_count,
+    seed,
+    top_k=5,
+    random_mode=False,
+    ctx=None,
+):
+    if ctx is None:
+        ctx = build_model_context(
+            df,
+            main_cols,
+            min_num,
+            max_num,
+        )
+
+    candidates = generate_candidates(
+        pick_count,
+        min_num,
+        max_num,
+        ctx,
+        cfg,
+        candidate_count,
+        seed,
+        uniform=random_mode,
+    )
 
     if len(candidates) < top_k:
-        candidates = generate_candidates(pick_count, min_num, max_num, ctx, None, candidate_count, seed, uniform=True)
+        candidates = generate_candidates(
+            pick_count,
+            min_num,
+            max_num,
+            ctx,
+            None,
+            candidate_count,
+            seed,
+            uniform=True,
+        )
 
     scored = []
+
     for nums in candidates:
-        comps = component_scores(nums, max_num, ctx)
-        score = 0.0 if random_mode or cfg is None else sum(cfg["w"][k] * comps[k] for k in cfg["w"])
+        comps = component_scores(
+            nums,
+            max_num,
+            ctx,
+        )
+
+        score = (
+            0.0
+            if random_mode or cfg is None
+            else sum(
+                cfg["w"][key] * comps[key]
+                for key in cfg["w"]
+            )
+        )
+
         scored.append({
             "numbers": list(nums),
             "score": float(score),
-            "model": "random" if random_mode or cfg is None else cfg["name"],
-            "block_counts": block_counts(nums, max_num),
+            "model": (
+                "random"
+                if random_mode or cfg is None
+                else cfg["name"]
+            ),
+            "block_counts": block_counts(
+                nums,
+                max_num,
+            ),
             "consecutive_count": consecutive_count(nums),
             "score_detail": comps,
-            "estimated_probability": 1 / math.comb(max_num, pick_count),
+            "estimated_probability": (
+                1 / math.comb(max_num, pick_count)
+            ),
         })
 
     if not random_mode:
-        scored.sort(key=lambda x: x["score"], reverse=True)
+        scored.sort(
+            key=lambda item: item["score"],
+            reverse=True,
+        )
 
-    max_common = 3 if cfg is None else cfg["f"]["max_common"]
-    max_number_usage = 3 if cfg is None else cfg["f"].get("max_number_usage", 3)
+    max_common = (
+        3
+        if cfg is None
+        else cfg["f"]["max_common"]
+    )
+    max_number_usage = (
+        3
+        if cfg is None
+        else cfg["f"].get(
+            "max_number_usage",
+            3,
+        )
+    )
+
     selected = select_diverse(
-    scored,
-    top_k,
-    max_common,
-    max_number_usage=max_number_usage,
+        scored,
+        top_k,
+        max_common,
+        max_number_usage=max_number_usage,
     )
 
     out = []
+
     for i, item in enumerate(selected, start=1):
         out.append({
             "pattern_id": f"P{i}",
             "numbers": item["numbers"],
-            "score": round(item["score"], 6),
+            "score": round(
+                item["score"],
+                6,
+            ),
             "model": item["model"],
             "block_counts": item["block_counts"],
-            "consecutive_count": item["consecutive_count"],
-            "estimated_probability": item["estimated_probability"],
+            "consecutive_count": (
+                item["consecutive_count"]
+            ),
+            "estimated_probability": (
+                item["estimated_probability"]
+            ),
         })
+
     return out
 
 
-def backtest(df, main_cols, min_num, max_num, pick_count, cfg, train_window, tested_periods, candidate_count, seed, random_mode=False):
-    start = max(train_window, len(df) - tested_periods)
+def backtest(
+    df,
+    main_cols,
+    min_num,
+    max_num,
+    pick_count,
+    cfg,
+    train_window,
+    tested_periods,
+    candidate_count,
+    seed,
+    random_mode=False,
+    context_cache=None,
+):
+    start = max(
+        train_window,
+        len(df) - tested_periods,
+    )
     matches = []
 
     for idx in range(start, len(df)):
-        train = df.iloc[:idx].copy()
-        actual = set(df.iloc[idx][main_cols].astype(int).tolist())
-        pred = predict(train, main_cols, min_num, max_num, pick_count, cfg, candidate_count, seed + idx, top_k=1, random_mode=random_mode)
-        matches.append(len(set(pred[0]["numbers"]) & actual))
+        if context_cache is None:
+            train = df.iloc[:idx].copy()
+            ctx = build_model_context(
+                train,
+                main_cols,
+                min_num,
+                max_num,
+            )
+        else:
+            ctx = context_cache[idx]
+
+        actual = set(
+            df.iloc[idx][main_cols]
+            .astype(int)
+            .tolist()
+        )
+
+        pred = predict(
+            df=None,
+            main_cols=main_cols,
+            min_num=min_num,
+            max_num=max_num,
+            pick_count=pick_count,
+            cfg=cfg,
+            candidate_count=candidate_count,
+            seed=seed + idx,
+            top_k=1,
+            random_mode=random_mode,
+            ctx=ctx,
+        )
+
+        matches.append(
+            len(
+                set(pred[0]["numbers"])
+                & actual
+            )
+        )
 
     n = len(matches)
+
     return {
-        "config": "random" if random_mode or cfg is None else cfg["name"],
+        "config": (
+            "random"
+            if random_mode or cfg is None
+            else cfg["name"]
+        ),
         "tested_periods": n,
-        "avg_matches": round(float(np.mean(matches)), 4) if matches else None,
-        "hit_rate_1match": round(sum(m >= 1 for m in matches) / n, 4) if n else None,
-        "hit_rate_2match": round(sum(m >= 2 for m in matches) / n, 4) if n else None,
-        "hit_rate_3match": round(sum(m >= 3 for m in matches) / n, 4) if n else None,
-        "hit_rate_4match": round(sum(m >= 4 for m in matches) / n, 4) if n else None,
-        "hit_rate_5match": round(sum(m >= 5 for m in matches) / n, 4) if n else None,
+        "avg_matches": (
+            round(float(np.mean(matches)), 4)
+            if matches
+            else None
+        ),
+        "hit_rate_1match": (
+            round(
+                sum(m >= 1 for m in matches) / n,
+                4,
+            )
+            if n
+            else None
+        ),
+        "hit_rate_2match": (
+            round(
+                sum(m >= 2 for m in matches) / n,
+                4,
+            )
+            if n
+            else None
+        ),
+        "hit_rate_3match": (
+            round(
+                sum(m >= 3 for m in matches) / n,
+                4,
+            )
+            if n
+            else None
+        ),
+        "hit_rate_4match": (
+            round(
+                sum(m >= 4 for m in matches) / n,
+                4,
+            )
+            if n
+            else None
+        ),
+        "hit_rate_5match": (
+            round(
+                sum(m >= 5 for m in matches) / n,
+                4,
+            )
+            if n
+            else None
+        ),
     }
 
 
@@ -291,25 +468,113 @@ def selection_score(result, random_avg):
     return round(float(score), 6)
 
 
-def optimize(df, main_cols, min_num, max_num, pick_count, train_window, tested_periods, bt_candidates, final_candidates):
-    random_result = backtest(df, main_cols, min_num, max_num, pick_count, None, train_window, tested_periods, bt_candidates, SEED, random_mode=True)
+def optimize(
+    df,
+    main_cols,
+    min_num,
+    max_num,
+    pick_count,
+    train_window,
+    tested_periods,
+    bt_candidates,
+    final_candidates,
+):
+    start = max(
+        train_window,
+        len(df) - tested_periods,
+    )
+
+    context_cache = {}
+
+    for idx in range(start, len(df)):
+        train = df.iloc[:idx].copy()
+
+        context_cache[idx] = build_model_context(
+            train,
+            main_cols,
+            min_num,
+            max_num,
+        )
+
+    random_result = backtest(
+        df,
+        main_cols,
+        min_num,
+        max_num,
+        pick_count,
+        None,
+        train_window,
+        tested_periods,
+        bt_candidates,
+        SEED,
+        random_mode=True,
+        context_cache=context_cache,
+    )
+
     random_avg = random_result["avg_matches"]
-
     results = []
+
     for cfg in CONFIGS:
-        r = backtest(df, main_cols, min_num, max_num, pick_count, cfg, train_window, tested_periods, bt_candidates, SEED)
-        r["selection_score"] = selection_score(r, random_avg)
-        r["random_avg"] = random_avg
-        r["random_uplift"] = round((r["avg_matches"] or 0.0) - (random_avg or 0.0), 4)
-        r["weights"] = cfg["w"]
-        r["filters"] = cfg["f"]
-        results.append(r)
+        result = backtest(
+            df,
+            main_cols,
+            min_num,
+            max_num,
+            pick_count,
+            cfg,
+            train_window,
+            tested_periods,
+            bt_candidates,
+            SEED,
+            context_cache=context_cache,
+        )
 
-    results.sort(key=lambda x: x["selection_score"], reverse=True)
+        result["selection_score"] = selection_score(
+            result,
+            random_avg,
+        )
+        result["random_avg"] = random_avg
+        result["random_uplift"] = round(
+            (result["avg_matches"] or 0.0)
+            - (random_avg or 0.0),
+            4,
+        )
+        result["weights"] = cfg["w"]
+        result["filters"] = cfg["f"]
+
+        results.append(result)
+
+    results.sort(
+        key=lambda item: item["selection_score"],
+        reverse=True,
+    )
+
     best_name = results[0]["config"]
-    best_cfg = next(c for c in CONFIGS if c["name"] == best_name)
+    best_cfg = next(
+        cfg
+        for cfg in CONFIGS
+        if cfg["name"] == best_name
+    )
 
-    pred = predict(df, main_cols, min_num, max_num, pick_count, best_cfg, final_candidates, SEED, top_k=5)
+    final_ctx = build_model_context(
+        df,
+        main_cols,
+        min_num,
+        max_num,
+    )
+
+    prediction = predict(
+        df=None,
+        main_cols=main_cols,
+        min_num=min_num,
+        max_num=max_num,
+        pick_count=pick_count,
+        cfg=best_cfg,
+        candidate_count=final_candidates,
+        seed=SEED,
+        top_k=5,
+        ctx=final_ctx,
+    )
 
     return {
         "random_baseline": random_result,
@@ -317,7 +582,7 @@ def optimize(df, main_cols, min_num, max_num, pick_count, train_window, tested_p
         "selected_config": best_name,
         "selected_weights": best_cfg["w"],
         "selected_filters": best_cfg["f"],
-        "prediction": pred,
+        "prediction": prediction,
     }
 
 
