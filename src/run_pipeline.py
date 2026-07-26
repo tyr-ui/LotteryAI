@@ -5,9 +5,9 @@ from datetime import datetime, timezone
 
 import numpy as np
 
+from data_loader import load_game_data
 from games import LOTTO_GAMES
-from main import validate_lottery
-from optimizer import load_data, optimize, print_result
+from optimizer import optimize
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -333,6 +333,52 @@ def print_evaluation(
         )
     )
 
+def print_result(
+    title: str,
+    latest_draw_no: int,
+    next_draw_no: int,
+    result: dict,
+) -> None:
+    print(f"\n=== {title} OPTIMIZER RESULT ===")
+    print(f"latest_draw_no: {latest_draw_no}")
+    print(f"next_draw_no: {next_draw_no}")
+    print(
+        "selected_config: "
+        f'{result.get("selected_config")}'
+    )
+
+    print("\n--- PREDICTION ---")
+
+    for pattern in result.get("prediction", []):
+        pattern_id = pattern.get("pattern_id")
+        numbers = pattern.get("numbers", [])
+        score = pattern.get("score")
+        model = pattern.get("model")
+
+        print(
+            f"{pattern_id}: "
+            f"{numbers} "
+            f"score={score} "
+            f"model={model}"
+        )
+
+    print("\n--- RANDOM BASELINE ---")
+    print(
+        json.dumps(
+            result.get("random_baseline", {}),
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+
+    print("\n--- RANKED CONFIGS ---")
+    print(
+        json.dumps(
+            result.get("ranked_configs", []),
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
 
 def main() -> None:
     OUTPUT_DIR.mkdir(
@@ -355,26 +401,24 @@ def main() -> None:
         {},
     )
 
-    loaded_data = load_data(
-        include_miniloto=True
-    )
-
-    datasets = dict(
-        zip(
-            LOTTO_GAMES.keys(),
-            loaded_data,
-        )
-    )
-
+    datasets = {}
     validations = {}
 
     for game_key, game_config in LOTTO_GAMES.items():
-        validations[game_key] = validate_lottery(
-            datasets[game_key],
-            game_config["main_cols"],
-            game_config["bonus_cols"],
-            game_config["min_num"],
-            game_config["max_num"],
+        loaded = load_game_data(
+            game_key,
+            game_config,
+            destination=(
+                ROOT
+                / "data"
+                / "raw"
+                / f"{game_key}.csv"
+            ),
+        )
+
+        datasets[game_key] = loaded.dataframe
+        validations[game_key] = dict(
+            loaded.validation
         )
 
     if is_scheduled_no_new_data(
