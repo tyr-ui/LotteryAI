@@ -1,7 +1,7 @@
 {
   "status": "ok",
   "note": "run_pipeline evaluates the previous prediction if the target draw is now available, then creates the next prediction.",
-  "generated_at": "2026-07-26T04:44:57.232274+00:00",
+  "generated_at": "2026-07-26T05:11:59.825562+00:00",
   "previous_evaluation": {
     "loto6": {
       "draw_type": "loto6",
@@ -67,54 +67,26 @@
     },
     "random_baseline": {
       "config": "random",
-      "tested_periods": 45,
-      "avg_matches": 0.8444,
-      "hit_rate_1match": 0.6,
-      "hit_rate_2match": 0.2222,
-      "hit_rate_3match": 0.0222,
+      "tested_periods": 90,
+      "avg_matches": 0.7778,
+      "hit_rate_1match": 0.5778,
+      "hit_rate_2match": 0.1889,
+      "hit_rate_3match": 0.0111,
       "hit_rate_4match": 0.0,
       "hit_rate_5match": 0.0
     },
     "ranked_configs": [
       {
-        "config": "repeat_light_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.0444,
-        "hit_rate_1match": 0.7111,
-        "hit_rate_2match": 0.3111,
-        "hit_rate_3match": 0.0222,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.22549,
-        "random_avg": 0.8444,
-        "random_uplift": 0.2,
-        "weights": {
-          "freq": 0.14,
-          "recent": 0.3,
-          "pair": 0.24,
-          "triplet": 0.06,
-          "delay": 0.0,
-          "dist": 0.18,
-          "repeat": 0.08
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
         "config": "repeat_medium_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.0222,
-        "hit_rate_1match": 0.7333,
-        "hit_rate_2match": 0.2667,
+        "tested_periods": 90,
+        "avg_matches": 0.9556,
+        "hit_rate_1match": 0.6889,
+        "hit_rate_2match": 0.2444,
         "hit_rate_3match": 0.0222,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.1822,
-        "random_avg": 0.8444,
+        "selection_score": 1.10891,
+        "random_avg": 0.7778,
         "random_uplift": 0.1778,
         "weights": {
           "freq": 0.14,
@@ -133,17 +105,72 @@
         }
       },
       {
-        "config": "recent_pair_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.0,
+        "config": "delay_light_strict",
+        "tested_periods": 90,
+        "avg_matches": 0.9444,
         "hit_rate_1match": 0.7111,
-        "hit_rate_2match": 0.2444,
+        "hit_rate_2match": 0.1889,
         "hit_rate_3match": 0.0444,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.1633,
-        "random_avg": 0.8444,
-        "random_uplift": 0.1556,
+        "selection_score": 1.0949,
+        "random_avg": 0.7778,
+        "random_uplift": 0.1666,
+        "weights": {
+          "freq": 0.18,
+          "recent": 0.2,
+          "pair": 0.2,
+          "triplet": 0.05,
+          "delay": 0.15,
+          "dist": 0.22
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
+      },
+      {
+        "config": "repeat_light_strict",
+        "tested_periods": 90,
+        "avg_matches": 0.9333,
+        "hit_rate_1match": 0.6667,
+        "hit_rate_2match": 0.2556,
+        "hit_rate_3match": 0.0111,
+        "hit_rate_4match": 0.0,
+        "hit_rate_5match": 0.0,
+        "selection_score": 1.073285,
+        "random_avg": 0.7778,
+        "random_uplift": 0.1555,
+        "weights": {
+          "freq": 0.14,
+          "recent": 0.3,
+          "pair": 0.24,
+          "triplet": 0.06,
+          "delay": 0.0,
+          "dist": 0.18,
+          "repeat": 0.08
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
+      },
+      {
+        "config": "recent_pair_strict",
+        "tested_periods": 90,
+        "avg_matches": 0.8778,
+        "hit_rate_1match": 0.6444,
+        "hit_rate_2match": 0.2111,
+        "hit_rate_3match": 0.0222,
+        "hit_rate_4match": 0.0,
+        "hit_rate_5match": 0.0,
+        "selection_score": 0.99389,
+        "random_avg": 0.7778,
+        "random_uplift": 0.1,
         "weights": {
           "freq": 0.14,
           "recent": 0.34,
@@ -161,16 +188,16 @@
       },
       {
         "config": "freq_pair_strict",
-        "tested_periods": 45,
-        "avg_matches": 0.9333,
-        "hit_rate_1match": 0.6444,
-        "hit_rate_2match": 0.2222,
-        "hit_rate_3match": 0.0667,
+        "tested_periods": 90,
+        "avg_matches": 0.8556,
+        "hit_rate_1match": 0.6222,
+        "hit_rate_2match": 0.1889,
+        "hit_rate_3match": 0.0444,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.084435,
-        "random_avg": 0.8444,
-        "random_uplift": 0.0889,
+        "selection_score": 0.97502,
+        "random_avg": 0.7778,
+        "random_uplift": 0.0778,
         "weights": {
           "freq": 0.3,
           "recent": 0.18,
@@ -187,17 +214,44 @@
         }
       },
       {
-        "config": "dist_heavy_strict",
-        "tested_periods": 45,
-        "avg_matches": 0.9333,
-        "hit_rate_1match": 0.6889,
-        "hit_rate_2match": 0.1778,
-        "hit_rate_3match": 0.0667,
+        "config": "balanced_loose",
+        "tested_periods": 90,
+        "avg_matches": 0.8222,
+        "hit_rate_1match": 0.6111,
+        "hit_rate_2match": 0.1889,
+        "hit_rate_3match": 0.0222,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.071115,
-        "random_avg": 0.8444,
-        "random_uplift": 0.0889,
+        "selection_score": 0.91717,
+        "random_avg": 0.7778,
+        "random_uplift": 0.0444,
+        "weights": {
+          "freq": 0.22,
+          "recent": 0.24,
+          "pair": 0.22,
+          "triplet": 0.08,
+          "delay": 0.08,
+          "dist": 0.16
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 3,
+          "max_con": 2,
+          "max_common": 4
+        }
+      },
+      {
+        "config": "dist_heavy_strict",
+        "tested_periods": 90,
+        "avg_matches": 0.8222,
+        "hit_rate_1match": 0.6556,
+        "hit_rate_2match": 0.1222,
+        "hit_rate_3match": 0.0444,
+        "hit_rate_4match": 0.0,
+        "hit_rate_5match": 0.0,
+        "selection_score": 0.90992,
+        "random_avg": 0.7778,
+        "random_uplift": 0.0444,
         "weights": {
           "freq": 0.18,
           "recent": 0.2,
@@ -214,17 +268,466 @@
         }
       },
       {
-        "config": "delay_light_strict",
-        "tested_periods": 45,
-        "avg_matches": 0.9111,
-        "hit_rate_1match": 0.6667,
-        "hit_rate_2match": 0.2,
-        "hit_rate_3match": 0.0444,
+        "config": "balanced_strict",
+        "tested_periods": 90,
+        "avg_matches": 0.8,
+        "hit_rate_1match": 0.6111,
+        "hit_rate_2match": 0.1667,
+        "hit_rate_3match": 0.0222,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.029965,
-        "random_avg": 0.8444,
-        "random_uplift": 0.0667,
+        "selection_score": 0.89054,
+        "random_avg": 0.7778,
+        "random_uplift": 0.0222,
+        "weights": {
+          "freq": 0.22,
+          "recent": 0.24,
+          "pair": 0.22,
+          "triplet": 0.08,
+          "delay": 0.08,
+          "dist": 0.16
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
+      },
+      {
+        "config": "no_delay_strict",
+        "tested_periods": 90,
+        "avg_matches": 0.7778,
+        "hit_rate_1match": 0.5889,
+        "hit_rate_2match": 0.1667,
+        "hit_rate_3match": 0.0222,
+        "hit_rate_4match": 0.0,
+        "hit_rate_5match": 0.0,
+        "selection_score": 0.86057,
+        "random_avg": 0.7778,
+        "random_uplift": 0.0,
+        "weights": {
+          "freq": 0.24,
+          "recent": 0.26,
+          "pair": 0.24,
+          "triplet": 0.08,
+          "delay": 0.0,
+          "dist": 0.18
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
+      },
+      {
+        "config": "no_delay_loose",
+        "tested_periods": 90,
+        "avg_matches": 0.7556,
+        "hit_rate_1match": 0.5889,
+        "hit_rate_2match": 0.1444,
+        "hit_rate_3match": 0.0222,
+        "hit_rate_4match": 0.0,
+        "hit_rate_5match": 0.0,
+        "selection_score": 0.81391,
+        "random_avg": 0.7778,
+        "random_uplift": -0.0222,
+        "weights": {
+          "freq": 0.24,
+          "recent": 0.26,
+          "pair": 0.24,
+          "triplet": 0.08,
+          "delay": 0.0,
+          "dist": 0.18
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 3,
+          "max_con": 2,
+          "max_common": 4
+        }
+      }
+    ],
+    "selected_config": "repeat_medium_strict",
+    "selected_weights": {
+      "freq": 0.14,
+      "recent": 0.27,
+      "pair": 0.22,
+      "triplet": 0.05,
+      "delay": 0.0,
+      "dist": 0.17,
+      "repeat": 0.15
+    },
+    "selected_filters": {
+      "max_block": 3,
+      "max_first": 2,
+      "max_con": 1,
+      "max_common": 3
+    },
+    "prediction": [
+      {
+        "pattern_id": "P1",
+        "numbers": [
+          6,
+          18,
+          21,
+          24,
+          26,
+          37
+        ],
+        "score": 0.727287,
+        "model": "repeat_medium_strict",
+        "block_counts": [
+          1,
+          2,
+          2,
+          1
+        ],
+        "consecutive_count": 0,
+        "estimated_probability": 1.6402977862213017e-07
+      },
+      {
+        "pattern_id": "P2",
+        "numbers": [
+          8,
+          15,
+          18,
+          26,
+          35,
+          43
+        ],
+        "score": 0.727161,
+        "model": "repeat_medium_strict",
+        "block_counts": [
+          1,
+          2,
+          1,
+          2
+        ],
+        "consecutive_count": 0,
+        "estimated_probability": 1.6402977862213017e-07
+      },
+      {
+        "pattern_id": "P3",
+        "numbers": [
+          5,
+          18,
+          21,
+          26,
+          36,
+          43
+        ],
+        "score": 0.716644,
+        "model": "repeat_medium_strict",
+        "block_counts": [
+          1,
+          2,
+          1,
+          2
+        ],
+        "consecutive_count": 0,
+        "estimated_probability": 1.6402977862213017e-07
+      },
+      {
+        "pattern_id": "P4",
+        "numbers": [
+          8,
+          15,
+          21,
+          24,
+          36,
+          43
+        ],
+        "score": 0.676563,
+        "model": "repeat_medium_strict",
+        "block_counts": [
+          1,
+          2,
+          1,
+          2
+        ],
+        "consecutive_count": 0,
+        "estimated_probability": 1.6402977862213017e-07
+      },
+      {
+        "pattern_id": "P5",
+        "numbers": [
+          1,
+          6,
+          15,
+          24,
+          35,
+          42
+        ],
+        "score": 0.645506,
+        "model": "repeat_medium_strict",
+        "block_counts": [
+          2,
+          1,
+          1,
+          2
+        ],
+        "consecutive_count": 0,
+        "estimated_probability": 1.6402977862213017e-07
+      }
+    ]
+  },
+  "loto7": {
+    "latest_draw_no": 687,
+    "next_draw_no": 688,
+    "rows": 687,
+    "validation": {
+      "rows": 687,
+      "latest_draw_no": 687,
+      "missing_cells": 0,
+      "duplicate_draw_no": 0,
+      "duplicate_date": 0,
+      "out_of_range_cells": 0,
+      "duplicate_main_numbers_rows": 0,
+      "status": "ok"
+    },
+    "random_baseline": {
+      "config": "random",
+      "tested_periods": 90,
+      "avg_matches": 1.0778,
+      "hit_rate_1match": 0.7111,
+      "hit_rate_2match": 0.2778,
+      "hit_rate_3match": 0.0556,
+      "hit_rate_4match": 0.0333,
+      "hit_rate_5match": 0.0
+    },
+    "ranked_configs": [
+      {
+        "config": "repeat_light_strict",
+        "tested_periods": 90,
+        "avg_matches": 1.4111,
+        "hit_rate_1match": 0.8333,
+        "hit_rate_2match": 0.4111,
+        "hit_rate_3match": 0.1444,
+        "hit_rate_4match": 0.0222,
+        "hit_rate_5match": 0.0,
+        "selection_score": 1.793245,
+        "random_avg": 1.0778,
+        "random_uplift": 0.3333,
+        "weights": {
+          "freq": 0.14,
+          "recent": 0.3,
+          "pair": 0.24,
+          "triplet": 0.06,
+          "delay": 0.0,
+          "dist": 0.18,
+          "repeat": 0.08
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
+      },
+      {
+        "config": "balanced_strict",
+        "tested_periods": 90,
+        "avg_matches": 1.3667,
+        "hit_rate_1match": 0.8222,
+        "hit_rate_2match": 0.3556,
+        "hit_rate_3match": 0.1556,
+        "hit_rate_4match": 0.0333,
+        "hit_rate_5match": 0.0,
+        "selection_score": 1.753935,
+        "random_avg": 1.0778,
+        "random_uplift": 0.2889,
+        "weights": {
+          "freq": 0.22,
+          "recent": 0.24,
+          "pair": 0.22,
+          "triplet": 0.08,
+          "delay": 0.08,
+          "dist": 0.16
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
+      },
+      {
+        "config": "recent_pair_strict",
+        "tested_periods": 90,
+        "avg_matches": 1.3778,
+        "hit_rate_1match": 0.8,
+        "hit_rate_2match": 0.4333,
+        "hit_rate_3match": 0.1222,
+        "hit_rate_4match": 0.0222,
+        "hit_rate_5match": 0.0,
+        "selection_score": 1.73719,
+        "random_avg": 1.0778,
+        "random_uplift": 0.3,
+        "weights": {
+          "freq": 0.14,
+          "recent": 0.34,
+          "pair": 0.26,
+          "triplet": 0.06,
+          "delay": 0.0,
+          "dist": 0.2
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
+      },
+      {
+        "config": "dist_heavy_strict",
+        "tested_periods": 90,
+        "avg_matches": 1.3667,
+        "hit_rate_1match": 0.8556,
+        "hit_rate_2match": 0.4,
+        "hit_rate_3match": 0.1,
+        "hit_rate_4match": 0.0111,
+        "hit_rate_5match": 0.0,
+        "selection_score": 1.681135,
+        "random_avg": 1.0778,
+        "random_uplift": 0.2889,
+        "weights": {
+          "freq": 0.18,
+          "recent": 0.2,
+          "pair": 0.2,
+          "triplet": 0.04,
+          "delay": 0.04,
+          "dist": 0.34
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
+      },
+      {
+        "config": "repeat_medium_strict",
+        "tested_periods": 90,
+        "avg_matches": 1.3444,
+        "hit_rate_1match": 0.8333,
+        "hit_rate_2match": 0.3667,
+        "hit_rate_3match": 0.1222,
+        "hit_rate_4match": 0.0222,
+        "hit_rate_5match": 0.0,
+        "selection_score": 1.67212,
+        "random_avg": 1.0778,
+        "random_uplift": 0.2666,
+        "weights": {
+          "freq": 0.14,
+          "recent": 0.27,
+          "pair": 0.22,
+          "triplet": 0.05,
+          "delay": 0.0,
+          "dist": 0.17,
+          "repeat": 0.15
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
+      },
+      {
+        "config": "balanced_loose",
+        "tested_periods": 90,
+        "avg_matches": 1.3111,
+        "hit_rate_1match": 0.7667,
+        "hit_rate_2match": 0.3667,
+        "hit_rate_3match": 0.1556,
+        "hit_rate_4match": 0.0222,
+        "hit_rate_5match": 0.0,
+        "selection_score": 1.658885,
+        "random_avg": 1.0778,
+        "random_uplift": 0.2333,
+        "weights": {
+          "freq": 0.22,
+          "recent": 0.24,
+          "pair": 0.22,
+          "triplet": 0.08,
+          "delay": 0.08,
+          "dist": 0.16
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 3,
+          "max_con": 2,
+          "max_common": 4
+        }
+      },
+      {
+        "config": "freq_pair_strict",
+        "tested_periods": 90,
+        "avg_matches": 1.3333,
+        "hit_rate_1match": 0.8111,
+        "hit_rate_2match": 0.3889,
+        "hit_rate_3match": 0.1222,
+        "hit_rate_4match": 0.0111,
+        "hit_rate_5match": 0.0,
+        "selection_score": 1.650475,
+        "random_avg": 1.0778,
+        "random_uplift": 0.2555,
+        "weights": {
+          "freq": 0.3,
+          "recent": 0.18,
+          "pair": 0.28,
+          "triplet": 0.06,
+          "delay": 0.0,
+          "dist": 0.18
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
+      },
+      {
+        "config": "no_delay_strict",
+        "tested_periods": 90,
+        "avg_matches": 1.3111,
+        "hit_rate_1match": 0.7667,
+        "hit_rate_2match": 0.4222,
+        "hit_rate_3match": 0.1222,
+        "hit_rate_4match": 0.0,
+        "hit_rate_5match": 0.0,
+        "selection_score": 1.632175,
+        "random_avg": 1.0778,
+        "random_uplift": 0.2333,
+        "weights": {
+          "freq": 0.24,
+          "recent": 0.26,
+          "pair": 0.24,
+          "triplet": 0.08,
+          "delay": 0.0,
+          "dist": 0.18
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
+      },
+      {
+        "config": "delay_light_strict",
+        "tested_periods": 90,
+        "avg_matches": 1.3111,
+        "hit_rate_1match": 0.8444,
+        "hit_rate_2match": 0.3111,
+        "hit_rate_3match": 0.1222,
+        "hit_rate_4match": 0.0333,
+        "hit_rate_5match": 0.0,
+        "selection_score": 1.623805,
+        "random_avg": 1.0778,
+        "random_uplift": 0.2333,
         "weights": {
           "freq": 0.18,
           "recent": 0.2,
@@ -241,71 +744,17 @@
         }
       },
       {
-        "config": "no_delay_strict",
-        "tested_periods": 45,
-        "avg_matches": 0.8667,
-        "hit_rate_1match": 0.6,
-        "hit_rate_2match": 0.2222,
-        "hit_rate_3match": 0.0444,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 0.991685,
-        "random_avg": 0.8444,
-        "random_uplift": 0.0223,
-        "weights": {
-          "freq": 0.24,
-          "recent": 0.26,
-          "pair": 0.24,
-          "triplet": 0.08,
-          "delay": 0.0,
-          "dist": 0.18
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
-        "config": "balanced_strict",
-        "tested_periods": 45,
-        "avg_matches": 0.8222,
-        "hit_rate_1match": 0.6,
-        "hit_rate_2match": 0.2,
-        "hit_rate_3match": 0.0222,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 0.90719,
-        "random_avg": 0.8444,
-        "random_uplift": -0.0222,
-        "weights": {
-          "freq": 0.22,
-          "recent": 0.24,
-          "pair": 0.22,
-          "triplet": 0.08,
-          "delay": 0.08,
-          "dist": 0.16
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
         "config": "no_delay_loose",
-        "tested_periods": 45,
-        "avg_matches": 0.8,
-        "hit_rate_1match": 0.5778,
-        "hit_rate_2match": 0.1778,
-        "hit_rate_3match": 0.0444,
+        "tested_periods": 90,
+        "avg_matches": 1.2444,
+        "hit_rate_1match": 0.7667,
+        "hit_rate_2match": 0.3667,
+        "hit_rate_3match": 0.1111,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 0.87832,
-        "random_avg": 0.8444,
-        "random_uplift": -0.0444,
+        "selection_score": 1.5066,
+        "random_avg": 1.0778,
+        "random_uplift": 0.1666,
         "weights": {
           "freq": 0.24,
           "recent": 0.26,
@@ -313,33 +762,6 @@
           "triplet": 0.08,
           "delay": 0.0,
           "dist": 0.18
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 3,
-          "max_con": 2,
-          "max_common": 4
-        }
-      },
-      {
-        "config": "balanced_loose",
-        "tested_periods": 45,
-        "avg_matches": 0.8,
-        "hit_rate_1match": 0.5778,
-        "hit_rate_2match": 0.2,
-        "hit_rate_3match": 0.0222,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 0.86722,
-        "random_avg": 0.8444,
-        "random_uplift": -0.0444,
-        "weights": {
-          "freq": 0.22,
-          "recent": 0.24,
-          "pair": 0.22,
-          "triplet": 0.08,
-          "delay": 0.08,
-          "dist": 0.16
         },
         "filters": {
           "max_block": 3,
@@ -369,528 +791,107 @@
       {
         "pattern_id": "P1",
         "numbers": [
-          1,
-          8,
-          18,
-          26,
-          37,
-          43
+          7,
+          9,
+          12,
+          15,
+          22,
+          34,
+          35
         ],
-        "score": 0.751801,
+        "score": 0.684059,
         "model": "repeat_light_strict",
         "block_counts": [
           2,
-          1,
+          2,
           1,
           2
         ],
-        "consecutive_count": 0,
-        "estimated_probability": 1.6402977862213017e-07
+        "consecutive_count": 1,
+        "estimated_probability": 9.713007815474609e-08
       },
       {
         "pattern_id": "P2",
         "numbers": [
-          6,
-          18,
-          21,
-          24,
-          26,
-          37
+          8,
+          9,
+          13,
+          15,
+          22,
+          29,
+          36
         ],
-        "score": 0.742478,
+        "score": 0.663136,
         "model": "repeat_light_strict",
         "block_counts": [
+          2,
+          2,
           1,
-          2,
-          2,
-          1
+          2
         ],
-        "consecutive_count": 0,
-        "estimated_probability": 1.6402977862213017e-07
+        "consecutive_count": 1,
+        "estimated_probability": 9.713007815474609e-08
       },
       {
         "pattern_id": "P3",
         "numbers": [
-          5,
+          1,
+          9,
+          14,
           18,
-          21,
-          26,
-          36,
-          43
+          22,
+          35,
+          36
         ],
-        "score": 0.732591,
+        "score": 0.62919,
         "model": "repeat_light_strict",
         "block_counts": [
-          1,
+          2,
           2,
           1,
           2
         ],
-        "consecutive_count": 0,
-        "estimated_probability": 1.6402977862213017e-07
+        "consecutive_count": 1,
+        "estimated_probability": 9.713007815474609e-08
       },
       {
         "pattern_id": "P4",
         "numbers": [
+          7,
           8,
           15,
-          21,
+          17,
           24,
-          36,
-          43
+          29,
+          34
         ],
-        "score": 0.702796,
+        "score": 0.603655,
         "model": "repeat_light_strict",
         "block_counts": [
-          1,
+          2,
           2,
           1,
           2
         ],
-        "consecutive_count": 0,
-        "estimated_probability": 1.6402977862213017e-07
+        "consecutive_count": 1,
+        "estimated_probability": 9.713007815474609e-08
       },
       {
         "pattern_id": "P5",
         "numbers": [
-          6,
-          8,
-          16,
-          27,
-          36,
-          37
-        ],
-        "score": 0.681244,
-        "model": "repeat_light_strict",
-        "block_counts": [
-          2,
           1,
-          1,
-          2
-        ],
-        "consecutive_count": 1,
-        "estimated_probability": 1.6402977862213017e-07
-      }
-    ]
-  },
-  "loto7": {
-    "latest_draw_no": 687,
-    "next_draw_no": 688,
-    "rows": 687,
-    "validation": {
-      "rows": 687,
-      "latest_draw_no": 687,
-      "missing_cells": 0,
-      "duplicate_draw_no": 0,
-      "duplicate_date": 0,
-      "out_of_range_cells": 0,
-      "duplicate_main_numbers_rows": 0,
-      "status": "ok"
-    },
-    "random_baseline": {
-      "config": "random",
-      "tested_periods": 45,
-      "avg_matches": 1.0667,
-      "hit_rate_1match": 0.7556,
-      "hit_rate_2match": 0.2444,
-      "hit_rate_3match": 0.0444,
-      "hit_rate_4match": 0.0222,
-      "hit_rate_5match": 0.0
-    },
-    "ranked_configs": [
-      {
-        "config": "balanced_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.3778,
-        "hit_rate_1match": 0.8444,
-        "hit_rate_2match": 0.3556,
-        "hit_rate_3match": 0.1333,
-        "hit_rate_4match": 0.0444,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.768285,
-        "random_avg": 1.0667,
-        "random_uplift": 0.3111,
-        "weights": {
-          "freq": 0.22,
-          "recent": 0.24,
-          "pair": 0.22,
-          "triplet": 0.08,
-          "delay": 0.08,
-          "dist": 0.16
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
-        "config": "recent_pair_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.3556,
-        "hit_rate_1match": 0.8444,
-        "hit_rate_2match": 0.4,
-        "hit_rate_3match": 0.1111,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.665595,
-        "random_avg": 1.0667,
-        "random_uplift": 0.2889,
-        "weights": {
-          "freq": 0.14,
-          "recent": 0.34,
-          "pair": 0.26,
-          "triplet": 0.06,
-          "delay": 0.0,
-          "dist": 0.2
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
-        "config": "dist_heavy_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.3333,
-        "hit_rate_1match": 0.8222,
-        "hit_rate_2match": 0.4,
-        "hit_rate_3match": 0.0889,
-        "hit_rate_4match": 0.0222,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.64437,
-        "random_avg": 1.0667,
-        "random_uplift": 0.2666,
-        "weights": {
-          "freq": 0.18,
-          "recent": 0.2,
-          "pair": 0.2,
-          "triplet": 0.04,
-          "delay": 0.04,
-          "dist": 0.34
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
-        "config": "freq_pair_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.3111,
-        "hit_rate_1match": 0.8444,
-        "hit_rate_2match": 0.3556,
-        "hit_rate_3match": 0.1111,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.5922,
-        "random_avg": 1.0667,
-        "random_uplift": 0.2444,
-        "weights": {
-          "freq": 0.3,
-          "recent": 0.18,
-          "pair": 0.28,
-          "triplet": 0.06,
-          "delay": 0.0,
-          "dist": 0.18
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
-        "config": "repeat_light_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.3111,
-        "hit_rate_1match": 0.8444,
-        "hit_rate_2match": 0.3556,
-        "hit_rate_3match": 0.1111,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.5922,
-        "random_avg": 1.0667,
-        "random_uplift": 0.2444,
-        "weights": {
-          "freq": 0.14,
-          "recent": 0.3,
-          "pair": 0.24,
-          "triplet": 0.06,
-          "delay": 0.0,
-          "dist": 0.18,
-          "repeat": 0.08
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
-        "config": "no_delay_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.2667,
-        "hit_rate_1match": 0.7556,
-        "hit_rate_2match": 0.4,
-        "hit_rate_3match": 0.1111,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.56058,
-        "random_avg": 1.0667,
-        "random_uplift": 0.2,
-        "weights": {
-          "freq": 0.24,
-          "recent": 0.26,
-          "pair": 0.24,
-          "triplet": 0.08,
-          "delay": 0.0,
-          "dist": 0.18
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
-        "config": "delay_light_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.2889,
-        "hit_rate_1match": 0.8889,
-        "hit_rate_2match": 0.2889,
-        "hit_rate_3match": 0.1111,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.54222,
-        "random_avg": 1.0667,
-        "random_uplift": 0.2222,
-        "weights": {
-          "freq": 0.18,
-          "recent": 0.2,
-          "pair": 0.2,
-          "triplet": 0.05,
-          "delay": 0.15,
-          "dist": 0.22
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
-        "config": "balanced_loose",
-        "tested_periods": 45,
-        "avg_matches": 1.2222,
-        "hit_rate_1match": 0.7778,
-        "hit_rate_2match": 0.3111,
-        "hit_rate_3match": 0.1333,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.481595,
-        "random_avg": 1.0667,
-        "random_uplift": 0.1555,
-        "weights": {
-          "freq": 0.22,
-          "recent": 0.24,
-          "pair": 0.22,
-          "triplet": 0.08,
-          "delay": 0.08,
-          "dist": 0.16
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 3,
-          "max_con": 2,
-          "max_common": 4
-        }
-      },
-      {
-        "config": "repeat_medium_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.1556,
-        "hit_rate_1match": 0.7778,
-        "hit_rate_2match": 0.2667,
-        "hit_rate_3match": 0.1111,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.355605,
-        "random_avg": 1.0667,
-        "random_uplift": 0.0889,
-        "weights": {
-          "freq": 0.14,
-          "recent": 0.27,
-          "pair": 0.22,
-          "triplet": 0.05,
-          "delay": 0.0,
-          "dist": 0.17,
-          "repeat": 0.15
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
-        "config": "no_delay_loose",
-        "tested_periods": 45,
-        "avg_matches": 1.1333,
-        "hit_rate_1match": 0.7111,
-        "hit_rate_2match": 0.3333,
-        "hit_rate_3match": 0.0889,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.33272,
-        "random_avg": 1.0667,
-        "random_uplift": 0.0666,
-        "weights": {
-          "freq": 0.24,
-          "recent": 0.26,
-          "pair": 0.24,
-          "triplet": 0.08,
-          "delay": 0.0,
-          "dist": 0.18
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 3,
-          "max_con": 2,
-          "max_common": 4
-        }
-      }
-    ],
-    "selected_config": "balanced_strict",
-    "selected_weights": {
-      "freq": 0.22,
-      "recent": 0.24,
-      "pair": 0.22,
-      "triplet": 0.08,
-      "delay": 0.08,
-      "dist": 0.16
-    },
-    "selected_filters": {
-      "max_block": 3,
-      "max_first": 2,
-      "max_con": 1,
-      "max_common": 3
-    },
-    "prediction": [
-      {
-        "pattern_id": "P1",
-        "numbers": [
-          7,
-          9,
-          13,
-          15,
-          22,
-          26,
-          34
-        ],
-        "score": 0.64199,
-        "model": "balanced_strict",
-        "block_counts": [
-          2,
-          2,
-          2,
-          1
-        ],
-        "consecutive_count": 0,
-        "estimated_probability": 9.713007815474609e-08
-      },
-      {
-        "pattern_id": "P2",
-        "numbers": [
-          6,
-          9,
-          13,
-          14,
-          22,
-          31,
-          35
-        ],
-        "score": 0.631895,
-        "model": "balanced_strict",
-        "block_counts": [
-          2,
-          2,
-          1,
-          2
-        ],
-        "consecutive_count": 1,
-        "estimated_probability": 9.713007815474609e-08
-      },
-      {
-        "pattern_id": "P3",
-        "numbers": [
-          4,
-          9,
-          15,
-          17,
-          22,
-          30,
-          35
-        ],
-        "score": 0.622008,
-        "model": "balanced_strict",
-        "block_counts": [
-          2,
-          2,
-          1,
-          2
-        ],
-        "consecutive_count": 0,
-        "estimated_probability": 9.713007815474609e-08
-      },
-      {
-        "pattern_id": "P4",
-        "numbers": [
-          6,
-          7,
           12,
-          15,
+          13,
+          18,
           26,
           29,
           35
         ],
-        "score": 0.594846,
-        "model": "balanced_strict",
+        "score": 0.576762,
+        "model": "repeat_light_strict",
         "block_counts": [
-          2,
-          2,
           1,
-          2
-        ],
-        "consecutive_count": 1,
-        "estimated_probability": 9.713007815474609e-08
-      },
-      {
-        "pattern_id": "P5",
-        "numbers": [
-          6,
-          7,
-          13,
-          17,
-          26,
-          30,
-          36
-        ],
-        "score": 0.56327,
-        "model": "balanced_strict",
-        "block_counts": [
-          2,
-          2,
+          3,
           1,
           2
         ],
@@ -915,54 +916,27 @@
     },
     "random_baseline": {
       "config": "random",
-      "tested_periods": 45,
+      "tested_periods": 90,
       "avg_matches": 0.6889,
-      "hit_rate_1match": 0.6,
-      "hit_rate_2match": 0.0889,
+      "hit_rate_1match": 0.5556,
+      "hit_rate_2match": 0.1333,
       "hit_rate_3match": 0.0,
       "hit_rate_4match": 0.0,
       "hit_rate_5match": 0.0
     },
     "ranked_configs": [
       {
-        "config": "recent_pair_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.1333,
-        "hit_rate_1match": 0.6889,
-        "hit_rate_2match": 0.3333,
-        "hit_rate_3match": 0.1111,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.47771,
-        "random_avg": 0.6889,
-        "random_uplift": 0.4444,
-        "weights": {
-          "freq": 0.14,
-          "recent": 0.34,
-          "pair": 0.26,
-          "triplet": 0.06,
-          "delay": 0.0,
-          "dist": 0.2
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
         "config": "dist_heavy_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.0667,
-        "hit_rate_1match": 0.7556,
-        "hit_rate_2match": 0.2667,
-        "hit_rate_3match": 0.0444,
+        "tested_periods": 90,
+        "avg_matches": 1.0,
+        "hit_rate_1match": 0.6889,
+        "hit_rate_2match": 0.2556,
+        "hit_rate_3match": 0.0556,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.31446,
+        "selection_score": 1.230045,
         "random_avg": 0.6889,
-        "random_uplift": 0.3778,
+        "random_uplift": 0.3111,
         "weights": {
           "freq": 0.18,
           "recent": 0.2,
@@ -979,17 +953,98 @@
         }
       },
       {
-        "config": "repeat_light_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.0444,
-        "hit_rate_1match": 0.6667,
-        "hit_rate_2match": 0.3333,
-        "hit_rate_3match": 0.0444,
+        "config": "recent_pair_strict",
+        "tested_periods": 90,
+        "avg_matches": 0.9667,
+        "hit_rate_1match": 0.6556,
+        "hit_rate_2match": 0.2333,
+        "hit_rate_3match": 0.0778,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.304335,
+        "selection_score": 1.19616,
         "random_avg": 0.6889,
-        "random_uplift": 0.3555,
+        "random_uplift": 0.2778,
+        "weights": {
+          "freq": 0.14,
+          "recent": 0.34,
+          "pair": 0.26,
+          "triplet": 0.06,
+          "delay": 0.0,
+          "dist": 0.2
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
+      },
+      {
+        "config": "balanced_loose",
+        "tested_periods": 90,
+        "avg_matches": 0.9556,
+        "hit_rate_1match": 0.7111,
+        "hit_rate_2match": 0.2222,
+        "hit_rate_3match": 0.0111,
+        "hit_rate_4match": 0.0111,
+        "hit_rate_5match": 0.0,
+        "selection_score": 1.142805,
+        "random_avg": 0.6889,
+        "random_uplift": 0.2667,
+        "weights": {
+          "freq": 0.22,
+          "recent": 0.24,
+          "pair": 0.22,
+          "triplet": 0.08,
+          "delay": 0.08,
+          "dist": 0.16
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 3,
+          "max_con": 2,
+          "max_common": 4
+        }
+      },
+      {
+        "config": "balanced_strict",
+        "tested_periods": 90,
+        "avg_matches": 0.9111,
+        "hit_rate_1match": 0.7,
+        "hit_rate_2match": 0.2,
+        "hit_rate_3match": 0.0111,
+        "hit_rate_4match": 0.0,
+        "hit_rate_5match": 0.0,
+        "selection_score": 1.07275,
+        "random_avg": 0.6889,
+        "random_uplift": 0.2222,
+        "weights": {
+          "freq": 0.22,
+          "recent": 0.24,
+          "pair": 0.22,
+          "triplet": 0.08,
+          "delay": 0.08,
+          "dist": 0.16
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
+      },
+      {
+        "config": "repeat_light_strict",
+        "tested_periods": 90,
+        "avg_matches": 0.8889,
+        "hit_rate_1match": 0.6333,
+        "hit_rate_2match": 0.2222,
+        "hit_rate_3match": 0.0333,
+        "hit_rate_4match": 0.0,
+        "hit_rate_5match": 0.0,
+        "selection_score": 1.0522,
+        "random_avg": 0.6889,
+        "random_uplift": 0.2,
         "weights": {
           "freq": 0.14,
           "recent": 0.3,
@@ -1007,97 +1062,15 @@
         }
       },
       {
-        "config": "repeat_medium_strict",
-        "tested_periods": 45,
-        "avg_matches": 1.0,
-        "hit_rate_1match": 0.6444,
-        "hit_rate_2match": 0.3333,
-        "hit_rate_3match": 0.0222,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.226635,
-        "random_avg": 0.6889,
-        "random_uplift": 0.3111,
-        "weights": {
-          "freq": 0.14,
-          "recent": 0.27,
-          "pair": 0.22,
-          "triplet": 0.05,
-          "delay": 0.0,
-          "dist": 0.17,
-          "repeat": 0.15
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
-        "config": "freq_pair_strict",
-        "tested_periods": 45,
-        "avg_matches": 0.9556,
-        "hit_rate_1match": 0.7333,
-        "hit_rate_2match": 0.1778,
-        "hit_rate_3match": 0.0444,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.137805,
-        "random_avg": 0.6889,
-        "random_uplift": 0.2667,
-        "weights": {
-          "freq": 0.3,
-          "recent": 0.18,
-          "pair": 0.28,
-          "triplet": 0.06,
-          "delay": 0.0,
-          "dist": 0.18
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
-        "config": "balanced_loose",
-        "tested_periods": 45,
-        "avg_matches": 0.9111,
-        "hit_rate_1match": 0.6889,
-        "hit_rate_2match": 0.1778,
-        "hit_rate_3match": 0.0222,
-        "hit_rate_4match": 0.0222,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.09161,
-        "random_avg": 0.6889,
-        "random_uplift": 0.2222,
-        "weights": {
-          "freq": 0.22,
-          "recent": 0.24,
-          "pair": 0.22,
-          "triplet": 0.08,
-          "delay": 0.08,
-          "dist": 0.16
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 3,
-          "max_con": 2,
-          "max_common": 4
-        }
-      },
-      {
         "config": "delay_light_strict",
-        "tested_periods": 45,
+        "tested_periods": 90,
         "avg_matches": 0.8889,
-        "hit_rate_1match": 0.6667,
-        "hit_rate_2match": 0.2,
-        "hit_rate_3match": 0.0222,
+        "hit_rate_1match": 0.6889,
+        "hit_rate_2match": 0.1889,
+        "hit_rate_3match": 0.0111,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.03666,
+        "selection_score": 1.02445,
         "random_avg": 0.6889,
         "random_uplift": 0.2,
         "weights": {
@@ -1116,17 +1089,45 @@
         }
       },
       {
-        "config": "no_delay_loose",
-        "tested_periods": 45,
-        "avg_matches": 0.8667,
-        "hit_rate_1match": 0.6444,
-        "hit_rate_2match": 0.1778,
-        "hit_rate_3match": 0.0444,
+        "config": "repeat_medium_strict",
+        "tested_periods": 90,
+        "avg_matches": 0.8556,
+        "hit_rate_1match": 0.6,
+        "hit_rate_2match": 0.2333,
+        "hit_rate_3match": 0.0222,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.02279,
+        "selection_score": 1.001695,
         "random_avg": 0.6889,
-        "random_uplift": 0.1778,
+        "random_uplift": 0.1667,
+        "weights": {
+          "freq": 0.14,
+          "recent": 0.27,
+          "pair": 0.22,
+          "triplet": 0.05,
+          "delay": 0.0,
+          "dist": 0.17,
+          "repeat": 0.15
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
+      },
+      {
+        "config": "no_delay_loose",
+        "tested_periods": 90,
+        "avg_matches": 0.8444,
+        "hit_rate_1match": 0.6556,
+        "hit_rate_2match": 0.1556,
+        "hit_rate_3match": 0.0333,
+        "hit_rate_4match": 0.0,
+        "hit_rate_5match": 0.0,
+        "selection_score": 0.977145,
+        "random_avg": 0.6889,
+        "random_uplift": 0.1555,
         "weights": {
           "freq": 0.24,
           "recent": 0.26,
@@ -1143,44 +1144,17 @@
         }
       },
       {
-        "config": "balanced_strict",
-        "tested_periods": 45,
-        "avg_matches": 0.8667,
-        "hit_rate_1match": 0.6889,
-        "hit_rate_2match": 0.1556,
-        "hit_rate_3match": 0.0222,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0,
-        "selection_score": 1.00837,
-        "random_avg": 0.6889,
-        "random_uplift": 0.1778,
-        "weights": {
-          "freq": 0.22,
-          "recent": 0.24,
-          "pair": 0.22,
-          "triplet": 0.08,
-          "delay": 0.08,
-          "dist": 0.16
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        }
-      },
-      {
         "config": "no_delay_strict",
-        "tested_periods": 45,
-        "avg_matches": 0.8444,
-        "hit_rate_1match": 0.6222,
-        "hit_rate_2match": 0.1778,
-        "hit_rate_3match": 0.0444,
+        "tested_periods": 90,
+        "avg_matches": 0.8222,
+        "hit_rate_1match": 0.6444,
+        "hit_rate_2match": 0.1444,
+        "hit_rate_3match": 0.0333,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0,
-        "selection_score": 1.002685,
+        "selection_score": 0.953815,
         "random_avg": 0.6889,
-        "random_uplift": 0.1555,
+        "random_uplift": 0.1333,
         "weights": {
           "freq": 0.24,
           "recent": 0.26,
@@ -1195,16 +1169,43 @@
           "max_con": 1,
           "max_common": 3
         }
+      },
+      {
+        "config": "freq_pair_strict",
+        "tested_periods": 90,
+        "avg_matches": 0.8333,
+        "hit_rate_1match": 0.6667,
+        "hit_rate_2match": 0.1444,
+        "hit_rate_3match": 0.0222,
+        "hit_rate_4match": 0.0,
+        "hit_rate_5match": 0.0,
+        "selection_score": 0.94492,
+        "random_avg": 0.6889,
+        "random_uplift": 0.1444,
+        "weights": {
+          "freq": 0.3,
+          "recent": 0.18,
+          "pair": 0.28,
+          "triplet": 0.06,
+          "delay": 0.0,
+          "dist": 0.18
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        }
       }
     ],
-    "selected_config": "recent_pair_strict",
+    "selected_config": "dist_heavy_strict",
     "selected_weights": {
-      "freq": 0.14,
-      "recent": 0.34,
-      "pair": 0.26,
-      "triplet": 0.06,
-      "delay": 0.0,
-      "dist": 0.2
+      "freq": 0.18,
+      "recent": 0.2,
+      "pair": 0.2,
+      "triplet": 0.04,
+      "delay": 0.04,
+      "dist": 0.34
     },
     "selected_filters": {
       "max_block": 3,
@@ -1222,8 +1223,8 @@
           20,
           31
         ],
-        "score": 0.790019,
-        "model": "recent_pair_strict",
+        "score": 0.79877,
+        "model": "dist_heavy_strict",
         "block_counts": [
           1,
           2,
@@ -1238,17 +1239,17 @@
         "numbers": [
           3,
           10,
-          20,
-          27,
+          16,
+          21,
           31
         ],
-        "score": 0.764406,
-        "model": "recent_pair_strict",
+        "score": 0.765063,
+        "model": "dist_heavy_strict",
         "block_counts": [
           1,
+          2,
           1,
-          1,
-          2
+          1
         ],
         "consecutive_count": 0,
         "estimated_probability": 5.885434139049267e-06
@@ -1257,18 +1258,18 @@
         "pattern_id": "P3",
         "numbers": [
           3,
-          4,
-          16,
-          27,
+          10,
+          19,
+          20,
           31
         ],
-        "score": 0.74388,
-        "model": "recent_pair_strict",
+        "score": 0.759751,
+        "model": "dist_heavy_strict",
         "block_counts": [
-          2,
           1,
-          0,
-          2
+          1,
+          2,
+          1
         ],
         "consecutive_count": 1,
         "estimated_probability": 5.885434139049267e-06
@@ -1282,8 +1283,8 @@
           20,
           29
         ],
-        "score": 0.720466,
-        "model": "recent_pair_strict",
+        "score": 0.739049,
+        "model": "dist_heavy_strict",
         "block_counts": [
           1,
           2,
@@ -1297,20 +1298,20 @@
         "pattern_id": "P5",
         "numbers": [
           4,
-          10,
           11,
-          27,
-          29
+          18,
+          21,
+          27
         ],
-        "score": 0.693913,
-        "model": "recent_pair_strict",
+        "score": 0.725572,
+        "model": "dist_heavy_strict",
         "block_counts": [
           1,
+          1,
           2,
-          0,
-          2
+          1
         ],
-        "consecutive_count": 1,
+        "consecutive_count": 0,
         "estimated_probability": 5.885434139049267e-06
       }
     ]
