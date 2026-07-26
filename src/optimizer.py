@@ -339,6 +339,10 @@ def predict(
                 max_num,
             ),
             "consecutive_count": consecutive_count(nums),
+            "repeat_count": len(
+                set(nums)
+                & set(ctx.get("last_draw_numbers", []))
+            ),
             "score_detail": comps,
             "estimated_probability": (
                 1 / math.comb(max_num, pick_count)
@@ -387,6 +391,7 @@ def predict(
             "consecutive_count": (
                 item["consecutive_count"]
             ),
+            "repeat_count": item["repeat_count"],
             "estimated_probability": (
                 item["estimated_probability"]
             ),
@@ -715,7 +720,13 @@ def print_result(title, latest, next_draw, result):
 
     print(f"--- {title} NEXT PREDICTION ---")
     for p in result["prediction"]:
-        print(f'{p["pattern_id"]}: {p["numbers"]} score={p["score"]} blocks={p["block_counts"]} con={p["consecutive_count"]}')
+        print(
+            f'{p["pattern_id"]}: {p["numbers"]} '
+            f'score={p["score"]} '
+            f'blocks={p["block_counts"]} '
+            f'con={p["consecutive_count"]} '
+            f'repeat={p["repeat_count"]}'
+        )
 
 
 def main():
