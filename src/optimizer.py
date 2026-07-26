@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import math
+from random import Random
+from statistics import mean, pstdev
 from typing import Mapping, Sequence
 
 from backtester import BacktestSummary, run_backtest
@@ -12,12 +14,27 @@ from predictor import PredictionResult, PredictionWeights, predict
 
 SEED = 2025
 
+# 探索量。GitHub Actionsの実行時間が厳しい場合は、
+# RANDOM_SEARCH_COUNTとLOCAL_SEARCH_COUNTを減らす。
+RANDOM_SEARCH_COUNT = 4
+LOCAL_SEARCH_COUNT = 6
+PARENT_COUNT = 3
+ROBUST_FINALIST_COUNT = 4
+ROBUST_SEEDS = (SEED, SEED + 1, SEED + 2)
 
-# 自動探索する設定。
-#
-# 旧optimizer.pyとの出力互換性を維持するため、
-# 設定名・重み・フィルタ情報は従来形式のまま保持する。
-CONFIGS = [
+WEIGHT_KEYS = (
+    "freq",
+    "recent",
+    "pair",
+    "triplet",
+    "delay",
+    "dist",
+    "repeat",
+)
+
+
+# 既存の固定設定。探索の初期点・比較基準として残す。
+BASE_CONFIGS = [
     {
         "name": "balanced_strict",
         "w": {
@@ -28,11 +45,7 @@ CONFIGS = [
             "delay": 0.08,
             "dist": 0.16,
         },
-        "s": {
-            "g": 0.35,
-            "r": 0.40,
-            "d": 0.25,
-        },
+        "s": {"g": 0.35, "r": 0.40, "d": 0.25},
         "f": {
             "max_block": 3,
             "max_first": 2,
@@ -50,11 +63,7 @@ CONFIGS = [
             "delay": 0.08,
             "dist": 0.16,
         },
-        "s": {
-            "g": 0.35,
-            "r": 0.40,
-            "d": 0.25,
-        },
+        "s": {"g": 0.35, "r": 0.40, "d": 0.25},
         "f": {
             "max_block": 3,
             "max_first": 3,
@@ -72,11 +81,7 @@ CONFIGS = [
             "delay": 0.00,
             "dist": 0.18,
         },
-        "s": {
-            "g": 0.45,
-            "r": 0.55,
-            "d": 0.00,
-        },
+        "s": {"g": 0.45, "r": 0.55, "d": 0.00},
         "f": {
             "max_block": 3,
             "max_first": 2,
@@ -94,11 +99,7 @@ CONFIGS = [
             "delay": 0.00,
             "dist": 0.18,
         },
-        "s": {
-            "g": 0.45,
-            "r": 0.55,
-            "d": 0.00,
-        },
+        "s": {"g": 0.45, "r": 0.55, "d": 0.00},
         "f": {
             "max_block": 3,
             "max_first": 3,
@@ -116,11 +117,7 @@ CONFIGS = [
             "delay": 0.00,
             "dist": 0.18,
         },
-        "s": {
-            "g": 0.65,
-            "r": 0.35,
-            "d": 0.00,
-        },
+        "s": {"g": 0.65, "r": 0.35, "d": 0.00},
         "f": {
             "max_block": 3,
             "max_first": 2,
@@ -138,11 +135,7 @@ CONFIGS = [
             "delay": 0.00,
             "dist": 0.20,
         },
-        "s": {
-            "g": 0.25,
-            "r": 0.75,
-            "d": 0.00,
-        },
+        "s": {"g": 0.25, "r": 0.75, "d": 0.00},
         "f": {
             "max_block": 3,
             "max_first": 2,
@@ -160,11 +153,7 @@ CONFIGS = [
             "delay": 0.15,
             "dist": 0.22,
         },
-        "s": {
-            "g": 0.30,
-            "r": 0.35,
-            "d": 0.35,
-        },
+        "s": {"g": 0.30, "r": 0.35, "d": 0.35},
         "f": {
             "max_block": 3,
             "max_first": 2,
@@ -182,11 +171,7 @@ CONFIGS = [
             "delay": 0.04,
             "dist": 0.34,
         },
-        "s": {
-            "g": 0.40,
-            "r": 0.45,
-            "d": 0.15,
-        },
+        "s": {"g": 0.40, "r": 0.45, "d": 0.15},
         "f": {
             "max_block": 3,
             "max_first": 2,
@@ -205,11 +190,7 @@ CONFIGS = [
             "dist": 0.18,
             "repeat": 0.08,
         },
-        "s": {
-            "g": 0.25,
-            "r": 0.75,
-            "d": 0.00,
-        },
+        "s": {"g": 0.25, "r": 0.75, "d": 0.00},
         "f": {
             "max_block": 3,
             "max_first": 2,
@@ -228,11 +209,7 @@ CONFIGS = [
             "dist": 0.17,
             "repeat": 0.15,
         },
-        "s": {
-            "g": 0.25,
-            "r": 0.75,
-            "d": 0.00,
-        },
+        "s": {"g": 0.25, "r": 0.75, "d": 0.00},
         "f": {
             "max_block": 3,
             "max_first": 2,
@@ -242,6 +219,9 @@ CONFIGS = [
     },
 ]
 
+# 旧コードや外部参照との互換性。
+CONFIGS = BASE_CONFIGS
+
 
 def _resolve_game_config(
     main_cols: Sequence[str],
@@ -249,12 +229,6 @@ def _resolve_game_config(
     max_num: int,
     pick_count: int,
 ) -> dict[str, object]:
-    """
-    旧optimize()の引数から対応するゲーム設定を取得する。
-
-    main.pyを同時変更しなくても動かせるよう、
-    現在のoptimize()呼び出し形式との互換性を維持する。
-    """
     normalized_main_cols = tuple(str(column) for column in main_cols)
 
     for game_config in LOTTO_GAMES.values():
@@ -262,7 +236,6 @@ def _resolve_game_config(
             str(column)
             for column in game_config.get("main_cols", ())
         )
-
         if (
             int(game_config["min_num"]) == int(min_num)
             and int(game_config["max_num"]) == int(max_num)
@@ -281,10 +254,8 @@ def _resolve_game_config(
 
     raise ValueError(
         "Could not resolve lottery configuration: "
-        f"min_num={min_num}, "
-        f"max_num={max_num}, "
-        f"pick_count={pick_count}, "
-        f"main_cols={list(main_cols)}"
+        f"min_num={min_num}, max_num={max_num}, "
+        f"pick_count={pick_count}, main_cols={list(main_cols)}"
     )
 
 
@@ -292,12 +263,6 @@ def _merge_config(
     game_config: Mapping[str, object],
     optimizer_config: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
-    """
-    ゲーム固有設定とoptimizer探索設定を統合する。
-
-    現行predictor.pyが直接利用しない旧フィルタ値も、
-    出力互換性と将来対応のため設定内に保持する。
-    """
     merged = dict(game_config)
 
     if optimizer_config is None:
@@ -310,26 +275,206 @@ def _merge_config(
     return merged
 
 
-def _prediction_weights(
+def _normalized_weight_dict(
+    raw_weights: Mapping[str, object],
+) -> dict[str, float]:
+    values = {
+        key: max(0.0, float(raw_weights.get(key, 0.0)))
+        for key in WEIGHT_KEYS
+    }
+    total = sum(values.values())
+
+    if total <= 0:
+        equal = 1.0 / len(WEIGHT_KEYS)
+        return {key: equal for key in WEIGHT_KEYS}
+
+    return {
+        key: round(value / total, 8)
+        for key, value in values.items()
+    }
+
+
+def _config_signature(
     config: Mapping[str, object],
-) -> PredictionWeights:
-    """
-    旧optimizer形式の重みを新predictor形式へ変換する。
-    """
+) -> tuple[float, ...]:
     raw_weights = config.get("w", {})
     if not isinstance(raw_weights, Mapping):
         raw_weights = {}
 
-    distribution_weight = float(raw_weights.get("dist", 0.0))
+    normalized = _normalized_weight_dict(raw_weights)
+    return tuple(round(normalized[key], 6) for key in WEIGHT_KEYS)
+
+
+def _copy_search_config(
+    config: Mapping[str, object],
+    *,
+    name: str,
+    origin: str,
+    parent: str | None = None,
+) -> dict[str, object]:
+    raw_weights = config.get("w", {})
+    if not isinstance(raw_weights, Mapping):
+        raw_weights = {}
+
+    filters = config.get("f", {})
+    if not isinstance(filters, Mapping):
+        filters = {}
+
+    scoring = config.get("s", {})
+    if not isinstance(scoring, Mapping):
+        scoring = {}
+
+    return {
+        "name": name,
+        "w": _normalized_weight_dict(raw_weights),
+        "s": dict(scoring),
+        "f": dict(filters),
+        "search_origin": origin,
+        "parent": parent,
+    }
+
+
+def _build_base_candidates() -> list[dict[str, object]]:
+    return [
+        _copy_search_config(
+            config,
+            name=str(config["name"]),
+            origin="fixed",
+        )
+        for config in BASE_CONFIGS
+    ]
+
+
+def _generate_random_candidates(
+    *,
+    count: int,
+    rng: Random,
+    inherited_filters: Mapping[str, object],
+) -> list[dict[str, object]]:
+    """
+    単体上のランダム探索。
+
+    指数分布から正の値を作って正規化するため、
+    全重みの合計は常に1になる。
+    """
+    candidates: list[dict[str, object]] = []
+
+    for index in range(1, count + 1):
+        raw = {
+            key: -math.log(max(rng.random(), 1e-12))
+            for key in WEIGHT_KEYS
+        }
+
+        # tripletとdelayだけが極端に支配しにくいよう軽く抑える。
+        raw["triplet"] *= 0.65
+        raw["delay"] *= 0.80
+
+        candidates.append({
+            "name": f"random_{index:02d}",
+            "w": _normalized_weight_dict(raw),
+            "s": {},
+            "f": dict(inherited_filters),
+            "search_origin": "random",
+            "parent": None,
+        })
+
+    return candidates
+
+
+def _mutate_weights(
+    weights: Mapping[str, object],
+    *,
+    rng: Random,
+    scale: float,
+) -> dict[str, float]:
+    normalized = _normalized_weight_dict(weights)
+    mutated: dict[str, float] = {}
+
+    for key in WEIGHT_KEYS:
+        base = normalized[key]
+        additive = rng.gauss(0.0, scale)
+        multiplicative = math.exp(rng.gauss(0.0, scale * 0.75))
+        mutated[key] = max(0.0, base * multiplicative + additive)
+
+    return _normalized_weight_dict(mutated)
+
+
+def _generate_local_candidates(
+    parents: Sequence[Mapping[str, object]],
+    *,
+    count: int,
+    rng: Random,
+) -> list[dict[str, object]]:
+    candidates: list[dict[str, object]] = []
+
+    if not parents:
+        return candidates
+
+    scales = (0.025, 0.05, 0.08)
+
+    for index in range(1, count + 1):
+        parent = parents[(index - 1) % len(parents)]
+        parent_weights = parent.get("w", {})
+        if not isinstance(parent_weights, Mapping):
+            parent_weights = {}
+
+        parent_filters = parent.get("f", {})
+        if not isinstance(parent_filters, Mapping):
+            parent_filters = {}
+
+        parent_name = str(parent["name"])
+        scale = scales[(index - 1) % len(scales)]
+
+        candidates.append({
+            "name": f"local_{index:02d}_{parent_name}",
+            "w": _mutate_weights(
+                parent_weights,
+                rng=rng,
+                scale=scale,
+            ),
+            "s": {},
+            "f": dict(parent_filters),
+            "search_origin": "local",
+            "parent": parent_name,
+        })
+
+    return candidates
+
+
+def _deduplicate_configs(
+    configs: Sequence[Mapping[str, object]],
+) -> list[dict[str, object]]:
+    unique: list[dict[str, object]] = []
+    signatures: set[tuple[float, ...]] = set()
+
+    for config in configs:
+        signature = _config_signature(config)
+        if signature in signatures:
+            continue
+        signatures.add(signature)
+        unique.append(dict(config))
+
+    return unique
+
+
+def _prediction_weights(
+    config: Mapping[str, object],
+) -> PredictionWeights:
+    raw_weights = config.get("w", {})
+    if not isinstance(raw_weights, Mapping):
+        raw_weights = {}
+
+    normalized = _normalized_weight_dict(raw_weights)
+    distribution_weight = normalized["dist"]
     shape_weight = distribution_weight / 6.0
 
     return PredictionWeights(
-        global_frequency=float(raw_weights.get("freq", 0.0)),
-        recent_frequency=float(raw_weights.get("recent", 0.0)),
-        delay=float(raw_weights.get("delay", 0.0)),
-        pair=float(raw_weights.get("pair", 0.0)),
-        triplet=float(raw_weights.get("triplet", 0.0)),
-        repeat=float(raw_weights.get("repeat", 0.0)),
+        global_frequency=normalized["freq"],
+        recent_frequency=normalized["recent"],
+        delay=normalized["delay"],
+        pair=normalized["pair"],
+        triplet=normalized["triplet"],
+        repeat=normalized["repeat"],
         sum_shape=shape_weight,
         odd_shape=shape_weight,
         low_shape=shape_weight,
@@ -341,11 +486,6 @@ def _prediction_weights(
 
 
 def _random_weights() -> PredictionWeights:
-    """
-    数字ごとの生成重みと候補スコアを均一化する。
-
-    predictor.pyの既存APIを変更せず、ランダム基準を作るために使う。
-    """
     return PredictionWeights(
         global_frequency=0.0,
         recent_frequency=0.0,
@@ -368,16 +508,11 @@ def _summary_to_result(
     *,
     config_name: str,
 ) -> dict[str, object]:
-    """
-    新backtesterの結果を旧optimizer出力形式へ変換する。
-    """
     return {
         "config": config_name,
         "tested_periods": summary.tested_periods,
         "avg_matches": summary.average_best_matches,
-        "average_matches_per_ticket": (
-            summary.average_matches_per_ticket
-        ),
+        "average_matches_per_ticket": summary.average_matches_per_ticket,
         "hit_rate_1match": summary.hit_rate_1match,
         "hit_rate_2match": summary.hit_rate_2match,
         "hit_rate_3match": summary.hit_rate_3match,
@@ -410,11 +545,50 @@ def _run_backtest_result(
         seed=seed,
         include_records=False,
     )
+    return _summary_to_result(summary, config_name=config_name)
 
-    return _summary_to_result(
-        summary,
-        config_name=config_name,
+
+def _aggregate_seed_results(
+    results: Sequence[Mapping[str, object]],
+    *,
+    config_name: str,
+) -> dict[str, object]:
+    if not results:
+        raise ValueError("results must not be empty.")
+
+    metric_keys = (
+        "avg_matches",
+        "average_matches_per_ticket",
+        "hit_rate_1match",
+        "hit_rate_2match",
+        "hit_rate_3match",
+        "hit_rate_4match",
+        "hit_rate_5match",
+        "hit_rate_6match",
+        "hit_rate_7match",
     )
+
+    aggregated: dict[str, object] = {
+        "config": config_name,
+        "tested_periods": int(results[0].get("tested_periods") or 0),
+        "evaluated_seeds": len(results),
+    }
+
+    for key in metric_keys:
+        values = [float(item.get(key) or 0.0) for item in results]
+        aggregated[key] = round(float(mean(values)), 6)
+
+    avg_values = [float(item.get("avg_matches") or 0.0) for item in results]
+    aggregated["avg_matches_std"] = round(
+        float(pstdev(avg_values)) if len(avg_values) > 1 else 0.0,
+        6,
+    )
+    aggregated["seed_avg_matches"] = [
+        round(value, 6)
+        for value in avg_values
+    ]
+
+    return aggregated
 
 
 def _prediction_to_legacy(
@@ -423,16 +597,10 @@ def _prediction_to_legacy(
     context,
     model_name: str,
 ) -> list[dict[str, object]]:
-    """
-    新predictorのPredictionResultを既存JSON形式へ変換する。
-    """
-    estimated_probability = (
-    1
-    / math.comb(
+    estimated_probability = 1 / math.comb(
         context.max_num - context.min_num + 1,
         context.pick_count,
     )
-)
 
     converted: list[dict[str, object]] = []
 
@@ -444,92 +612,110 @@ def _prediction_to_legacy(
             ranges=context.block_ranges,
         )
 
-        repeat_count = (
-            int(item.repeat_counts[0])
-            if item.repeat_counts
-            else 0
-        )
+        repeat_count = int(item.repeat_counts[0]) if item.repeat_counts else 0
 
-        converted.append(
-            {
-                "pattern_id": f"P{index}",
-                "numbers": list(item.candidate),
-                "score": round(float(item.total_score), 6),
-                "model": model_name,
-                "block_counts": list(shape.block_counts),
-                "consecutive_count": int(
-                shape.consecutive_pairs
-                ),
-                "repeat_count": repeat_count,
-                "estimated_probability": (
-                    estimated_probability
-                ),
-            }
-        )
+        converted.append({
+            "pattern_id": f"P{index}",
+            "numbers": list(item.candidate),
+            "score": round(float(item.total_score), 6),
+            "model": model_name,
+            "block_counts": list(shape.block_counts),
+            "consecutive_count": int(shape.consecutive_pairs),
+            "repeat_count": repeat_count,
+            "estimated_probability": estimated_probability,
+        })
 
     return converted
-
-
-def filter_key(
-    config: Mapping[str, object],
-) -> tuple[tuple[str, object], ...]:
-    filters = config.get("f", {})
-
-    if not isinstance(filters, Mapping):
-        return ()
-
-    return tuple(
-        sorted(
-            (str(key), value)
-            for key, value in filters.items()
-        )
-    )
 
 
 def selection_score(
     result: Mapping[str, object],
     random_avg: float | None,
 ) -> float:
-    avg = float(result.get("avg_matches") or 0.0)
-    hit_rate_2 = float(
-        result.get("hit_rate_2match") or 0.0
-    )
-    hit_rate_3 = float(
-        result.get("hit_rate_3match") or 0.0
-    )
-    hit_rate_4 = float(
-        result.get("hit_rate_4match") or 0.0
-    )
+    """
+    設定名に依存しない純粋な評価関数。
 
-    uplift = (
-        0.0
-        if random_avg is None
-        else avg - float(random_avg)
-    )
+    平均一致数と高一致率を加点し、
+    ランダム比の改善を加点、
+    seed間の不安定さを減点する。
+    """
+    avg = float(result.get("avg_matches") or 0.0)
+    uplift = 0.0 if random_avg is None else avg - float(random_avg)
+    stability_std = float(result.get("avg_matches_std") or 0.0)
 
     score = (
         avg
-        + 0.30 * hit_rate_2
-        + 0.80 * hit_rate_3
-        + 1.20 * hit_rate_4
+        + 0.30 * float(result.get("hit_rate_2match") or 0.0)
+        + 0.80 * float(result.get("hit_rate_3match") or 0.0)
+        + 1.20 * float(result.get("hit_rate_4match") or 0.0)
+        + 1.60 * float(result.get("hit_rate_5match") or 0.0)
+        + 2.00 * float(result.get("hit_rate_6match") or 0.0)
+        + 2.40 * float(result.get("hit_rate_7match") or 0.0)
         + 0.35 * uplift
+        - 0.20 * stability_std
     )
 
-    name = str(result.get("config", ""))
-
-    if "no_delay" in name or "balanced" in name:
-        score += 0.015
-
-    if "loose" in name:
-        score -= 0.010
-
-    if (
-        random_avg is not None
-        and avg < float(random_avg) - 0.05
-    ):
+    if random_avg is not None and avg < float(random_avg) - 0.05:
         score -= 0.25
 
     return round(float(score), 6)
+
+
+def _evaluate_config(
+    history: Sequence[Sequence[int]],
+    game_config: Mapping[str, object],
+    optimizer_config: Mapping[str, object],
+    *,
+    train_window: int,
+    tested_periods: int,
+    candidate_count: int,
+    seeds: Sequence[int],
+    random_baselines: Mapping[int, Mapping[str, object]],
+) -> dict[str, object]:
+    merged_config = _merge_config(game_config, optimizer_config)
+    weights = _prediction_weights(optimizer_config)
+    name = str(optimizer_config["name"])
+
+    per_seed = [
+        _run_backtest_result(
+            history,
+            merged_config,
+            config_name=name,
+            train_window=train_window,
+            tested_periods=tested_periods,
+            candidate_count=candidate_count,
+            weights=weights,
+            seed=seed,
+        )
+        for seed in seeds
+    ]
+
+    result = _aggregate_seed_results(per_seed, config_name=name)
+
+    random_results = [
+        random_baselines[seed]
+        for seed in seeds
+    ]
+    random_aggregate = _aggregate_seed_results(
+        random_results,
+        config_name="random",
+    )
+    random_avg = float(random_aggregate.get("avg_matches") or 0.0)
+
+    result["selection_score"] = selection_score(result, random_avg)
+    result["random_unfiltered_avg"] = random_avg
+    result["random_filtered_avg"] = random_avg
+    result["random_uplift"] = round(
+        float(result.get("avg_matches") or 0.0) - random_avg,
+        6,
+    )
+    result["random_filtered_baseline"] = random_aggregate
+    result["weights"] = dict(optimizer_config["w"])
+    result["filters"] = dict(optimizer_config.get("f", {}))
+    result["search_origin"] = optimizer_config.get("search_origin")
+    result["parent"] = optimizer_config.get("parent")
+
+    return result
 
 
 def optimize(
@@ -544,10 +730,10 @@ def optimize(
     final_candidates,
 ):
     """
-    複数の重み設定をバックテストし、
-    最良設定を使って次回候補を生成する。
+    固定設定、ランダム探索、局所探索を段階的に実行し、
+    複数seedで最終候補の安定性を確認してから次回候補を生成する。
 
-    引数と戻り値は旧main.pyとの互換性を維持する。
+    引数と主要な戻り値は旧main.pyとの互換性を維持する。
     """
     game_config = _resolve_game_config(
         main_cols,
@@ -555,166 +741,158 @@ def optimize(
         max_num,
         pick_count,
     )
+    game_config.update({
+        "main_cols": tuple(main_cols),
+        "min_num": int(min_num),
+        "max_num": int(max_num),
+        "pick_count": int(pick_count),
+        "train_window": int(train_window),
+        "tested_periods": int(tested_periods),
+        "backtest_candidates": int(bt_candidates),
+        "final_candidates": int(final_candidates),
+    })
 
-    game_config.update(
-        {
-            "main_cols": tuple(main_cols),
-            "min_num": int(min_num),
-            "max_num": int(max_num),
-            "pick_count": int(pick_count),
-            "train_window": int(train_window),
-            "tested_periods": int(tested_periods),
-            "backtest_candidates": int(bt_candidates),
-            "final_candidates": int(final_candidates),
-        }
-    )
-
-    history = dataframe_to_history(
-        df,
-        game_config,
-    )
-
+    history = dataframe_to_history(df, game_config)
     random_weights = _random_weights()
 
-    # 互換キー名はrandom_unfilteredだが、
-    # 現在のpredictorが持つゲーム共通フィルタは適用される。
-    random_unfiltered_result = _run_backtest_result(
-        history,
-        game_config,
-        config_name="random",
-        train_window=int(train_window),
-        tested_periods=int(tested_periods),
-        candidate_count=int(bt_candidates),
-        weights=random_weights,
-        seed=SEED,
-    )
-
-    random_filtered_cache: dict[
-        tuple[tuple[str, object], ...],
-        dict[str, object],
-    ] = {}
-
-    for optimizer_config in CONFIGS:
-        key = filter_key(optimizer_config)
-
-        if key in random_filtered_cache:
-            continue
-
-        merged_config = _merge_config(
-            game_config,
-            optimizer_config,
-        )
-
-        random_filtered_cache[key] = (
-            _run_backtest_result(
-                history,
-                merged_config,
-                config_name="random",
-                train_window=int(train_window),
-                tested_periods=int(tested_periods),
-                candidate_count=int(bt_candidates),
-                weights=random_weights,
-                seed=SEED + 100000,
-            )
-        )
-
-    results: list[dict[str, object]] = []
-
-    for optimizer_config in CONFIGS:
-        key = filter_key(optimizer_config)
-        merged_config = _merge_config(
-            game_config,
-            optimizer_config,
-        )
-        weights = _prediction_weights(
-            optimizer_config,
-        )
-
-        result = _run_backtest_result(
+    random_baselines: dict[int, dict[str, object]] = {}
+    for seed in ROBUST_SEEDS:
+        random_baselines[seed] = _run_backtest_result(
             history,
-            merged_config,
-            config_name=str(optimizer_config["name"]),
+            game_config,
+            config_name="random",
             train_window=int(train_window),
             tested_periods=int(tested_periods),
             candidate_count=int(bt_candidates),
-            weights=weights,
-            seed=SEED,
+            weights=random_weights,
+            seed=seed,
         )
 
-        random_filtered_result = (
-            random_filtered_cache[key]
-        )
-        random_filtered_avg = (
-            random_filtered_result.get("avg_matches")
-        )
+    rng = Random(SEED + int(max_num) * 100 + int(pick_count))
 
-        resolved_random_avg = (
-            float(random_filtered_avg)
-            if random_filtered_avg is not None
-            else None
-        )
+    base_candidates = _build_base_candidates()
+    inherited_filters = dict(base_candidates[0].get("f", {}))
 
-        result["selection_score"] = selection_score(
-            result,
-            resolved_random_avg,
-        )
+    random_candidates = _generate_random_candidates(
+        count=RANDOM_SEARCH_COUNT,
+        rng=rng,
+        inherited_filters=inherited_filters,
+    )
 
-        result["random_unfiltered_avg"] = (
-            random_unfiltered_result.get("avg_matches")
-        )
-        result["random_filtered_avg"] = (
-            random_filtered_avg
-        )
-        result["random_uplift"] = round(
-            float(result.get("avg_matches") or 0.0)
-            - float(random_filtered_avg or 0.0),
-            4,
-        )
-        result["random_filtered_baseline"] = (
-            random_filtered_result
-        )
-        result["weights"] = dict(
-            optimizer_config["w"]
-        )
-        result["filters"] = dict(
-            optimizer_config["f"]
-        )
+    stage_one_configs = _deduplicate_configs(
+        [*base_candidates, *random_candidates]
+    )
 
-        results.append(result)
-
-    if not results:
-        raise RuntimeError(
-            "No optimizer configurations were evaluated."
+    stage_one_results = [
+        _evaluate_config(
+            history,
+            game_config,
+            config,
+            train_window=int(train_window),
+            tested_periods=int(tested_periods),
+            candidate_count=int(bt_candidates),
+            seeds=(SEED,),
+            random_baselines=random_baselines,
         )
-
-    results.sort(
-        key=lambda item: float(
-            item["selection_score"]
-        ),
+        for config in stage_one_configs
+    ]
+    stage_one_results.sort(
+        key=lambda item: float(item["selection_score"]),
         reverse=True,
     )
 
-    best_result = results[0]
+    config_by_name = {
+        str(config["name"]): config
+        for config in stage_one_configs
+    }
+    parent_configs = [
+        config_by_name[str(result["config"])]
+        for result in stage_one_results[:PARENT_COUNT]
+    ]
+
+    local_candidates = _generate_local_candidates(
+        parent_configs,
+        count=LOCAL_SEARCH_COUNT,
+        rng=rng,
+    )
+
+    all_configs = _deduplicate_configs(
+        [*stage_one_configs, *local_candidates]
+    )
+    evaluated_names = {
+        str(result["config"])
+        for result in stage_one_results
+    }
+
+    local_results = [
+        _evaluate_config(
+            history,
+            game_config,
+            config,
+            train_window=int(train_window),
+            tested_periods=int(tested_periods),
+            candidate_count=int(bt_candidates),
+            seeds=(SEED,),
+            random_baselines=random_baselines,
+        )
+        for config in all_configs
+        if str(config["name"]) not in evaluated_names
+    ]
+
+    preliminary_results = [
+        *stage_one_results,
+        *local_results,
+    ]
+    preliminary_results.sort(
+        key=lambda item: float(item["selection_score"]),
+        reverse=True,
+    )
+
+    all_config_by_name = {
+        str(config["name"]): config
+        for config in all_configs
+    }
+
+    finalist_names = [
+        str(result["config"])
+        for result in preliminary_results[:ROBUST_FINALIST_COUNT]
+    ]
+
+    robust_results_by_name: dict[str, dict[str, object]] = {}
+    for name in finalist_names:
+        robust_results_by_name[name] = _evaluate_config(
+            history,
+            game_config,
+            all_config_by_name[name],
+            train_window=int(train_window),
+            tested_periods=int(tested_periods),
+            candidate_count=int(bt_candidates),
+            seeds=ROBUST_SEEDS,
+            random_baselines=random_baselines,
+        )
+
+    ranked_results: list[dict[str, object]] = []
+    for result in preliminary_results:
+        name = str(result["config"])
+        ranked_results.append(
+            robust_results_by_name.get(name, result)
+        )
+
+    ranked_results.sort(
+        key=lambda item: float(item["selection_score"]),
+        reverse=True,
+    )
+
+    if not ranked_results:
+        raise RuntimeError("No optimizer configurations were evaluated.")
+
+    best_result = ranked_results[0]
     best_name = str(best_result["config"])
+    best_config = all_config_by_name[best_name]
 
-    best_config = next(
-        config
-        for config in CONFIGS
-        if config["name"] == best_name
-    )
-
-    final_config = _merge_config(
-        game_config,
-        best_config,
-    )
-    final_weights = _prediction_weights(
-        best_config,
-    )
-
-    final_context = build_model_context(
-        history,
-        final_config,
-    )
+    final_config = _merge_config(game_config, best_config)
+    final_weights = _prediction_weights(best_config)
+    final_context = build_model_context(history, final_config)
 
     final_prediction = predict(
         final_context,
@@ -731,20 +909,33 @@ def optimize(
         model_name=best_name,
     )
 
+    selected_random_baseline = best_result["random_filtered_baseline"]
+
     return {
-        "random_baseline": (
-            random_unfiltered_result
+        "random_baseline": _aggregate_seed_results(
+            [random_baselines[seed] for seed in ROBUST_SEEDS],
+            config_name="random",
         ),
-        "selected_random_filtered_baseline": (
-            best_result["random_filtered_baseline"]
-        ),
-        "ranked_configs": results,
+        "selected_random_filtered_baseline": selected_random_baseline,
+        "ranked_configs": ranked_results,
         "selected_config": best_name,
-        "selected_weights": dict(
-            best_config["w"]
-        ),
-        "selected_filters": dict(
-            best_config["f"]
-        ),
+        "selected_weights": dict(best_config["w"]),
+        "selected_filters": dict(best_config.get("f", {})),
+        "search_metadata": {
+            "algorithm": "fixed_random_local_robust",
+            "base_config_count": len(base_candidates),
+            "random_config_count": len(random_candidates),
+            "local_config_count": len(local_candidates),
+            "total_unique_config_count": len(all_configs),
+            "parent_count": PARENT_COUNT,
+            "robust_finalist_count": ROBUST_FINALIST_COUNT,
+            "robust_seeds": list(ROBUST_SEEDS),
+            "note": (
+                "Optimizer-specific max_block/max_first/max_con/max_common "
+                "are retained for output compatibility, but predictor.py "
+                "currently does not consume those keys. Therefore this "
+                "version optimizes only effective prediction weights."
+            ),
+        },
         "prediction": prediction,
     }
