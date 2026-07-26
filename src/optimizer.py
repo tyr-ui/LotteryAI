@@ -1,554 +1,528 @@
-from pathlib import Path
-import json
+from __future__ import annotations
+
 import math
-from itertools import combinations
+from typing import Mapping, Sequence
 
-import numpy as np
-import pandas as pd
-
+from backtester import BacktestSummary, run_backtest
+from data_loader import dataframe_to_history
+from features import build_model_context, build_shape_features
 from games import LOTTO_GAMES
-from main import (
-    download_game_csv,
-    read_csv_text,
-    normalize_loto6,
-    normalize_loto7,
-    normalize_miniloto,
-    validate_lottery,
-    build_model_context,
-    shape_score,
-)
+from predictor import PredictionResult, PredictionWeights, predict
 
-ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_DIR = ROOT / "output"
+
 SEED = 2025
 
-# 自動探索する設定。重み + 分布制約をセットで比較する。
+
+# 自動探索する設定。
+#
+# 旧optimizer.pyとの出力互換性を維持するため、
+# 設定名・重み・フィルタ情報は従来形式のまま保持する。
 CONFIGS = [
-    {"name": "balanced_strict", "w": {"freq": .22, "recent": .24, "pair": .22, "triplet": .08, "delay": .08, "dist": .16}, "s": {"g": .35, "r": .40, "d": .25}, "f": {"max_block": 3, "max_first": 2, "max_con": 1, "max_common": 3}},
-    {"name": "balanced_loose", "w": {"freq": .22, "recent": .24, "pair": .22, "triplet": .08, "delay": .08, "dist": .16}, "s": {"g": .35, "r": .40, "d": .25}, "f": {"max_block": 3, "max_first": 3, "max_con": 2, "max_common": 4}},
-    {"name": "no_delay_strict", "w": {"freq": .24, "recent": .26, "pair": .24, "triplet": .08, "delay": .00, "dist": .18}, "s": {"g": .45, "r": .55, "d": .00}, "f": {"max_block": 3, "max_first": 2, "max_con": 1, "max_common": 3}},
-    {"name": "no_delay_loose", "w": {"freq": .24, "recent": .26, "pair": .24, "triplet": .08, "delay": .00, "dist": .18}, "s": {"g": .45, "r": .55, "d": .00}, "f": {"max_block": 3, "max_first": 3, "max_con": 2, "max_common": 4}},
-    {"name": "freq_pair_strict", "w": {"freq": .30, "recent": .18, "pair": .28, "triplet": .06, "delay": .00, "dist": .18}, "s": {"g": .65, "r": .35, "d": .00}, "f": {"max_block": 3, "max_first": 2, "max_con": 1, "max_common": 3}},
-    {"name": "recent_pair_strict", "w": {"freq": .14, "recent": .34, "pair": .26, "triplet": .06, "delay": .00, "dist": .20}, "s": {"g": .25, "r": .75, "d": .00}, "f": {"max_block": 3, "max_first": 2, "max_con": 1, "max_common": 3}},
-    {"name": "delay_light_strict", "w": {"freq": .18, "recent": .20, "pair": .20, "triplet": .05, "delay": .15, "dist": .22}, "s": {"g": .30, "r": .35, "d": .35}, "f": {"max_block": 3, "max_first": 2, "max_con": 1, "max_common": 3}},
-    {"name": "dist_heavy_strict", "w": {"freq": .18, "recent": .20, "pair": .20, "triplet": .04, "delay": .04, "dist": .34}, "s": {"g": .40, "r": .45, "d": .15}, "f": {"max_block": 3, "max_first": 2, "max_con": 1, "max_common": 3}},
-    {"name": "repeat_light_strict", "w": {"freq": .14, "recent": .30, "pair": .24, "triplet": .06, "delay": .00, "dist": .18, "repeat": .08}, "s": {"g": .25, "r": .75, "d": .00}, "f": {"max_block": 3, "max_first": 2, "max_con": 1, "max_common": 3}},
-    {"name": "repeat_medium_strict", "w": {"freq": .14, "recent": .27, "pair": .22, "triplet": .05, "delay": .00, "dist": .17, "repeat": .15}, "s": {"g": .25, "r": .75, "d": .00}, "f": {"max_block": 3, "max_first": 2, "max_con": 1, "max_common": 3}},
-    ]
+    {
+        "name": "balanced_strict",
+        "w": {
+            "freq": 0.22,
+            "recent": 0.24,
+            "pair": 0.22,
+            "triplet": 0.08,
+            "delay": 0.08,
+            "dist": 0.16,
+        },
+        "s": {
+            "g": 0.35,
+            "r": 0.40,
+            "d": 0.25,
+        },
+        "f": {
+            "max_block": 3,
+            "max_first": 2,
+            "max_con": 1,
+            "max_common": 3,
+        },
+    },
+    {
+        "name": "balanced_loose",
+        "w": {
+            "freq": 0.22,
+            "recent": 0.24,
+            "pair": 0.22,
+            "triplet": 0.08,
+            "delay": 0.08,
+            "dist": 0.16,
+        },
+        "s": {
+            "g": 0.35,
+            "r": 0.40,
+            "d": 0.25,
+        },
+        "f": {
+            "max_block": 3,
+            "max_first": 3,
+            "max_con": 2,
+            "max_common": 4,
+        },
+    },
+    {
+        "name": "no_delay_strict",
+        "w": {
+            "freq": 0.24,
+            "recent": 0.26,
+            "pair": 0.24,
+            "triplet": 0.08,
+            "delay": 0.00,
+            "dist": 0.18,
+        },
+        "s": {
+            "g": 0.45,
+            "r": 0.55,
+            "d": 0.00,
+        },
+        "f": {
+            "max_block": 3,
+            "max_first": 2,
+            "max_con": 1,
+            "max_common": 3,
+        },
+    },
+    {
+        "name": "no_delay_loose",
+        "w": {
+            "freq": 0.24,
+            "recent": 0.26,
+            "pair": 0.24,
+            "triplet": 0.08,
+            "delay": 0.00,
+            "dist": 0.18,
+        },
+        "s": {
+            "g": 0.45,
+            "r": 0.55,
+            "d": 0.00,
+        },
+        "f": {
+            "max_block": 3,
+            "max_first": 3,
+            "max_con": 2,
+            "max_common": 4,
+        },
+    },
+    {
+        "name": "freq_pair_strict",
+        "w": {
+            "freq": 0.30,
+            "recent": 0.18,
+            "pair": 0.28,
+            "triplet": 0.06,
+            "delay": 0.00,
+            "dist": 0.18,
+        },
+        "s": {
+            "g": 0.65,
+            "r": 0.35,
+            "d": 0.00,
+        },
+        "f": {
+            "max_block": 3,
+            "max_first": 2,
+            "max_con": 1,
+            "max_common": 3,
+        },
+    },
+    {
+        "name": "recent_pair_strict",
+        "w": {
+            "freq": 0.14,
+            "recent": 0.34,
+            "pair": 0.26,
+            "triplet": 0.06,
+            "delay": 0.00,
+            "dist": 0.20,
+        },
+        "s": {
+            "g": 0.25,
+            "r": 0.75,
+            "d": 0.00,
+        },
+        "f": {
+            "max_block": 3,
+            "max_first": 2,
+            "max_con": 1,
+            "max_common": 3,
+        },
+    },
+    {
+        "name": "delay_light_strict",
+        "w": {
+            "freq": 0.18,
+            "recent": 0.20,
+            "pair": 0.20,
+            "triplet": 0.05,
+            "delay": 0.15,
+            "dist": 0.22,
+        },
+        "s": {
+            "g": 0.30,
+            "r": 0.35,
+            "d": 0.35,
+        },
+        "f": {
+            "max_block": 3,
+            "max_first": 2,
+            "max_con": 1,
+            "max_common": 3,
+        },
+    },
+    {
+        "name": "dist_heavy_strict",
+        "w": {
+            "freq": 0.18,
+            "recent": 0.20,
+            "pair": 0.20,
+            "triplet": 0.04,
+            "delay": 0.04,
+            "dist": 0.34,
+        },
+        "s": {
+            "g": 0.40,
+            "r": 0.45,
+            "d": 0.15,
+        },
+        "f": {
+            "max_block": 3,
+            "max_first": 2,
+            "max_con": 1,
+            "max_common": 3,
+        },
+    },
+    {
+        "name": "repeat_light_strict",
+        "w": {
+            "freq": 0.14,
+            "recent": 0.30,
+            "pair": 0.24,
+            "triplet": 0.06,
+            "delay": 0.00,
+            "dist": 0.18,
+            "repeat": 0.08,
+        },
+        "s": {
+            "g": 0.25,
+            "r": 0.75,
+            "d": 0.00,
+        },
+        "f": {
+            "max_block": 3,
+            "max_first": 2,
+            "max_con": 1,
+            "max_common": 3,
+        },
+    },
+    {
+        "name": "repeat_medium_strict",
+        "w": {
+            "freq": 0.14,
+            "recent": 0.27,
+            "pair": 0.22,
+            "triplet": 0.05,
+            "delay": 0.00,
+            "dist": 0.17,
+            "repeat": 0.15,
+        },
+        "s": {
+            "g": 0.25,
+            "r": 0.75,
+            "d": 0.00,
+        },
+        "f": {
+            "max_block": 3,
+            "max_first": 2,
+            "max_con": 1,
+            "max_common": 3,
+        },
+    },
+]
 
 
-def consecutive_count(nums):
-    nums = sorted(nums)
-    return sum(1 for a, b in zip(nums, nums[1:]) if b == a + 1)
+def _resolve_game_config(
+    main_cols: Sequence[str],
+    min_num: int,
+    max_num: int,
+    pick_count: int,
+) -> dict[str, object]:
+    """
+    旧optimize()の引数から対応するゲーム設定を取得する。
 
+    main.pyを同時変更しなくても動かせるよう、
+    現在のoptimize()呼び出し形式との互換性を維持する。
+    """
+    normalized_main_cols = tuple(str(column) for column in main_cols)
 
-def block_counts(nums, max_num):
-    game_config = next(
-        (
-            config
-            for config in LOTTO_GAMES.values()
-            if config["max_num"] == max_num
-        ),
-        None,
-    )
-
-    if game_config is None:
-        raise ValueError(f"Unsupported max_num: {max_num}")
-
-    return [
-        sum(1 for n in nums if lo <= n <= hi)
-        for lo, hi in game_config["block_ranges"]
-    ]
-
-
-def is_reasonable(nums, max_num, pick_count, cfg):
-    nums = tuple(sorted(nums))
-
-    game_config = next(
-        (
-            config
-            for config in LOTTO_GAMES.values()
-            if config["max_num"] == max_num
-            and config["pick_count"] == pick_count
-        ),
-        None,
-    )
-
-    if game_config is None:
-        raise ValueError(
-            f"Unsupported lottery settings: "
-            f"max_num={max_num}, pick_count={pick_count}"
+    for game_config in LOTTO_GAMES.values():
+        configured_main_cols = tuple(
+            str(column)
+            for column in game_config.get("main_cols", ())
         )
 
-    filters = cfg["f"]
-    blocks = block_counts(nums, max_num)
-
-    if max(blocks) > filters["max_block"]:
-        return False
-
-    if pick_count == 7 and blocks[0] > filters["max_first"]:
-        return False
-
-    if consecutive_count(nums) > filters["max_con"]:
-        return False
-
-    odd_count = sum(n % 2 for n in nums)
-    low_count = sum(n <= max_num // 2 for n in nums)
-
-    return (
-        odd_count in game_config["allowed_odd_counts"]
-        and low_count in game_config["allowed_low_counts"]
-    )
-
-
-def component_scores(nums, max_num, ctx):
-    pairs = [
-        ctx["pairs"].get(
-            tuple(sorted(pair)),
-            0,
-        ) / ctx["max_pair"]
-        for pair in combinations(nums, 2)
-    ]
-
-    triples = [
-        ctx["triples"].get(
-            tuple(sorted(triple)),
-            0,
-        ) / ctx["max_triple"]
-        for triple in combinations(nums, 3)
-    ]
-
-    last_draw_numbers = set(
-        ctx.get("last_draw_numbers", [])
-    )
-
-    repeat_score = (
-        len(set(nums) & last_draw_numbers)
-        / len(nums)
-        if nums
-        else 0.0
-    )
-
-    return {
-        "freq": float(
-            np.mean(
-                [
-                    ctx["global_norm"][n]
-                    for n in nums
-                ]
-            )
-        ),
-        "recent": float(
-            np.mean(
-                [
-                    ctx["recent_norm"][n]
-                    for n in nums
-                ]
-            )
-        ),
-        "delay": float(
-            np.mean(
-                [
-                    ctx["delay_norm"][n]
-                    for n in nums
-                ]
-            )
-        ),
-        "pair": (
-            float(np.mean(pairs))
-            if pairs
-            else 0.0
-        ),
-        "triplet": (
-            float(np.mean(triples))
-            if triples
-            else 0.0
-        ),
-        "dist": float(
-            shape_score(
-                tuple(nums),
-                max_num,
-                ctx["shape_stats"],
-            )
-        ),
-        "repeat": float(repeat_score),
-    }
-
-
-def sampling_probs(ctx, min_num, max_num, cfg=None, uniform=False):
-    vals = []
-    for n in range(min_num, max_num + 1):
-        if uniform or cfg is None:
-            v = 1.0
-        else:
-            s = cfg["s"]
-            v = s["g"] * ctx["global_norm"][n] + s["r"] * ctx["recent_norm"][n] + s["d"] * ctx["delay_norm"][n]
-        vals.append(max(v, 0.0001))
-    arr = np.array(vals, dtype=float) ** 1.25
-    return arr / arr.sum()
-
-
-def generate_candidates(pick_count, min_num, max_num, ctx, cfg, candidate_count, seed, uniform=False):
-    rng = np.random.default_rng(seed)
-    numbers = np.array(list(range(min_num, max_num + 1)))
-    probs = sampling_probs(ctx, min_num, max_num, cfg, uniform=uniform)
-
-    candidates = set()
-    attempts = 0
-    while len(candidates) < candidate_count and attempts < candidate_count * 80:
-        nums = tuple(sorted(int(n) for n in rng.choice(numbers, size=pick_count, replace=False, p=probs)))
-        if cfg is None or is_reasonable(
-            nums,
-            max_num,
-            pick_count,
-            cfg,
+        if (
+            int(game_config["min_num"]) == int(min_num)
+            and int(game_config["max_num"]) == int(max_num)
+            and int(game_config["pick_count"]) == int(pick_count)
+            and configured_main_cols == normalized_main_cols
         ):
-            candidates.add(nums)
-        attempts += 1
-    return list(candidates)
+            return dict(game_config)
+
+    for game_config in LOTTO_GAMES.values():
+        if (
+            int(game_config["min_num"]) == int(min_num)
+            and int(game_config["max_num"]) == int(max_num)
+            and int(game_config["pick_count"]) == int(pick_count)
+        ):
+            return dict(game_config)
+
+    raise ValueError(
+        "Could not resolve lottery configuration: "
+        f"min_num={min_num}, "
+        f"max_num={max_num}, "
+        f"pick_count={pick_count}, "
+        f"main_cols={list(main_cols)}"
+    )
 
 
-def select_diverse(scored, top_k, max_common, max_number_usage=3):
+def _merge_config(
+    game_config: Mapping[str, object],
+    optimizer_config: Mapping[str, object] | None = None,
+) -> dict[str, object]:
     """
-    Select top candidates while controlling portfolio concentration.
+    ゲーム固有設定とoptimizer探索設定を統合する。
 
-    max_common:
-        Maximum shared numbers between any two patterns.
-
-    max_number_usage:
-        Maximum times the same number can appear across all selected patterns.
-        Example: max_number_usage=3 means number 6 can appear in at most 3 of P1-P5.
+    現行predictor.pyが直接利用しない旧フィルタ値も、
+    出力互換性と将来対応のため設定内に保持する。
     """
-    selected = []
-    usage = {}
+    merged = dict(game_config)
 
-    def can_add(item, strict_usage=True):
-        nums = set(item["numbers"])
+    if optimizer_config is None:
+        return merged
 
-        # Pairwise overlap control.
-        for existing in selected:
-            if len(nums & set(existing["numbers"])) > max_common:
-                return False
+    filters = optimizer_config.get("f", {})
+    if isinstance(filters, Mapping):
+        merged.update(filters)
 
-        # Whole-portfolio number concentration control.
-        if strict_usage:
-            for n in nums:
-                if usage.get(n, 0) >= max_number_usage:
-                    return False
-
-        return True
-
-    def add_item(item):
-        selected.append(item)
-        for n in item["numbers"]:
-            usage[n] = usage.get(n, 0) + 1
-
-    # First pass: strict overlap + strict number usage.
-    for item in scored:
-        if can_add(item, strict_usage=True):
-            add_item(item)
-        if len(selected) >= top_k:
-            return selected
-
-    # Second pass: keep overlap control, relax number usage if too few candidates.
-    for item in scored:
-        if item in selected:
-            continue
-        if can_add(item, strict_usage=False):
-            add_item(item)
-        if len(selected) >= top_k:
-            return selected
-
-    # Final fallback: always return top_k if possible.
-    for item in scored:
-        if item not in selected:
-            add_item(item)
-        if len(selected) >= top_k:
-            return selected
-
-    return selected
+    return merged
 
 
-def predict(
-    df,
-    main_cols,
-    min_num,
-    max_num,
-    pick_count,
-    cfg,
-    candidate_count,
-    seed,
-    top_k=5,
-    random_mode=False,
-    ctx=None,
-):
-    if ctx is None:
-        ctx = build_model_context(
-            df,
-            main_cols,
-            min_num,
-            max_num,
-        )
+def _prediction_weights(
+    config: Mapping[str, object],
+) -> PredictionWeights:
+    """
+    旧optimizer形式の重みを新predictor形式へ変換する。
+    """
+    raw_weights = config.get("w", {})
+    if not isinstance(raw_weights, Mapping):
+        raw_weights = {}
 
-    candidates = generate_candidates(
-        pick_count,
-        min_num,
-        max_num,
-        ctx,
-        cfg,
-        candidate_count,
-        seed,
-        uniform=random_mode,
+    distribution_weight = float(raw_weights.get("dist", 0.0))
+    shape_weight = distribution_weight / 6.0
+
+    return PredictionWeights(
+        global_frequency=float(raw_weights.get("freq", 0.0)),
+        recent_frequency=float(raw_weights.get("recent", 0.0)),
+        delay=float(raw_weights.get("delay", 0.0)),
+        pair=float(raw_weights.get("pair", 0.0)),
+        triplet=float(raw_weights.get("triplet", 0.0)),
+        repeat=float(raw_weights.get("repeat", 0.0)),
+        sum_shape=shape_weight,
+        odd_shape=shape_weight,
+        low_shape=shape_weight,
+        consecutive_shape=shape_weight,
+        span_shape=shape_weight,
+        block_shape=shape_weight,
+        diversity=0.35,
     )
 
-    if len(candidates) < top_k:
-        candidates = generate_candidates(
-            pick_count,
-            min_num,
-            max_num,
-            ctx,
-            None,
-            candidate_count,
-            seed,
-            uniform=True,
-        )
 
-    scored = []
+def _random_weights() -> PredictionWeights:
+    """
+    数字ごとの生成重みと候補スコアを均一化する。
 
-    for nums in candidates:
-        comps = component_scores(
-            nums,
-            max_num,
-            ctx,
-        )
-
-        score = (
-            0.0
-            if random_mode or cfg is None
-            else sum(
-                cfg["w"][key] * comps[key]
-                for key in cfg["w"]
-            )
-        )
-
-        scored.append({
-            "numbers": list(nums),
-            "score": float(score),
-            "model": (
-                "random"
-                if random_mode or cfg is None
-                else cfg["name"]
-            ),
-            "block_counts": block_counts(
-                nums,
-                max_num,
-            ),
-            "consecutive_count": consecutive_count(nums),
-            "repeat_count": len(
-                set(nums)
-                & set(ctx.get("last_draw_numbers", []))
-            ),
-            "score_detail": comps,
-            "estimated_probability": (
-                1 / math.comb(max_num, pick_count)
-            ),
-        })
-
-    if not random_mode:
-        scored.sort(
-            key=lambda item: item["score"],
-            reverse=True,
-        )
-
-    max_common = (
-        3
-        if cfg is None
-        else cfg["f"]["max_common"]
-    )
-    max_number_usage = (
-        3
-        if cfg is None
-        else cfg["f"].get(
-            "max_number_usage",
-            3,
-        )
+    predictor.pyの既存APIを変更せず、ランダム基準を作るために使う。
+    """
+    return PredictionWeights(
+        global_frequency=0.0,
+        recent_frequency=0.0,
+        delay=0.0,
+        pair=0.0,
+        triplet=0.0,
+        repeat=0.0,
+        sum_shape=0.0,
+        odd_shape=0.0,
+        low_shape=0.0,
+        consecutive_shape=0.0,
+        span_shape=0.0,
+        block_shape=0.0,
+        diversity=0.0,
     )
 
-    selected = select_diverse(
-        scored,
-        top_k,
-        max_common,
-        max_number_usage=max_number_usage,
-    )
 
-    out = []
-
-    for i, item in enumerate(selected, start=1):
-        out.append({
-            "pattern_id": f"P{i}",
-            "numbers": item["numbers"],
-            "score": round(
-                item["score"],
-                6,
-            ),
-            "model": item["model"],
-            "block_counts": item["block_counts"],
-            "consecutive_count": (
-                item["consecutive_count"]
-            ),
-            "repeat_count": item["repeat_count"],
-            "estimated_probability": (
-                item["estimated_probability"]
-            ),
-        })
-
-    return out
-
-
-def backtest(
-    df,
-    main_cols,
-    min_num,
-    max_num,
-    pick_count,
-    cfg,
-    train_window,
-    tested_periods,
-    candidate_count,
-    seed,
-    random_mode=False,
-    context_cache=None,
-):
-    start = max(
-        train_window,
-        len(df) - tested_periods,
-    )
-    matches = []
-
-    for idx in range(start, len(df)):
-        if context_cache is None:
-            train = df.iloc[:idx].copy()
-
-            ctx = build_model_context(
-                train,
-                main_cols,
-                min_num,
-                max_num,
-            )
-
-            ctx["last_draw_numbers"] = (
-                train.iloc[-1][main_cols]
-                .astype(int)
-                .tolist()
-            )
-        else:
-            ctx = context_cache[idx]
-
-        actual = set(
-            df.iloc[idx][main_cols]
-            .astype(int)
-            .tolist()
-        )
-
-        pred = predict(
-            df=None,
-            main_cols=main_cols,
-            min_num=min_num,
-            max_num=max_num,
-            pick_count=pick_count,
-            cfg=cfg,
-            candidate_count=candidate_count,
-            seed=seed + idx,
-            top_k=1,
-            random_mode=random_mode,
-            ctx=ctx,
-        )
-
-        matches.append(
-            len(
-                set(pred[0]["numbers"])
-                & actual
-            )
-        )
-
-    n = len(matches)
-
+def _summary_to_result(
+    summary: BacktestSummary,
+    *,
+    config_name: str,
+) -> dict[str, object]:
+    """
+    新backtesterの結果を旧optimizer出力形式へ変換する。
+    """
     return {
-        "config": (
-            "random"
-            if random_mode or cfg is None
-            else cfg["name"]
+        "config": config_name,
+        "tested_periods": summary.tested_periods,
+        "avg_matches": summary.average_best_matches,
+        "average_matches_per_ticket": (
+            summary.average_matches_per_ticket
         ),
-        "tested_periods": n,
-        "avg_matches": (
-            round(float(np.mean(matches)), 4)
-            if matches
-            else None
-        ),
-        "hit_rate_1match": (
-            round(
-                sum(m >= 1 for m in matches) / n,
-                4,
-            )
-            if n
-            else None
-        ),
-        "hit_rate_2match": (
-            round(
-                sum(m >= 2 for m in matches) / n,
-                4,
-            )
-            if n
-            else None
-        ),
-        "hit_rate_3match": (
-            round(
-                sum(m >= 3 for m in matches) / n,
-                4,
-            )
-            if n
-            else None
-        ),
-        "hit_rate_4match": (
-            round(
-                sum(m >= 4 for m in matches) / n,
-                4,
-            )
-            if n
-            else None
-        ),
-        "hit_rate_5match": (
-            round(
-                sum(m >= 5 for m in matches) / n,
-                4,
-            )
-            if n
-            else None
-        ),
+        "hit_rate_1match": summary.hit_rate_1match,
+        "hit_rate_2match": summary.hit_rate_2match,
+        "hit_rate_3match": summary.hit_rate_3match,
+        "hit_rate_4match": summary.hit_rate_4match,
+        "hit_rate_5match": summary.hit_rate_5match,
+        "hit_rate_6match": summary.hit_rate_6match,
+        "hit_rate_7match": summary.hit_rate_7match,
     }
 
-def filter_key(cfg):
-    filters = cfg["f"]
+
+def _run_backtest_result(
+    history: Sequence[Sequence[int]],
+    game_config: Mapping[str, object],
+    *,
+    config_name: str,
+    train_window: int,
+    tested_periods: int,
+    candidate_count: int,
+    weights: PredictionWeights,
+    seed: int,
+) -> dict[str, object]:
+    summary = run_backtest(
+        history,
+        game_config,
+        train_window=train_window,
+        tested_periods=tested_periods,
+        candidate_count=candidate_count,
+        top_k=1,
+        weights=weights,
+        seed=seed,
+        include_records=False,
+    )
+
+    return _summary_to_result(
+        summary,
+        config_name=config_name,
+    )
+
+
+def _prediction_to_legacy(
+    prediction: PredictionResult,
+    *,
+    context,
+    model_name: str,
+) -> list[dict[str, object]]:
+    """
+    新predictorのPredictionResultを既存JSON形式へ変換する。
+    """
+    estimated_probability = (
+        1 / math.comb(context.max_num, context.pick_count)
+    )
+
+    converted: list[dict[str, object]] = []
+
+    for index, item in enumerate(prediction.selected, start=1):
+        shape = build_shape_features(
+            item.candidate,
+            min_num=context.min_num,
+            max_num=context.max_num,
+            ranges=context.block_ranges,
+        )
+
+        repeat_count = (
+            int(item.repeat_counts[0])
+            if item.repeat_counts
+            else 0
+        )
+
+        converted.append(
+            {
+                "pattern_id": f"P{index}",
+                "numbers": list(item.candidate),
+                "score": round(float(item.total_score), 6),
+                "model": model_name,
+                "block_counts": list(shape.block_counts),
+                "consecutive_count": int(
+                    shape.consecutive_count
+                ),
+                "repeat_count": repeat_count,
+                "estimated_probability": (
+                    estimated_probability
+                ),
+            }
+        )
+
+    return converted
+
+
+def filter_key(
+    config: Mapping[str, object],
+) -> tuple[tuple[str, object], ...]:
+    filters = config.get("f", {})
+
+    if not isinstance(filters, Mapping):
+        return ()
 
     return tuple(
-        sorted(filters.items())
+        sorted(
+            (str(key), value)
+            for key, value in filters.items()
+        )
     )
 
-def selection_score(result, random_avg):
-    avg = result["avg_matches"] or 0.0
-    h2 = result["hit_rate_2match"] or 0.0
-    h3 = result["hit_rate_3match"] or 0.0
-    h4 = result["hit_rate_4match"] or 0.0
-    uplift = 0.0 if random_avg is None else avg - random_avg
 
-    score = avg + 0.30 * h2 + 0.80 * h3 + 1.20 * h4 + 0.35 * uplift
+def selection_score(
+    result: Mapping[str, object],
+    random_avg: float | None,
+) -> float:
+    avg = float(result.get("avg_matches") or 0.0)
+    hit_rate_2 = float(
+        result.get("hit_rate_2match") or 0.0
+    )
+    hit_rate_3 = float(
+        result.get("hit_rate_3match") or 0.0
+    )
+    hit_rate_4 = float(
+        result.get("hit_rate_4match") or 0.0
+    )
 
-    name = result["config"]
+    uplift = (
+        0.0
+        if random_avg is None
+        else avg - float(random_avg)
+    )
+
+    score = (
+        avg
+        + 0.30 * hit_rate_2
+        + 0.80 * hit_rate_3
+        + 1.20 * hit_rate_4
+        + 0.35 * uplift
+    )
+
+    name = str(result.get("config", ""))
+
     if "no_delay" in name or "balanced" in name:
         score += 0.015
+
     if "loose" in name:
         score -= 0.010
-    if random_avg is not None and avg < random_avg - 0.05:
+
+    if (
+        random_avg is not None
+        and avg < float(random_avg) - 0.05
+    ):
         score -= 0.25
 
     return round(float(score), 6)
@@ -565,163 +539,192 @@ def optimize(
     bt_candidates,
     final_candidates,
 ):
-    start = max(
-        train_window,
-        len(df) - tested_periods,
-    )
+    """
+    複数の重み設定をバックテストし、
+    最良設定を使って次回候補を生成する。
 
-    context_cache = {}
-
-    for idx in range(start, len(df)):
-        train = df.iloc[:idx].copy()
-
-        ctx = build_model_context(
-            train,
-            main_cols,
-            min_num,
-            max_num,
-        )
-
-        ctx["last_draw_numbers"] = (
-            train.iloc[-1][main_cols]
-            .astype(int)
-            .tolist()
-        )
-
-        context_cache[idx] = ctx
-
-    random_unfiltered_result = backtest(
-        df,
+    引数と戻り値は旧main.pyとの互換性を維持する。
+    """
+    game_config = _resolve_game_config(
         main_cols,
         min_num,
         max_num,
         pick_count,
-        None,
-        train_window,
-        tested_periods,
-        bt_candidates,
-        SEED,
-        random_mode=True,
-        context_cache=context_cache,
     )
 
-    random_filtered_cache = {}
+    game_config.update(
+        {
+            "main_cols": tuple(main_cols),
+            "min_num": int(min_num),
+            "max_num": int(max_num),
+            "pick_count": int(pick_count),
+            "train_window": int(train_window),
+            "tested_periods": int(tested_periods),
+            "backtest_candidates": int(bt_candidates),
+            "final_candidates": int(final_candidates),
+        }
+    )
 
-    for cfg in CONFIGS:
-        key = filter_key(cfg)
+    history = dataframe_to_history(
+        df,
+        game_config,
+    )
+
+    random_weights = _random_weights()
+
+    # 互換キー名はrandom_unfilteredだが、
+    # 現在のpredictorが持つゲーム共通フィルタは適用される。
+    random_unfiltered_result = _run_backtest_result(
+        history,
+        game_config,
+        config_name="random",
+        train_window=int(train_window),
+        tested_periods=int(tested_periods),
+        candidate_count=int(bt_candidates),
+        weights=random_weights,
+        seed=SEED,
+    )
+
+    random_filtered_cache: dict[
+        tuple[tuple[str, object], ...],
+        dict[str, object],
+    ] = {}
+
+    for optimizer_config in CONFIGS:
+        key = filter_key(optimizer_config)
 
         if key in random_filtered_cache:
             continue
 
-        random_filtered_cache[key] = backtest(
-            df,
-            main_cols,
-            min_num,
-            max_num,
-            pick_count,
-            cfg,
-            train_window,
-            tested_periods,
-            bt_candidates,
-            SEED + 100000,
-            random_mode=True,
-            context_cache=context_cache,
+        merged_config = _merge_config(
+            game_config,
+            optimizer_config,
         )
 
-    results = []
+        random_filtered_cache[key] = (
+            _run_backtest_result(
+                history,
+                merged_config,
+                config_name="random",
+                train_window=int(train_window),
+                tested_periods=int(tested_periods),
+                candidate_count=int(bt_candidates),
+                weights=random_weights,
+                seed=SEED + 100000,
+            )
+        )
 
-    for cfg in CONFIGS:
-        key = filter_key(cfg)
+    results: list[dict[str, object]] = []
+
+    for optimizer_config in CONFIGS:
+        key = filter_key(optimizer_config)
+        merged_config = _merge_config(
+            game_config,
+            optimizer_config,
+        )
+        weights = _prediction_weights(
+            optimizer_config,
+        )
+
+        result = _run_backtest_result(
+            history,
+            merged_config,
+            config_name=str(optimizer_config["name"]),
+            train_window=int(train_window),
+            tested_periods=int(tested_periods),
+            candidate_count=int(bt_candidates),
+            weights=weights,
+            seed=SEED,
+        )
 
         random_filtered_result = (
             random_filtered_cache[key]
         )
-
-        result = backtest(
-            df,
-            main_cols,
-            min_num,
-            max_num,
-            pick_count,
-            cfg,
-            train_window,
-            tested_periods,
-            bt_candidates,
-            SEED,
-            context_cache=context_cache,
+        random_filtered_avg = (
+            random_filtered_result.get("avg_matches")
         )
 
-        random_filtered_avg = (
-            random_filtered_result["avg_matches"]
+        resolved_random_avg = (
+            float(random_filtered_avg)
+            if random_filtered_avg is not None
+            else None
         )
 
         result["selection_score"] = selection_score(
             result,
-            random_filtered_avg,
+            resolved_random_avg,
         )
 
         result["random_unfiltered_avg"] = (
-            random_unfiltered_result["avg_matches"]
+            random_unfiltered_result.get("avg_matches")
         )
-
         result["random_filtered_avg"] = (
             random_filtered_avg
         )
-
         result["random_uplift"] = round(
-            (result["avg_matches"] or 0.0)
-            - (random_filtered_avg or 0.0),
+            float(result.get("avg_matches") or 0.0)
+            - float(random_filtered_avg or 0.0),
             4,
         )
-
         result["random_filtered_baseline"] = (
             random_filtered_result
         )
-
-        result["weights"] = cfg["w"]
-        result["filters"] = cfg["f"]
+        result["weights"] = dict(
+            optimizer_config["w"]
+        )
+        result["filters"] = dict(
+            optimizer_config["f"]
+        )
 
         results.append(result)
 
+    if not results:
+        raise RuntimeError(
+            "No optimizer configurations were evaluated."
+        )
+
     results.sort(
-        key=lambda item: item["selection_score"],
+        key=lambda item: float(
+            item["selection_score"]
+        ),
         reverse=True,
     )
 
-    best_name = results[0]["config"]
-
-    best_cfg = next(
-        cfg
-        for cfg in CONFIGS
-        if cfg["name"] == best_name
-    )
-
     best_result = results[0]
+    best_name = str(best_result["config"])
 
-    final_ctx = build_model_context(
-        df,
-        main_cols,
-        min_num,
-        max_num,
+    best_config = next(
+        config
+        for config in CONFIGS
+        if config["name"] == best_name
     )
 
-    final_ctx["last_draw_numbers"] = (
-        df.iloc[-1][main_cols]
-        .astype(int)
-        .tolist()
+    final_config = _merge_config(
+        game_config,
+        best_config,
+    )
+    final_weights = _prediction_weights(
+        best_config,
     )
 
-    prediction = predict(
-        df=None,
-        main_cols=main_cols,
-        min_num=min_num,
-        max_num=max_num,
-        pick_count=pick_count,
-        cfg=best_cfg,
-        candidate_count=final_candidates,
-        seed=SEED,
+    final_context = build_model_context(
+        history,
+        final_config,
+    )
+
+    final_prediction = predict(
+        final_context,
+        final_config,
+        candidate_count=int(final_candidates),
         top_k=5,
-        ctx=final_ctx,
+        weights=final_weights,
+        seed=SEED,
+    )
+
+    prediction = _prediction_to_legacy(
+        final_prediction,
+        context=final_context,
+        model_name=best_name,
     )
 
     return {
@@ -729,254 +732,15 @@ def optimize(
             random_unfiltered_result
         ),
         "selected_random_filtered_baseline": (
-            best_result[
-                "random_filtered_baseline"
-            ]
+            best_result["random_filtered_baseline"]
         ),
         "ranked_configs": results,
         "selected_config": best_name,
-        "selected_weights": best_cfg["w"],
-        "selected_filters": best_cfg["f"],
+        "selected_weights": dict(
+            best_config["w"]
+        ),
+        "selected_filters": dict(
+            best_config["f"]
+        ),
         "prediction": prediction,
     }
-
-
-def load_data(include_miniloto=False):
-    normalizers = {
-        "loto6": normalize_loto6,
-        "loto7": normalize_loto7,
-        "miniloto": normalize_miniloto,
-    }
-
-    loaded = {}
-
-    for game_key, game_config in LOTTO_GAMES.items():
-        raw = read_csv_text(
-            download_game_csv(game_config["kind"])
-        )
-
-        loaded[game_key] = normalizers[game_key](raw)
-
-    if include_miniloto:
-        return (
-            loaded["loto6"],
-            loaded["loto7"],
-            loaded["miniloto"],
-        )
-
-    return (
-        loaded["loto6"],
-        loaded["loto7"],
-    )
-
-
-def print_result(
-    title,
-    latest,
-    next_draw,
-    result,
-):
-    print(
-        f"\n=== {title} OPTIMIZER RESULT ==="
-    )
-    print(
-        f"latest={latest} next={next_draw}"
-    )
-
-    random_unfiltered = result[
-        "random_baseline"
-    ]
-
-    random_filtered = result[
-        "selected_random_filtered_baseline"
-    ]
-
-    print(
-        "random_unfiltered: "
-        f'avg={random_unfiltered["avg_matches"]}, '
-        f'2+={random_unfiltered["hit_rate_2match"]}, '
-        f'3+={random_unfiltered["hit_rate_3match"]}'
-    )
-
-    print(
-        "random_filtered_for_selected: "
-        f'avg={random_filtered["avg_matches"]}, '
-        f'2+={random_filtered["hit_rate_2match"]}, '
-        f'3+={random_filtered["hit_rate_3match"]}'
-    )
-
-    print("--- TOP CONFIGS ---")
-
-    for ranked in result["ranked_configs"][:5]:
-        print(
-            f'{ranked["config"]}: '
-            f'selection={ranked["selection_score"]}, '
-            f'avg={ranked["avg_matches"]}, '
-            f'filtered_random='
-            f'{ranked["random_filtered_avg"]}, '
-            f'uplift={ranked["random_uplift"]}, '
-            f'2+={ranked["hit_rate_2match"]}, '
-            f'3+={ranked["hit_rate_3match"]}'
-        )
-
-    print(
-        "selected_config="
-        f'{result["selected_config"]}'
-    )
-    print(
-        "selected_weights="
-        f'{json.dumps(result["selected_weights"], ensure_ascii=False)}'
-    )
-    print(
-        "selected_filters="
-        f'{json.dumps(result["selected_filters"], ensure_ascii=False)}'
-    )
-
-    print(
-        f"--- {title} NEXT PREDICTION ---"
-    )
-
-    for prediction in result["prediction"]:
-        print(
-            f'{prediction["pattern_id"]}: '
-            f'{prediction["numbers"]} '
-            f'score={prediction["score"]} '
-            f'blocks={prediction["block_counts"]} '
-            f'con={prediction["consecutive_count"]} '
-            f'repeat={prediction["repeat_count"]}'
-        )
-
-
-def main():
-    OUTPUT_DIR.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    loaded_data = load_data(
-        include_miniloto=True
-    )
-
-    datasets = dict(
-        zip(
-            LOTTO_GAMES.keys(),
-            loaded_data,
-        )
-    )
-
-    game_results = {}
-
-    for game_key, game_config in LOTTO_GAMES.items():
-        df = datasets[game_key]
-
-        validation = validate_lottery(
-            df,
-            game_config["main_cols"],
-            game_config["bonus_cols"],
-            game_config["min_num"],
-            game_config["max_num"],
-        )
-
-        optimizer_result = optimize(
-            df=df,
-            main_cols=game_config["main_cols"],
-            min_num=game_config["min_num"],
-            max_num=game_config["max_num"],
-            pick_count=game_config["pick_count"],
-            train_window=game_config["train_window"],
-            tested_periods=game_config["tested_periods"],
-            bt_candidates=game_config["backtest_candidates"],
-            final_candidates=game_config["final_candidates"],
-        )
-
-        game_results[game_key] = {
-            "latest_draw_no": validation["latest_draw_no"],
-            "next_draw_no": validation["latest_draw_no"] + 1,
-            "rows": validation["rows"],
-            "validation": validation,
-            **optimizer_result,
-        }
-
-    output = {
-        "status": "ok",
-        "note": (
-            "optimizer automatically searches multiple weight/filter "
-            "configs against a random baseline."
-        ),
-        **game_results,
-    }
-
-    (
-        OUTPUT_DIR / "optimizer_result.json"
-    ).write_text(
-        json.dumps(
-            output,
-            ensure_ascii=False,
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
-
-    for game_key, game_config in LOTTO_GAMES.items():
-        prediction_path = (
-            OUTPUT_DIR
-            / game_config["prediction_filename"]
-        )
-
-        prediction_path.write_text(
-            json.dumps(
-                game_results[game_key]["prediction"],
-                ensure_ascii=False,
-                indent=2,
-            ),
-            encoding="utf-8",
-        )
-
-    for game_key, game_config in LOTTO_GAMES.items():
-        result = game_results[game_key]
-
-        print_result(
-            game_config["display_name"],
-            result["latest_draw_no"],
-            result["next_draw_no"],
-            result,
-        )
-
-    short_output = {
-        "status": "ok",
-    }
-
-    for game_key in LOTTO_GAMES:
-        result = game_results[game_key]
-
-        short_output[
-            f"{game_key}_latest_draw_no"
-        ] = result["latest_draw_no"]
-
-        short_output[
-            f"{game_key}_next_draw_no"
-        ] = result["next_draw_no"]
-
-        short_output[
-            f"{game_key}_selected_config"
-        ] = result["selected_config"]
-
-        short_output[
-            f"{game_key}_prediction"
-        ] = [
-            pattern["numbers"]
-            for pattern in result["prediction"]
-        ]
-
-    print("\n=== SHORT JSON ===")
-    print(
-        json.dumps(
-            short_output,
-            ensure_ascii=False,
-            indent=2,
-        )
-    )
-
-
-if __name__ == "__main__":
-    main()
