@@ -527,6 +527,12 @@ def backtest(
         ),
     }
 
+def filter_key(cfg):
+    filters = cfg["f"]
+
+    return tuple(
+        sorted(filters.items())
+    )
 
 def selection_score(result, random_avg):
     avg = result["avg_matches"] or 0.0
@@ -584,8 +590,6 @@ def optimize(
 
         context_cache[idx] = ctx
 
-    # 従来の完全ランダム。
-    # フィルターを使わない参考値として残す。
     random_unfiltered_result = backtest(
         df,
         main_cols,
@@ -601,12 +605,15 @@ def optimize(
         context_cache=context_cache,
     )
 
-    results = []
+    random_filtered_cache = {}
 
-    for cfg_index, cfg in enumerate(CONFIGS):
-        # 各モデルと同じフィルターを使った一様ランダム。
-        # モデルの比較対象はこちらを使用する。
-        random_filtered_result = backtest(
+    for cfg in CONFIGS:
+        key = filter_key(cfg)
+
+        if key in random_filtered_cache:
+            continue
+
+        random_filtered_cache[key] = backtest(
             df,
             main_cols,
             min_num,
@@ -616,9 +623,18 @@ def optimize(
             train_window,
             tested_periods,
             bt_candidates,
-            SEED + 100000 + cfg_index,
+            SEED + 100000,
             random_mode=True,
             context_cache=context_cache,
+        )
+
+    results = []
+
+    for cfg in CONFIGS:
+        key = filter_key(cfg)
+
+        random_filtered_result = (
+            random_filtered_cache[key]
         )
 
         result = backtest(
@@ -647,6 +663,7 @@ def optimize(
         result["random_unfiltered_avg"] = (
             random_unfiltered_result["avg_matches"]
         )
+
         result["random_filtered_avg"] = (
             random_filtered_avg
         )
@@ -660,6 +677,7 @@ def optimize(
         result["random_filtered_baseline"] = (
             random_filtered_result
         )
+
         result["weights"] = cfg["w"]
         result["filters"] = cfg["f"]
 
@@ -707,9 +725,13 @@ def optimize(
     )
 
     return {
-        "random_baseline": random_unfiltered_result,
+        "random_baseline": (
+            random_unfiltered_result
+        ),
         "selected_random_filtered_baseline": (
-            best_result["random_filtered_baseline"]
+            best_result[
+                "random_filtered_baseline"
+            ]
         ),
         "ranked_configs": results,
         "selected_config": best_name,
