@@ -61,29 +61,42 @@ def block_counts(nums, max_num):
 
 def is_reasonable(nums, max_num, pick_count, cfg):
     nums = tuple(sorted(nums))
-    f = cfg["f"]
+
+    game_config = next(
+        (
+            config
+            for config in LOTTO_GAMES.values()
+            if config["max_num"] == max_num
+            and config["pick_count"] == pick_count
+        ),
+        None,
+    )
+
+    if game_config is None:
+        raise ValueError(
+            f"Unsupported lottery settings: "
+            f"max_num={max_num}, pick_count={pick_count}"
+        )
+
+    filters = cfg["f"]
     blocks = block_counts(nums, max_num)
 
-    if max(blocks) > f["max_block"]:
-        return False
-    if pick_count == 7 and blocks[0] > f["max_first"]:
-        return False
-    if consecutive_count(nums) > f["max_con"]:
+    if max(blocks) > filters["max_block"]:
         return False
 
-    odd = sum(n % 2 for n in nums)
-    low = sum(n <= max_num // 2 for n in nums)
+    if pick_count == 7 and blocks[0] > filters["max_first"]:
+        return False
 
-    if pick_count == 5:
-        return odd in (2, 3) and low in (2, 3)
+    if consecutive_count(nums) > filters["max_con"]:
+        return False
 
-    if pick_count == 6:
-        return odd in (2, 3, 4) and low in (2, 3, 4)
+    odd_count = sum(n % 2 for n in nums)
+    low_count = sum(n <= max_num // 2 for n in nums)
 
-    if pick_count == 7:
-        return odd in (3, 4) and low in (3, 4)
-
-    raise ValueError(f"Unsupported pick_count: {pick_count}")
+    return (
+        odd_count in game_config["allowed_odd_counts"]
+        and low_count in game_config["allowed_low_counts"]
+    )
 
 
 def component_scores(nums, max_num, ctx):
