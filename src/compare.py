@@ -158,22 +158,29 @@ def is_reasonable_candidate(
         if con_count >= 2:
             return False
 
-    return True
-    
-    def select_diverse_top(scored: list[dict], pick_count: int, top_k: int) -> list[dict]:
+        return True
+
+
+def select_diverse_top(
+    scored: list[dict],
+    pick_count: int,
+    top_k: int,
+) -> list[dict]:
     """
     v4:
     上位スコアだけでなく、5口同士が似すぎないようにする。
     ロト6は共通数字3個まで、ロト7も共通数字3個まで。
     """
     selected = []
-
     max_common = 3
 
     for item in scored:
         nums = set(item["numbers"])
 
-        if all(len(nums & set(existing["numbers"])) <= max_common for existing in selected):
+        if all(
+            len(nums & set(existing["numbers"])) <= max_common
+            for existing in selected
+        ):
             selected.append(item)
 
         if len(selected) >= top_k:
@@ -183,6 +190,7 @@ def is_reasonable_candidate(
         for item in scored:
             if item not in selected:
                 selected.append(item)
+
             if len(selected) >= top_k:
                 break
 
