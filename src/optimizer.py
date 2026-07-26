@@ -197,7 +197,12 @@ def generate_candidates(pick_count, min_num, max_num, ctx, cfg, candidate_count,
     attempts = 0
     while len(candidates) < candidate_count and attempts < candidate_count * 80:
         nums = tuple(sorted(int(n) for n in rng.choice(numbers, size=pick_count, replace=False, p=probs)))
-        if uniform or cfg is None or is_reasonable(nums, max_num, pick_count, cfg):
+        if cfg is None or is_reasonable(
+            nums,
+            max_num,
+            pick_count,
+            cfg,
+        ):
             candidates.add(nums)
         attempts += 1
     return list(candidates)
@@ -579,7 +584,9 @@ def optimize(
 
         context_cache[idx] = ctx
 
-    random_result = backtest(
+    # 従来の完全ランダム。
+    # フィルターを使わない参考値として残す。
+    random_unfiltered_result = backtest(
         df,
         main_cols,
         min_num,
@@ -594,10 +601,26 @@ def optimize(
         context_cache=context_cache,
     )
 
-    random_avg = random_result["avg_matches"]
     results = []
 
-    for cfg in CONFIGS:
+    for cfg_index, cfg in enumerate(CONFIGS):
+        # 各モデルと同じフィルターを使った一様ランダム。
+        # モデルの比較対象はこちらを使用する。
+        random_filtered_result = backtest(
+            df,
+            main_cols,
+            min_num,
+            max_num,
+            pick_count,
+            cfg,
+            train_window,
+            tested_periods,
+            bt_candidates,
+            SEED + 100000 + cfg_index,
+            random_mode=True,
+            context_cache=context_cache,
+        )
+
         result = backtest(
             df,
             main_cols,
@@ -612,15 +635,30 @@ def optimize(
             context_cache=context_cache,
         )
 
+        random_filtered_avg = (
+            random_filtered_result["avg_matches"]
+        )
+
         result["selection_score"] = selection_score(
             result,
-            random_avg,
+            random_filtered_avg,
         )
-        result["random_avg"] = random_avg
+
+        result["random_unfiltered_avg"] = (
+            random_unfiltered_result["avg_matches"]
+        )
+        result["random_filtered_avg"] = (
+            random_filtered_avg
+        )
+
         result["random_uplift"] = round(
             (result["avg_matches"] or 0.0)
-            - (random_avg or 0.0),
+            - (random_filtered_avg or 0.0),
             4,
+        )
+
+        result["random_filtered_baseline"] = (
+            random_filtered_result
         )
         result["weights"] = cfg["w"]
         result["filters"] = cfg["f"]
@@ -633,11 +671,14 @@ def optimize(
     )
 
     best_name = results[0]["config"]
+
     best_cfg = next(
         cfg
         for cfg in CONFIGS
         if cfg["name"] == best_name
     )
+
+    best_result = results[0]
 
     final_ctx = build_model_context(
         df,
@@ -666,7 +707,10 @@ def optimize(
     )
 
     return {
-        "random_baseline": random_result,
+        "random_baseline": random_unfiltered_result,
+        "selected_random_filtered_baseline": (
+            best_result["random_filtered_baseline"]
+        ),
         "ranked_configs": results,
         "selected_config": best_name,
         "selected_weights": best_cfg["w"],
@@ -704,28 +748,80 @@ def load_data(include_miniloto=False):
     )
 
 
-def print_result(title, latest, next_draw, result):
-    print(f"\n=== {title} OPTIMIZER RESULT ===")
-    print(f"latest={latest} next={next_draw}")
-    rb = result["random_baseline"]
-    print(f'random: avg={rb["avg_matches"]}, 2+={rb["hit_rate_2match"]}, 3+={rb["hit_rate_3match"]}')
+def print_result(
+    title,
+    latest,
+    next_draw,
+    result,
+):
+    print(
+        f"\n=== {title} OPTIMIZER RESULT ==="
+    )
+    print(
+        f"latest={latest} next={next_draw}"
+    )
+
+    random_unfiltered = result[
+        "random_baseline"
+    ]
+
+    random_filtered = result[
+        "selected_random_filtered_baseline"
+    ]
+
+    print(
+        "random_unfiltered: "
+        f'avg={random_unfiltered["avg_matches"]}, '
+        f'2+={random_unfiltered["hit_rate_2match"]}, '
+        f'3+={random_unfiltered["hit_rate_3match"]}'
+    )
+
+    print(
+        "random_filtered_for_selected: "
+        f'avg={random_filtered["avg_matches"]}, '
+        f'2+={random_filtered["hit_rate_2match"]}, '
+        f'3+={random_filtered["hit_rate_3match"]}'
+    )
 
     print("--- TOP CONFIGS ---")
-    for r in result["ranked_configs"][:5]:
-        print(f'{r["config"]}: selection={r["selection_score"]}, avg={r["avg_matches"]}, uplift={r["random_uplift"]}, 2+={r["hit_rate_2match"]}, 3+={r["hit_rate_3match"]}')
 
-    print(f'selected_config={result["selected_config"]}')
-    print(f'selected_weights={json.dumps(result["selected_weights"], ensure_ascii=False)}')
-    print(f'selected_filters={json.dumps(result["selected_filters"], ensure_ascii=False)}')
-
-    print(f"--- {title} NEXT PREDICTION ---")
-    for p in result["prediction"]:
+    for ranked in result["ranked_configs"][:5]:
         print(
-            f'{p["pattern_id"]}: {p["numbers"]} '
-            f'score={p["score"]} '
-            f'blocks={p["block_counts"]} '
-            f'con={p["consecutive_count"]} '
-            f'repeat={p["repeat_count"]}'
+            f'{ranked["config"]}: '
+            f'selection={ranked["selection_score"]}, '
+            f'avg={ranked["avg_matches"]}, '
+            f'filtered_random='
+            f'{ranked["random_filtered_avg"]}, '
+            f'uplift={ranked["random_uplift"]}, '
+            f'2+={ranked["hit_rate_2match"]}, '
+            f'3+={ranked["hit_rate_3match"]}'
+        )
+
+    print(
+        "selected_config="
+        f'{result["selected_config"]}'
+    )
+    print(
+        "selected_weights="
+        f'{json.dumps(result["selected_weights"], ensure_ascii=False)}'
+    )
+    print(
+        "selected_filters="
+        f'{json.dumps(result["selected_filters"], ensure_ascii=False)}'
+    )
+
+    print(
+        f"--- {title} NEXT PREDICTION ---"
+    )
+
+    for prediction in result["prediction"]:
+        print(
+            f'{prediction["pattern_id"]}: '
+            f'{prediction["numbers"]} '
+            f'score={prediction["score"]} '
+            f'blocks={prediction["block_counts"]} '
+            f'con={prediction["consecutive_count"]} '
+            f'repeat={prediction["repeat_count"]}'
         )
 
 
