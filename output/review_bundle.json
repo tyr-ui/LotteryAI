@@ -2,8 +2,8 @@
   "schema_version": "1.0",
   "status": "ok",
   "note": "run_pipeline evaluates the previous prediction if the target draw is now available, then creates the next prediction.",
-  "generated_at": "2026-07-29T14:38:16.134695+00:00",
-  "bundle_generated_at": "2026-07-29T14:38:16.142609+00:00",
+  "generated_at": "2026-07-29T15:21:00.213727+00:00",
+  "bundle_generated_at": "2026-07-29T15:21:00.220156+00:00",
   "top_configs_per_game": 5,
   "games": {
     "loto6": {
@@ -49,6 +49,7 @@
           2026,
           2027
         ],
+        "search_module": "optimizer_search",
         "note": "Optimizer-specific max_block/max_first/max_con/max_common are retained for output compatibility, but predictor.py currently does not consume those keys. Therefore this version optimizes only effective prediction weights."
       },
       "prediction": [
@@ -415,6 +416,7 @@
           2026,
           2027
         ],
+        "search_module": "optimizer_search",
         "note": "Optimizer-specific max_block/max_first/max_con/max_common are retained for output compatibility, but predictor.py currently does not consume those keys. Therefore this version optimizes only effective prediction weights."
       },
       "prediction": [
@@ -784,6 +786,7 @@
           2026,
           2027
         ],
+        "search_module": "optimizer_search",
         "note": "Optimizer-specific max_block/max_first/max_con/max_common are retained for output compatibility, but predictor.py currently does not consume those keys. Therefore this version optimizes only effective prediction weights."
       },
       "prediction": [
