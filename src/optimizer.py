@@ -230,8 +230,8 @@ def optimize(
     )
 
     parent_configs = find_parent_configs(
-        stage_one_configs,
         stage_one_results,
+        stage_one_configs,
         parent_count=PARENT_COUNT,
     )
 
