@@ -25,6 +25,11 @@ from optimizer_search import (
     generate_local_candidates,
     generate_random_candidates,
 )
+
+from optimizer_ablation import (
+    run_feature_ablation,
+)
+
 from predictor import PredictionResult, predict
 
 
@@ -331,6 +336,18 @@ def optimize(
         best_name
     ]
 
+    ablation_results = run_feature_ablation(
+        history,
+        game_config,
+        best_config,
+        best_result,
+        train_window=int(train_window),
+        tested_periods=int(tested_periods),
+        candidate_count=int(bt_candidates),
+        seeds=ROBUST_SEEDS,
+        random_baselines=random_baselines,
+    )
+
     final_config = merge_config(
         game_config,
         best_config,
@@ -423,6 +440,9 @@ def optimize(
                 "prediction weights."
             ),
         },
+        "feature_ablation": (
+            ablation_results
+        ),
         "prediction": prediction,
     }
 
