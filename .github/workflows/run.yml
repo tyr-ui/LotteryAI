@@ -52,7 +52,7 @@ jobs:
         env:
           PYTHONPATH: src
         run: |
-          python -c "import games, main, optimizer, run_pipeline"
+          python -c "import games, main, optimizer, review_output, run_pipeline"
 
   full-run:
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
@@ -87,6 +87,8 @@ jobs:
           git add output/prediction_optimizer_miniloto.json
           git add output/evaluation_history.json
           git add output/evaluation_summary.json
+          git add output/run_summary.json
+          git add output/review_bundle.json
 
           if git diff --cached --quiet; then
             echo "No output changes to commit."
@@ -95,8 +97,20 @@ jobs:
             git push
           fi
 
-      - name: Upload output files
+      - name: Upload review files
+        uses: actions/upload-artifact@v4
+        with:
+          name: lotteryai-review
+          path: |
+            output/run_summary.json
+            output/review_bundle.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload all output files
         uses: actions/upload-artifact@v4
         with:
           name: lotteryai-output
           path: output/
+          if-no-files-found: error
+          retention-days: 30
