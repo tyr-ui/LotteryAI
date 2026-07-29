@@ -8,6 +8,7 @@ import numpy as np
 from data_loader import load_game_data
 from games import LOTTO_GAMES
 from optimizer import optimize
+from review_output import write_review_outputs
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -546,6 +547,16 @@ def main() -> None:
         summary_path,
         evaluation_summary,
     )
+
+    run_summary_path, review_bundle_path = write_review_outputs(
+        output_dir=OUTPUT_DIR,
+        output=output,
+        game_keys=list(LOTTO_GAMES.keys()),
+    )
+
+    print("\n=== REVIEW OUTPUTS ===")
+    print(f"run_summary: {run_summary_path}")
+    print(f"review_bundle: {review_bundle_path}")
 
     for game_key, game_config in LOTTO_GAMES.items():
         result = optimizer_results[game_key]
