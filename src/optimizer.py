@@ -446,6 +446,24 @@ def optimize(
             "applied_prediction_weights": dict(
                 vars(final_weights)
             ),
+            "weight_diff": {
+                key: round(
+                    float(
+                        getattr(
+                            final_weights,
+                            key,
+                        )
+                    )
+                    - float(
+                        getattr(
+                            base_weights,
+                            key,
+                        )
+                    ),
+                    6,
+                )
+                for key in vars(base_weights)
+            },
         },
         
         "search_metadata": {
