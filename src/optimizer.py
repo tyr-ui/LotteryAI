@@ -30,6 +30,10 @@ from optimizer_ablation import (
     run_feature_ablation,
 )
 
+from feature_memory import (
+    save_feature_memory,
+)
+
 from predictor import PredictionResult, predict
 
 
@@ -346,6 +350,11 @@ def optimize(
         candidate_count=int(bt_candidates),
         seeds=ROBUST_SEEDS,
         random_baselines=random_baselines,
+    )
+
+    save_feature_memory(
+        str(game_config["kind"]),
+        ablation_results,
     )
 
     final_config = merge_config(
