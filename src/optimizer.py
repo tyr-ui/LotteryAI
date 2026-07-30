@@ -34,6 +34,10 @@ from feature_memory import (
     save_feature_memory,
 )
 
+from optimizer_learning import (
+    load_learning_weights,
+)
+
 from predictor import PredictionResult, predict
 
 
@@ -186,6 +190,10 @@ def optimize(
             final_candidates
         ),
     })
+
+    learning_weights = load_learning_weights(
+        str(game_config["kind"])
+    )
 
     history = dataframe_to_history(
         df,
@@ -418,6 +426,10 @@ def optimize(
             "algorithm": (
                 "fixed_random_local_robust"
             ),
+            "learning_weights_loaded": (
+                learning_weights
+            ),
+            "learning_applied": False,
             "base_config_count": len(
                 base_candidates
             ),
