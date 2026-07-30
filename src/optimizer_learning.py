@@ -251,6 +251,41 @@ def apply_learning_weights(
 
     return adjusted_mapping
 
+def load_learning_strength(
+    game_name: str,
+) -> float:
+    analysis = _load_analysis()
+
+    games = analysis.get("games")
+
+    if not isinstance(games, dict):
+        return 0.10
+
+    game = games.get(game_name)
+
+    if not isinstance(game, dict):
+        return 0.10
+
+    run_count = int(
+        game.get(
+            "total_run_count",
+            0,
+        )
+    )
+
+    if run_count >= 20:
+        return 0.80
+
+    if run_count >= 10:
+        return 0.50
+
+    if run_count >= 6:
+        return 0.35
+
+    if run_count >= 3:
+        return 0.20
+
+    return 0.10
 
 def print_learning_weights(
     game_name: str,
@@ -280,6 +315,7 @@ def print_learning_weights(
 
 __all__ = [
     "apply_learning_weights",
+    "load_learning_strength",
     "load_learning_weights",
     "print_learning_weights",
 ]
