@@ -236,13 +236,20 @@ def evaluate_config(
     candidate_count: int,
     seeds: Sequence[int],
     random_baselines: Mapping[int, Mapping[str, object]],
-) -> dict[str, object]:
+    weights_override: PredictionWeights | None = None,
+    ) -> dict[str, object]:
     """1つのoptimizer設定を指定seed群で評価する。"""
     merged_game_config = merge_config(
         game_config,
         optimizer_config,
     )
-    weights = prediction_weights(optimizer_config)
+    weights = (
+        weights_override
+        if weights_override is not None
+        else prediction_weights(
+            optimizer_config
+        )
+    )
     name = str(optimizer_config["name"])
 
     per_seed = [
