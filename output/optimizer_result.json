@@ -1,14 +1,114 @@
 {
   "status": "ok",
   "note": "run_pipeline evaluates the previous prediction if the target draw is now available, then creates the next prediction.",
-  "generated_at": "2026-07-30T10:40:25.216556+00:00",
+  "generated_at": "2026-07-30T12:07:01.482239+00:00",
   "previous_evaluation": {
     "loto6": {
       "draw_type": "loto6",
-      "status": "pending",
-      "target_draw_no": 2124,
-      "latest_draw_no": 2123,
-      "message": "まだ前回予想対象回の結果がデータに反映されていません。"
+      "status": "evaluated",
+      "draw_no": 2124,
+      "actual_numbers": [
+        6,
+        20,
+        29,
+        36,
+        37,
+        41
+      ],
+      "evaluated_at": "2026-07-30T11:59:25.089676+00:00",
+      "predictions": [
+        {
+          "pattern_id": "P1",
+          "numbers": [
+            8,
+            18,
+            21,
+            26,
+            37,
+            42
+          ],
+          "matches": 1,
+          "matched_numbers": [
+            37
+          ],
+          "score": 0.396821,
+          "model": "local_03_dist_heavy_strict"
+        },
+        {
+          "pattern_id": "P2",
+          "numbers": [
+            2,
+            6,
+            10,
+            27,
+            35,
+            36
+          ],
+          "matches": 2,
+          "matched_numbers": [
+            6,
+            36
+          ],
+          "score": 0.368313,
+          "model": "local_03_dist_heavy_strict"
+        },
+        {
+          "pattern_id": "P3",
+          "numbers": [
+            1,
+            5,
+            15,
+            24,
+            28,
+            38
+          ],
+          "matches": 0,
+          "matched_numbers": [],
+          "score": 0.338536,
+          "model": "local_03_dist_heavy_strict"
+        },
+        {
+          "pattern_id": "P4",
+          "numbers": [
+            16,
+            20,
+            25,
+            30,
+            40,
+            43
+          ],
+          "matches": 1,
+          "matched_numbers": [
+            20
+          ],
+          "score": 0.285453,
+          "model": "local_03_dist_heavy_strict"
+        },
+        {
+          "pattern_id": "P5",
+          "numbers": [
+            11,
+            12,
+            14,
+            19,
+            29,
+            32
+          ],
+          "matches": 1,
+          "matched_numbers": [
+            29
+          ],
+          "score": 0.242783,
+          "model": "local_03_dist_heavy_strict"
+        }
+      ],
+      "best_match_count": 2,
+      "avg_match_count": 1.0,
+      "hit_rate_1match": 0.8,
+      "hit_rate_2match": 0.2,
+      "hit_rate_3match": 0.0,
+      "hit_rate_4match": 0.0,
+      "hit_rate_5match": 0.0
     },
     "loto7": {
       "draw_type": "loto7",
@@ -27,12 +127,12 @@
   },
   "evaluation_summary": {
     "loto6": {
-      "evaluated_draws": 7,
-      "avg_best_match_count": 1.5714,
-      "avg_all_pattern_matches": 0.9714,
+      "evaluated_draws": 8,
+      "avg_best_match_count": 1.625,
+      "avg_all_pattern_matches": 0.975,
       "max_best_match_count": 3,
       "best_draw_no": 2118,
-      "latest_evaluated_draw_no": 2123
+      "latest_evaluated_draw_no": 2124
     },
     "loto7": {
       "evaluated_draws": 3,
@@ -52,12 +152,12 @@
     }
   },
   "loto6": {
-    "latest_draw_no": 2123,
-    "next_draw_no": 2124,
-    "rows": 2123,
+    "latest_draw_no": 2124,
+    "next_draw_no": 2125,
+    "rows": 2124,
     "validation": {
-      "rows": 2123,
-      "latest_draw_no": 2123,
+      "rows": 2124,
+      "latest_draw_no": 2124,
       "missing_cells": 0,
       "duplicate_draw_no": 0,
       "duplicate_date": 0,
@@ -69,29 +169,29 @@
       "config": "random",
       "tested_periods": 90,
       "evaluated_seeds": 3,
-      "avg_matches": 0.677767,
-      "average_matches_per_ticket": 0.677767,
-      "hit_rate_1match": 0.544467,
+      "avg_matches": 0.681467,
+      "average_matches_per_ticket": 0.681467,
+      "hit_rate_1match": 0.548167,
       "hit_rate_2match": 0.1185,
       "hit_rate_3match": 0.0148,
       "hit_rate_4match": 0.0,
       "hit_rate_5match": 0.0,
       "hit_rate_6match": 0.0,
       "hit_rate_7match": 0.0,
-      "avg_matches_std": 0.041577,
+      "avg_matches_std": 0.051581,
       "seed_avg_matches": [
-        0.7222,
-        0.6222,
-        0.6889
+        0.7333,
+        0.6111,
+        0.7
       ]
     },
     "selected_random_filtered_baseline": {
       "config": "random",
       "tested_periods": 90,
       "evaluated_seeds": 1,
-      "avg_matches": 0.7222,
-      "average_matches_per_ticket": 0.7222,
-      "hit_rate_1match": 0.5889,
+      "avg_matches": 0.7333,
+      "average_matches_per_ticket": 0.7333,
+      "hit_rate_1match": 0.6,
       "hit_rate_2match": 0.1333,
       "hit_rate_3match": 0.0,
       "hit_rate_4match": 0.0,
@@ -100,19 +200,19 @@
       "hit_rate_7match": 0.0,
       "avg_matches_std": 0.0,
       "seed_avg_matches": [
-        0.7222
+        0.7333
       ]
     },
     "ranked_configs": [
       {
-        "config": "local_03_dist_heavy_strict",
+        "config": "local_05_random_02",
         "tested_periods": 90,
         "evaluated_seeds": 1,
         "avg_matches": 0.9889,
         "average_matches_per_ticket": 0.9889,
-        "hit_rate_1match": 0.6667,
-        "hit_rate_2match": 0.2556,
-        "hit_rate_3match": 0.0556,
+        "hit_rate_1match": 0.7,
+        "hit_rate_2match": 0.2333,
+        "hit_rate_3match": 0.0444,
         "hit_rate_4match": 0.0111,
         "hit_rate_5match": 0.0,
         "hit_rate_6match": 0.0,
@@ -121,17 +221,17 @@
         "seed_avg_matches": [
           0.9889
         ],
-        "selection_score": 1.216725,
-        "random_unfiltered_avg": 0.7222,
-        "random_filtered_avg": 0.7222,
-        "random_uplift": 0.2667,
+        "selection_score": 1.19719,
+        "random_unfiltered_avg": 0.7333,
+        "random_filtered_avg": 0.7333,
+        "random_uplift": 0.2556,
         "random_filtered_baseline": {
           "config": "random",
           "tested_periods": 90,
           "evaluated_seeds": 1,
-          "avg_matches": 0.7222,
-          "average_matches_per_ticket": 0.7222,
-          "hit_rate_1match": 0.5889,
+          "avg_matches": 0.7333,
+          "average_matches_per_ticket": 0.7333,
+          "hit_rate_1match": 0.6,
           "hit_rate_2match": 0.1333,
           "hit_rate_3match": 0.0,
           "hit_rate_4match": 0.0,
@@ -140,17 +240,17 @@
           "hit_rate_7match": 0.0,
           "avg_matches_std": 0.0,
           "seed_avg_matches": [
-            0.7222
+            0.7333
           ]
         },
         "weights": {
-          "freq": 0.15969398,
-          "recent": 0.23118669,
-          "pair": 0.36117577,
-          "triplet": 0.0,
-          "delay": 0.0,
-          "dist": 0.24794356,
-          "repeat": 0.0
+          "freq": 0.23329198,
+          "recent": 0.0,
+          "pair": 0.31007863,
+          "triplet": 0.13487861,
+          "delay": 0.06743508,
+          "dist": 0.08733757,
+          "repeat": 0.16697813
         },
         "filters": {
           "max_block": 3,
@@ -159,16 +259,16 @@
           "max_common": 3
         },
         "search_origin": "local",
-        "parent": "dist_heavy_strict"
+        "parent": "random_02"
       },
       {
         "config": "random_02",
         "tested_periods": 90,
         "evaluated_seeds": 1,
-        "avg_matches": 1.0,
-        "average_matches_per_ticket": 1.0,
+        "avg_matches": 0.9889,
+        "average_matches_per_ticket": 0.9889,
         "hit_rate_1match": 0.7,
-        "hit_rate_2match": 0.2556,
+        "hit_rate_2match": 0.2444,
         "hit_rate_3match": 0.0333,
         "hit_rate_4match": 0.0111,
         "hit_rate_5match": 0.0,
@@ -176,19 +276,19 @@
         "hit_rate_7match": 0.0,
         "avg_matches_std": 0.0,
         "seed_avg_matches": [
-          1.0
+          0.9889
         ],
-        "selection_score": 1.21387,
-        "random_unfiltered_avg": 0.7222,
-        "random_filtered_avg": 0.7222,
-        "random_uplift": 0.2778,
+        "selection_score": 1.19164,
+        "random_unfiltered_avg": 0.7333,
+        "random_filtered_avg": 0.7333,
+        "random_uplift": 0.2556,
         "random_filtered_baseline": {
           "config": "random",
           "tested_periods": 90,
           "evaluated_seeds": 1,
-          "avg_matches": 0.7222,
-          "average_matches_per_ticket": 0.7222,
-          "hit_rate_1match": 0.5889,
+          "avg_matches": 0.7333,
+          "average_matches_per_ticket": 0.7333,
+          "hit_rate_1match": 0.6,
           "hit_rate_2match": 0.1333,
           "hit_rate_3match": 0.0,
           "hit_rate_4match": 0.0,
@@ -197,7 +297,7 @@
           "hit_rate_7match": 0.0,
           "avg_matches_std": 0.0,
           "seed_avg_matches": [
-            0.7222
+            0.7333
           ]
         },
         "weights": {
@@ -222,10 +322,10 @@
         "config": "local_02_random_02",
         "tested_periods": 90,
         "evaluated_seeds": 1,
-        "avg_matches": 1.0,
-        "average_matches_per_ticket": 1.0,
+        "avg_matches": 0.9889,
+        "average_matches_per_ticket": 0.9889,
         "hit_rate_1match": 0.7,
-        "hit_rate_2match": 0.2556,
+        "hit_rate_2match": 0.2444,
         "hit_rate_3match": 0.0333,
         "hit_rate_4match": 0.0111,
         "hit_rate_5match": 0.0,
@@ -233,19 +333,19 @@
         "hit_rate_7match": 0.0,
         "avg_matches_std": 0.0,
         "seed_avg_matches": [
-          1.0
+          0.9889
         ],
-        "selection_score": 1.21387,
-        "random_unfiltered_avg": 0.7222,
-        "random_filtered_avg": 0.7222,
-        "random_uplift": 0.2778,
+        "selection_score": 1.19164,
+        "random_unfiltered_avg": 0.7333,
+        "random_filtered_avg": 0.7333,
+        "random_uplift": 0.2556,
         "random_filtered_baseline": {
           "config": "random",
           "tested_periods": 90,
           "evaluated_seeds": 1,
-          "avg_matches": 0.7222,
-          "average_matches_per_ticket": 0.7222,
-          "hit_rate_1match": 0.5889,
+          "avg_matches": 0.7333,
+          "average_matches_per_ticket": 0.7333,
+          "hit_rate_1match": 0.6,
           "hit_rate_2match": 0.1333,
           "hit_rate_3match": 0.0,
           "hit_rate_4match": 0.0,
@@ -254,7 +354,7 @@
           "hit_rate_7match": 0.0,
           "avg_matches_std": 0.0,
           "seed_avg_matches": [
-            0.7222
+            0.7333
           ]
         },
         "weights": {
@@ -276,73 +376,12 @@
         "parent": "random_02"
       },
       {
-        "config": "local_04_random_01",
-        "tested_periods": 90,
-        "evaluated_seeds": 3,
-        "avg_matches": 0.962967,
-        "average_matches_per_ticket": 0.962967,
-        "hit_rate_1match": 0.6889,
-        "hit_rate_2match": 0.240767,
-        "hit_rate_3match": 0.0259,
-        "hit_rate_4match": 0.0074,
-        "hit_rate_5match": 0.0,
-        "hit_rate_6match": 0.0,
-        "hit_rate_7match": 0.0,
-        "avg_matches_std": 0.061737,
-        "seed_avg_matches": [
-          1.0222,
-          0.9889,
-          0.8778
-        ],
-        "selection_score": 1.15227,
-        "random_unfiltered_avg": 0.677767,
-        "random_filtered_avg": 0.677767,
-        "random_uplift": 0.2852,
-        "random_filtered_baseline": {
-          "config": "random",
-          "tested_periods": 90,
-          "evaluated_seeds": 3,
-          "avg_matches": 0.677767,
-          "average_matches_per_ticket": 0.677767,
-          "hit_rate_1match": 0.544467,
-          "hit_rate_2match": 0.1185,
-          "hit_rate_3match": 0.0148,
-          "hit_rate_4match": 0.0,
-          "hit_rate_5match": 0.0,
-          "hit_rate_6match": 0.0,
-          "hit_rate_7match": 0.0,
-          "avg_matches_std": 0.041577,
-          "seed_avg_matches": [
-            0.7222,
-            0.6222,
-            0.6889
-          ]
-        },
-        "weights": {
-          "freq": 0.50934234,
-          "recent": 0.09518059,
-          "pair": 0.0906665,
-          "triplet": 0.0,
-          "delay": 0.0,
-          "dist": 0.19463624,
-          "repeat": 0.11017433
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        },
-        "search_origin": "local",
-        "parent": "random_01"
-      },
-      {
         "config": "dist_heavy_strict",
         "tested_periods": 90,
         "evaluated_seeds": 1,
-        "avg_matches": 0.9444,
-        "average_matches_per_ticket": 0.9444,
-        "hit_rate_1match": 0.6222,
+        "avg_matches": 0.9333,
+        "average_matches_per_ticket": 0.9333,
+        "hit_rate_1match": 0.6111,
         "hit_rate_2match": 0.2667,
         "hit_rate_3match": 0.0444,
         "hit_rate_4match": 0.0111,
@@ -351,19 +390,19 @@
         "hit_rate_7match": 0.0,
         "avg_matches_std": 0.0,
         "seed_avg_matches": [
-          0.9444
+          0.9333
         ],
-        "selection_score": 1.15102,
-        "random_unfiltered_avg": 0.7222,
-        "random_filtered_avg": 0.7222,
-        "random_uplift": 0.2222,
+        "selection_score": 1.13215,
+        "random_unfiltered_avg": 0.7333,
+        "random_filtered_avg": 0.7333,
+        "random_uplift": 0.2,
         "random_filtered_baseline": {
           "config": "random",
           "tested_periods": 90,
           "evaluated_seeds": 1,
-          "avg_matches": 0.7222,
-          "average_matches_per_ticket": 0.7222,
-          "hit_rate_1match": 0.5889,
+          "avg_matches": 0.7333,
+          "average_matches_per_ticket": 0.7333,
+          "hit_rate_1match": 0.6,
           "hit_rate_2match": 0.1333,
           "hit_rate_3match": 0.0,
           "hit_rate_4match": 0.0,
@@ -372,7 +411,7 @@
           "hit_rate_7match": 0.0,
           "avg_matches_std": 0.0,
           "seed_avg_matches": [
-            0.7222
+            0.7333
           ]
         },
         "weights": {
@@ -397,9 +436,9 @@
         "config": "local_06_dist_heavy_strict",
         "tested_periods": 90,
         "evaluated_seeds": 1,
-        "avg_matches": 0.9556,
-        "average_matches_per_ticket": 0.9556,
-        "hit_rate_1match": 0.6667,
+        "avg_matches": 0.9444,
+        "average_matches_per_ticket": 0.9444,
+        "hit_rate_1match": 0.6556,
         "hit_rate_2match": 0.2444,
         "hit_rate_3match": 0.0333,
         "hit_rate_4match": 0.0111,
@@ -408,19 +447,19 @@
         "hit_rate_7match": 0.0,
         "avg_matches_std": 0.0,
         "seed_avg_matches": [
-          0.9556
+          0.9444
         ],
-        "selection_score": 1.15057,
-        "random_unfiltered_avg": 0.7222,
-        "random_filtered_avg": 0.7222,
-        "random_uplift": 0.2334,
+        "selection_score": 1.131565,
+        "random_unfiltered_avg": 0.7333,
+        "random_filtered_avg": 0.7333,
+        "random_uplift": 0.2111,
         "random_filtered_baseline": {
           "config": "random",
           "tested_periods": 90,
           "evaluated_seeds": 1,
-          "avg_matches": 0.7222,
-          "average_matches_per_ticket": 0.7222,
-          "hit_rate_1match": 0.5889,
+          "avg_matches": 0.7333,
+          "average_matches_per_ticket": 0.7333,
+          "hit_rate_1match": 0.6,
           "hit_rate_2match": 0.1333,
           "hit_rate_3match": 0.0,
           "hit_rate_4match": 0.0,
@@ -429,7 +468,7 @@
           "hit_rate_7match": 0.0,
           "avg_matches_std": 0.0,
           "seed_avg_matches": [
-            0.7222
+            0.7333
           ]
         },
         "weights": {
@@ -451,56 +490,56 @@
         "parent": "dist_heavy_strict"
       },
       {
-        "config": "local_01_random_01",
+        "config": "local_04_random_01",
         "tested_periods": 90,
         "evaluated_seeds": 3,
-        "avg_matches": 0.951833,
-        "average_matches_per_ticket": 0.951833,
-        "hit_rate_1match": 0.6852,
-        "hit_rate_2match": 0.233367,
+        "avg_matches": 0.948167,
+        "average_matches_per_ticket": 0.948167,
+        "hit_rate_1match": 0.6778,
+        "hit_rate_2match": 0.237067,
         "hit_rate_3match": 0.0259,
         "hit_rate_4match": 0.0074,
         "hit_rate_5match": 0.0,
         "hit_rate_6match": 0.0,
         "hit_rate_7match": 0.0,
-        "avg_matches_std": 0.0637,
+        "avg_matches_std": 0.058314,
         "seed_avg_matches": [
-          1.0333,
-          0.9444,
-          0.8778
+          1.0,
+          0.9778,
+          0.8667
         ],
-        "selection_score": 1.134626,
-        "random_unfiltered_avg": 0.677767,
-        "random_filtered_avg": 0.677767,
-        "random_uplift": 0.274066,
+        "selection_score": 1.130569,
+        "random_unfiltered_avg": 0.681467,
+        "random_filtered_avg": 0.681467,
+        "random_uplift": 0.2667,
         "random_filtered_baseline": {
           "config": "random",
           "tested_periods": 90,
           "evaluated_seeds": 3,
-          "avg_matches": 0.677767,
-          "average_matches_per_ticket": 0.677767,
-          "hit_rate_1match": 0.544467,
+          "avg_matches": 0.681467,
+          "average_matches_per_ticket": 0.681467,
+          "hit_rate_1match": 0.548167,
           "hit_rate_2match": 0.1185,
           "hit_rate_3match": 0.0148,
           "hit_rate_4match": 0.0,
           "hit_rate_5match": 0.0,
           "hit_rate_6match": 0.0,
           "hit_rate_7match": 0.0,
-          "avg_matches_std": 0.041577,
+          "avg_matches_std": 0.051581,
           "seed_avg_matches": [
-            0.7222,
-            0.6222,
-            0.6889
+            0.7333,
+            0.6111,
+            0.7
           ]
         },
         "weights": {
-          "freq": 0.50714178,
-          "recent": 0.09205614,
-          "pair": 0.10157947,
-          "triplet": 0.00171906,
+          "freq": 0.50934234,
+          "recent": 0.09518059,
+          "pair": 0.0906665,
+          "triplet": 0.0,
           "delay": 0.0,
-          "dist": 0.15522339,
-          "repeat": 0.14228016
+          "dist": 0.19463624,
+          "repeat": 0.11017433
         },
         "filters": {
           "max_block": 3,
@@ -510,124 +549,6 @@
         },
         "search_origin": "local",
         "parent": "random_01"
-      },
-      {
-        "config": "local_05_random_02",
-        "tested_periods": 90,
-        "evaluated_seeds": 3,
-        "avg_matches": 0.951833,
-        "average_matches_per_ticket": 0.951833,
-        "hit_rate_1match": 0.6963,
-        "hit_rate_2match": 0.2259,
-        "hit_rate_3match": 0.0259,
-        "hit_rate_4match": 0.0037,
-        "hit_rate_5match": 0.0,
-        "hit_rate_6match": 0.0,
-        "hit_rate_7match": 0.0,
-        "avg_matches_std": 0.04566,
-        "seed_avg_matches": [
-          1.0111,
-          0.9444,
-          0.9
-        ],
-        "selection_score": 1.131554,
-        "random_unfiltered_avg": 0.677767,
-        "random_filtered_avg": 0.677767,
-        "random_uplift": 0.274066,
-        "random_filtered_baseline": {
-          "config": "random",
-          "tested_periods": 90,
-          "evaluated_seeds": 3,
-          "avg_matches": 0.677767,
-          "average_matches_per_ticket": 0.677767,
-          "hit_rate_1match": 0.544467,
-          "hit_rate_2match": 0.1185,
-          "hit_rate_3match": 0.0148,
-          "hit_rate_4match": 0.0,
-          "hit_rate_5match": 0.0,
-          "hit_rate_6match": 0.0,
-          "hit_rate_7match": 0.0,
-          "avg_matches_std": 0.041577,
-          "seed_avg_matches": [
-            0.7222,
-            0.6222,
-            0.6889
-          ]
-        },
-        "weights": {
-          "freq": 0.23329198,
-          "recent": 0.0,
-          "pair": 0.31007863,
-          "triplet": 0.13487861,
-          "delay": 0.06743508,
-          "dist": 0.08733757,
-          "repeat": 0.16697813
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        },
-        "search_origin": "local",
-        "parent": "random_02"
-      },
-      {
-        "config": "no_delay_strict",
-        "tested_periods": 90,
-        "evaluated_seeds": 1,
-        "avg_matches": 0.9444,
-        "average_matches_per_ticket": 0.9444,
-        "hit_rate_1match": 0.6778,
-        "hit_rate_2match": 0.2222,
-        "hit_rate_3match": 0.0333,
-        "hit_rate_4match": 0.0111,
-        "hit_rate_5match": 0.0,
-        "hit_rate_6match": 0.0,
-        "hit_rate_7match": 0.0,
-        "avg_matches_std": 0.0,
-        "seed_avg_matches": [
-          0.9444
-        ],
-        "selection_score": 1.12879,
-        "random_unfiltered_avg": 0.7222,
-        "random_filtered_avg": 0.7222,
-        "random_uplift": 0.2222,
-        "random_filtered_baseline": {
-          "config": "random",
-          "tested_periods": 90,
-          "evaluated_seeds": 1,
-          "avg_matches": 0.7222,
-          "average_matches_per_ticket": 0.7222,
-          "hit_rate_1match": 0.5889,
-          "hit_rate_2match": 0.1333,
-          "hit_rate_3match": 0.0,
-          "hit_rate_4match": 0.0,
-          "hit_rate_5match": 0.0,
-          "hit_rate_6match": 0.0,
-          "hit_rate_7match": 0.0,
-          "avg_matches_std": 0.0,
-          "seed_avg_matches": [
-            0.7222
-          ]
-        },
-        "weights": {
-          "freq": 0.24,
-          "recent": 0.26,
-          "pair": 0.24,
-          "triplet": 0.08,
-          "delay": 0.0,
-          "dist": 0.18,
-          "repeat": 0.0
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        },
-        "search_origin": "fixed",
-        "parent": null
       },
       {
         "config": "balanced_strict",
@@ -646,17 +567,17 @@
         "seed_avg_matches": [
           0.9333
         ],
-        "selection_score": 1.117135,
-        "random_unfiltered_avg": 0.7222,
-        "random_filtered_avg": 0.7222,
-        "random_uplift": 0.2111,
+        "selection_score": 1.11325,
+        "random_unfiltered_avg": 0.7333,
+        "random_filtered_avg": 0.7333,
+        "random_uplift": 0.2,
         "random_filtered_baseline": {
           "config": "random",
           "tested_periods": 90,
           "evaluated_seeds": 1,
-          "avg_matches": 0.7222,
-          "average_matches_per_ticket": 0.7222,
-          "hit_rate_1match": 0.5889,
+          "avg_matches": 0.7333,
+          "average_matches_per_ticket": 0.7333,
+          "hit_rate_1match": 0.6,
           "hit_rate_2match": 0.1333,
           "hit_rate_3match": 0.0,
           "hit_rate_4match": 0.0,
@@ -665,7 +586,7 @@
           "hit_rate_7match": 0.0,
           "avg_matches_std": 0.0,
           "seed_avg_matches": [
-            0.7222
+            0.7333
           ]
         },
         "weights": {
@@ -687,46 +608,164 @@
         "parent": null
       },
       {
-        "config": "random_01",
+        "config": "local_01_random_01",
         "tested_periods": 90,
         "evaluated_seeds": 3,
         "avg_matches": 0.937033,
         "average_matches_per_ticket": 0.937033,
-        "hit_rate_1match": 0.6778,
-        "hit_rate_2match": 0.2222,
-        "hit_rate_3match": 0.0296,
+        "hit_rate_1match": 0.6741,
+        "hit_rate_2match": 0.229667,
+        "hit_rate_3match": 0.0259,
         "hit_rate_4match": 0.0074,
         "hit_rate_5match": 0.0,
         "hit_rate_6match": 0.0,
         "hit_rate_7match": 0.0,
-        "avg_matches_std": 0.06931,
+        "avg_matches_std": 0.05901,
         "seed_avg_matches": [
           1.0111,
-          0.9556,
-          0.8444
+          0.9333,
+          0.8667
         ],
-        "selection_score": 1.113134,
-        "random_unfiltered_avg": 0.677767,
-        "random_filtered_avg": 0.677767,
-        "random_uplift": 0.259266,
+        "selection_score": 1.113179,
+        "random_unfiltered_avg": 0.681467,
+        "random_filtered_avg": 0.681467,
+        "random_uplift": 0.255566,
         "random_filtered_baseline": {
           "config": "random",
           "tested_periods": 90,
           "evaluated_seeds": 3,
-          "avg_matches": 0.677767,
-          "average_matches_per_ticket": 0.677767,
-          "hit_rate_1match": 0.544467,
+          "avg_matches": 0.681467,
+          "average_matches_per_ticket": 0.681467,
+          "hit_rate_1match": 0.548167,
           "hit_rate_2match": 0.1185,
           "hit_rate_3match": 0.0148,
           "hit_rate_4match": 0.0,
           "hit_rate_5match": 0.0,
           "hit_rate_6match": 0.0,
           "hit_rate_7match": 0.0,
-          "avg_matches_std": 0.041577,
+          "avg_matches_std": 0.051581,
           "seed_avg_matches": [
-            0.7222,
-            0.6222,
-            0.6889
+            0.7333,
+            0.6111,
+            0.7
+          ]
+        },
+        "weights": {
+          "freq": 0.50714178,
+          "recent": 0.09205614,
+          "pair": 0.10157947,
+          "triplet": 0.00171906,
+          "delay": 0.0,
+          "dist": 0.15522339,
+          "repeat": 0.14228016
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        },
+        "search_origin": "local",
+        "parent": "random_01"
+      },
+      {
+        "config": "no_delay_strict",
+        "tested_periods": 90,
+        "evaluated_seeds": 1,
+        "avg_matches": 0.9333,
+        "average_matches_per_ticket": 0.9333,
+        "hit_rate_1match": 0.6778,
+        "hit_rate_2match": 0.2111,
+        "hit_rate_3match": 0.0333,
+        "hit_rate_4match": 0.0111,
+        "hit_rate_5match": 0.0,
+        "hit_rate_6match": 0.0,
+        "hit_rate_7match": 0.0,
+        "avg_matches_std": 0.0,
+        "seed_avg_matches": [
+          0.9333
+        ],
+        "selection_score": 1.10659,
+        "random_unfiltered_avg": 0.7333,
+        "random_filtered_avg": 0.7333,
+        "random_uplift": 0.2,
+        "random_filtered_baseline": {
+          "config": "random",
+          "tested_periods": 90,
+          "evaluated_seeds": 1,
+          "avg_matches": 0.7333,
+          "average_matches_per_ticket": 0.7333,
+          "hit_rate_1match": 0.6,
+          "hit_rate_2match": 0.1333,
+          "hit_rate_3match": 0.0,
+          "hit_rate_4match": 0.0,
+          "hit_rate_5match": 0.0,
+          "hit_rate_6match": 0.0,
+          "hit_rate_7match": 0.0,
+          "avg_matches_std": 0.0,
+          "seed_avg_matches": [
+            0.7333
+          ]
+        },
+        "weights": {
+          "freq": 0.24,
+          "recent": 0.26,
+          "pair": 0.24,
+          "triplet": 0.08,
+          "delay": 0.0,
+          "dist": 0.18,
+          "repeat": 0.0
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        },
+        "search_origin": "fixed",
+        "parent": null
+      },
+      {
+        "config": "random_01",
+        "tested_periods": 90,
+        "evaluated_seeds": 3,
+        "avg_matches": 0.9222,
+        "average_matches_per_ticket": 0.9222,
+        "hit_rate_1match": 0.666667,
+        "hit_rate_2match": 0.2185,
+        "hit_rate_3match": 0.0296,
+        "hit_rate_4match": 0.0074,
+        "hit_rate_5match": 0.0,
+        "hit_rate_6match": 0.0,
+        "hit_rate_7match": 0.0,
+        "avg_matches_std": 0.065434,
+        "seed_avg_matches": [
+          0.9889,
+          0.9444,
+          0.8333
+        ],
+        "selection_score": 1.09148,
+        "random_unfiltered_avg": 0.681467,
+        "random_filtered_avg": 0.681467,
+        "random_uplift": 0.240733,
+        "random_filtered_baseline": {
+          "config": "random",
+          "tested_periods": 90,
+          "evaluated_seeds": 3,
+          "avg_matches": 0.681467,
+          "average_matches_per_ticket": 0.681467,
+          "hit_rate_1match": 0.548167,
+          "hit_rate_2match": 0.1185,
+          "hit_rate_3match": 0.0148,
+          "hit_rate_4match": 0.0,
+          "hit_rate_5match": 0.0,
+          "hit_rate_6match": 0.0,
+          "hit_rate_7match": 0.0,
+          "avg_matches_std": 0.051581,
+          "seed_avg_matches": [
+            0.7333,
+            0.6111,
+            0.7
           ]
         },
         "weights": {
@@ -748,13 +787,13 @@
         "parent": null
       },
       {
-        "config": "repeat_light_strict",
+        "config": "delay_light_strict",
         "tested_periods": 90,
         "evaluated_seeds": 1,
         "avg_matches": 0.9222,
         "average_matches_per_ticket": 0.9222,
-        "hit_rate_1match": 0.6444,
-        "hit_rate_2match": 0.2444,
+        "hit_rate_1match": 0.6778,
+        "hit_rate_2match": 0.2111,
         "hit_rate_3match": 0.0222,
         "hit_rate_4match": 0.0111,
         "hit_rate_5match": 0.0,
@@ -764,17 +803,17 @@
         "seed_avg_matches": [
           0.9222
         ],
-        "selection_score": 1.0966,
-        "random_unfiltered_avg": 0.7222,
-        "random_filtered_avg": 0.7222,
-        "random_uplift": 0.2,
+        "selection_score": 1.082725,
+        "random_unfiltered_avg": 0.7333,
+        "random_filtered_avg": 0.7333,
+        "random_uplift": 0.1889,
         "random_filtered_baseline": {
           "config": "random",
           "tested_periods": 90,
           "evaluated_seeds": 1,
-          "avg_matches": 0.7222,
-          "average_matches_per_ticket": 0.7222,
-          "hit_rate_1match": 0.5889,
+          "avg_matches": 0.7333,
+          "average_matches_per_ticket": 0.7333,
+          "hit_rate_1match": 0.6,
           "hit_rate_2match": 0.1333,
           "hit_rate_3match": 0.0,
           "hit_rate_4match": 0.0,
@@ -783,7 +822,125 @@
           "hit_rate_7match": 0.0,
           "avg_matches_std": 0.0,
           "seed_avg_matches": [
-            0.7222
+            0.7333
+          ]
+        },
+        "weights": {
+          "freq": 0.18,
+          "recent": 0.2,
+          "pair": 0.2,
+          "triplet": 0.05,
+          "delay": 0.15,
+          "dist": 0.22,
+          "repeat": 0.0
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        },
+        "search_origin": "fixed",
+        "parent": null
+      },
+      {
+        "config": "local_03_dist_heavy_strict",
+        "tested_periods": 90,
+        "evaluated_seeds": 3,
+        "avg_matches": 0.9111,
+        "average_matches_per_ticket": 0.9111,
+        "hit_rate_1match": 0.659267,
+        "hit_rate_2match": 0.2,
+        "hit_rate_3match": 0.048167,
+        "hit_rate_4match": 0.0037,
+        "hit_rate_5match": 0.0,
+        "hit_rate_6match": 0.0,
+        "hit_rate_7match": 0.0,
+        "avg_matches_std": 0.080633,
+        "seed_avg_matches": [
+          0.9889,
+          0.9444,
+          0.8
+        ],
+        "selection_score": 1.078319,
+        "random_unfiltered_avg": 0.681467,
+        "random_filtered_avg": 0.681467,
+        "random_uplift": 0.229633,
+        "random_filtered_baseline": {
+          "config": "random",
+          "tested_periods": 90,
+          "evaluated_seeds": 3,
+          "avg_matches": 0.681467,
+          "average_matches_per_ticket": 0.681467,
+          "hit_rate_1match": 0.548167,
+          "hit_rate_2match": 0.1185,
+          "hit_rate_3match": 0.0148,
+          "hit_rate_4match": 0.0,
+          "hit_rate_5match": 0.0,
+          "hit_rate_6match": 0.0,
+          "hit_rate_7match": 0.0,
+          "avg_matches_std": 0.051581,
+          "seed_avg_matches": [
+            0.7333,
+            0.6111,
+            0.7
+          ]
+        },
+        "weights": {
+          "freq": 0.15969398,
+          "recent": 0.23118669,
+          "pair": 0.36117577,
+          "triplet": 0.0,
+          "delay": 0.0,
+          "dist": 0.24794356,
+          "repeat": 0.0
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        },
+        "search_origin": "local",
+        "parent": "dist_heavy_strict"
+      },
+      {
+        "config": "repeat_light_strict",
+        "tested_periods": 90,
+        "evaluated_seeds": 1,
+        "avg_matches": 0.9111,
+        "average_matches_per_ticket": 0.9111,
+        "hit_rate_1match": 0.6444,
+        "hit_rate_2match": 0.2333,
+        "hit_rate_3match": 0.0222,
+        "hit_rate_4match": 0.0111,
+        "hit_rate_5match": 0.0,
+        "hit_rate_6match": 0.0,
+        "hit_rate_7match": 0.0,
+        "avg_matches_std": 0.0,
+        "seed_avg_matches": [
+          0.9111
+        ],
+        "selection_score": 1.0744,
+        "random_unfiltered_avg": 0.7333,
+        "random_filtered_avg": 0.7333,
+        "random_uplift": 0.1778,
+        "random_filtered_baseline": {
+          "config": "random",
+          "tested_periods": 90,
+          "evaluated_seeds": 1,
+          "avg_matches": 0.7333,
+          "average_matches_per_ticket": 0.7333,
+          "hit_rate_1match": 0.6,
+          "hit_rate_2match": 0.1333,
+          "hit_rate_3match": 0.0,
+          "hit_rate_4match": 0.0,
+          "hit_rate_5match": 0.0,
+          "hit_rate_6match": 0.0,
+          "hit_rate_7match": 0.0,
+          "avg_matches_std": 0.0,
+          "seed_avg_matches": [
+            0.7333
           ]
         },
         "weights": {
@@ -808,10 +965,10 @@
         "config": "recent_pair_strict",
         "tested_periods": 90,
         "evaluated_seeds": 1,
-        "avg_matches": 0.9111,
-        "average_matches_per_ticket": 0.9111,
+        "avg_matches": 0.9,
+        "average_matches_per_ticket": 0.9,
         "hit_rate_1match": 0.6222,
-        "hit_rate_2match": 0.2444,
+        "hit_rate_2match": 0.2333,
         "hit_rate_3match": 0.0333,
         "hit_rate_4match": 0.0111,
         "hit_rate_5match": 0.0,
@@ -819,19 +976,19 @@
         "hit_rate_7match": 0.0,
         "avg_matches_std": 0.0,
         "seed_avg_matches": [
-          0.9111
+          0.9
         ],
-        "selection_score": 1.090495,
-        "random_unfiltered_avg": 0.7222,
-        "random_filtered_avg": 0.7222,
-        "random_uplift": 0.1889,
+        "selection_score": 1.068295,
+        "random_unfiltered_avg": 0.7333,
+        "random_filtered_avg": 0.7333,
+        "random_uplift": 0.1667,
         "random_filtered_baseline": {
           "config": "random",
           "tested_periods": 90,
           "evaluated_seeds": 1,
-          "avg_matches": 0.7222,
-          "average_matches_per_ticket": 0.7222,
-          "hit_rate_1match": 0.5889,
+          "avg_matches": 0.7333,
+          "average_matches_per_ticket": 0.7333,
+          "hit_rate_1match": 0.6,
           "hit_rate_2match": 0.1333,
           "hit_rate_3match": 0.0,
           "hit_rate_4match": 0.0,
@@ -840,7 +997,7 @@
           "hit_rate_7match": 0.0,
           "avg_matches_std": 0.0,
           "seed_avg_matches": [
-            0.7222
+            0.7333
           ]
         },
         "weights": {
@@ -862,120 +1019,6 @@
         "parent": null
       },
       {
-        "config": "delay_light_strict",
-        "tested_periods": 90,
-        "evaluated_seeds": 1,
-        "avg_matches": 0.9111,
-        "average_matches_per_ticket": 0.9111,
-        "hit_rate_1match": 0.6667,
-        "hit_rate_2match": 0.2111,
-        "hit_rate_3match": 0.0222,
-        "hit_rate_4match": 0.0111,
-        "hit_rate_5match": 0.0,
-        "hit_rate_6match": 0.0,
-        "hit_rate_7match": 0.0,
-        "avg_matches_std": 0.0,
-        "seed_avg_matches": [
-          0.9111
-        ],
-        "selection_score": 1.071625,
-        "random_unfiltered_avg": 0.7222,
-        "random_filtered_avg": 0.7222,
-        "random_uplift": 0.1889,
-        "random_filtered_baseline": {
-          "config": "random",
-          "tested_periods": 90,
-          "evaluated_seeds": 1,
-          "avg_matches": 0.7222,
-          "average_matches_per_ticket": 0.7222,
-          "hit_rate_1match": 0.5889,
-          "hit_rate_2match": 0.1333,
-          "hit_rate_3match": 0.0,
-          "hit_rate_4match": 0.0,
-          "hit_rate_5match": 0.0,
-          "hit_rate_6match": 0.0,
-          "hit_rate_7match": 0.0,
-          "avg_matches_std": 0.0,
-          "seed_avg_matches": [
-            0.7222
-          ]
-        },
-        "weights": {
-          "freq": 0.18,
-          "recent": 0.2,
-          "pair": 0.2,
-          "triplet": 0.05,
-          "delay": 0.15,
-          "dist": 0.22,
-          "repeat": 0.0
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        },
-        "search_origin": "fixed",
-        "parent": null
-      },
-      {
-        "config": "random_04",
-        "tested_periods": 90,
-        "evaluated_seeds": 1,
-        "avg_matches": 0.8889,
-        "average_matches_per_ticket": 0.8889,
-        "hit_rate_1match": 0.6,
-        "hit_rate_2match": 0.2333,
-        "hit_rate_3match": 0.0333,
-        "hit_rate_4match": 0.0222,
-        "hit_rate_5match": 0.0,
-        "hit_rate_6match": 0.0,
-        "hit_rate_7match": 0.0,
-        "avg_matches_std": 0.0,
-        "seed_avg_matches": [
-          0.8889
-        ],
-        "selection_score": 1.070515,
-        "random_unfiltered_avg": 0.7222,
-        "random_filtered_avg": 0.7222,
-        "random_uplift": 0.1667,
-        "random_filtered_baseline": {
-          "config": "random",
-          "tested_periods": 90,
-          "evaluated_seeds": 1,
-          "avg_matches": 0.7222,
-          "average_matches_per_ticket": 0.7222,
-          "hit_rate_1match": 0.5889,
-          "hit_rate_2match": 0.1333,
-          "hit_rate_3match": 0.0,
-          "hit_rate_4match": 0.0,
-          "hit_rate_5match": 0.0,
-          "hit_rate_6match": 0.0,
-          "hit_rate_7match": 0.0,
-          "avg_matches_std": 0.0,
-          "seed_avg_matches": [
-            0.7222
-          ]
-        },
-        "weights": {
-          "freq": 0.41789166,
-          "recent": 0.2869462,
-          "pair": 0.04308417,
-          "triplet": 0.01367016,
-          "delay": 0.15289242,
-          "dist": 0.01082294,
-          "repeat": 0.07469245
-        },
-        "filters": {
-          "max_block": 3,
-          "max_first": 2,
-          "max_con": 1,
-          "max_common": 3
-        },
-        "search_origin": "random",
-        "parent": null
-      },
-      {
         "config": "repeat_medium_strict",
         "tested_periods": 90,
         "evaluated_seeds": 1,
@@ -992,17 +1035,17 @@
         "seed_avg_matches": [
           0.9111
         ],
-        "selection_score": 1.068295,
-        "random_unfiltered_avg": 0.7222,
-        "random_filtered_avg": 0.7222,
-        "random_uplift": 0.1889,
+        "selection_score": 1.06441,
+        "random_unfiltered_avg": 0.7333,
+        "random_filtered_avg": 0.7333,
+        "random_uplift": 0.1778,
         "random_filtered_baseline": {
           "config": "random",
           "tested_periods": 90,
           "evaluated_seeds": 1,
-          "avg_matches": 0.7222,
-          "average_matches_per_ticket": 0.7222,
-          "hit_rate_1match": 0.5889,
+          "avg_matches": 0.7333,
+          "average_matches_per_ticket": 0.7333,
+          "hit_rate_1match": 0.6,
           "hit_rate_2match": 0.1333,
           "hit_rate_3match": 0.0,
           "hit_rate_4match": 0.0,
@@ -1011,7 +1054,7 @@
           "hit_rate_7match": 0.0,
           "avg_matches_std": 0.0,
           "seed_avg_matches": [
-            0.7222
+            0.7333
           ]
         },
         "weights": {
@@ -1033,33 +1076,33 @@
         "parent": null
       },
       {
-        "config": "freq_pair_strict",
+        "config": "random_04",
         "tested_periods": 90,
         "evaluated_seeds": 1,
-        "avg_matches": 0.9,
-        "average_matches_per_ticket": 0.9,
-        "hit_rate_1match": 0.6556,
+        "avg_matches": 0.8778,
+        "average_matches_per_ticket": 0.8778,
+        "hit_rate_1match": 0.6,
         "hit_rate_2match": 0.2222,
-        "hit_rate_3match": 0.0111,
-        "hit_rate_4match": 0.0111,
+        "hit_rate_3match": 0.0333,
+        "hit_rate_4match": 0.0222,
         "hit_rate_5match": 0.0,
         "hit_rate_6match": 0.0,
         "hit_rate_7match": 0.0,
         "avg_matches_std": 0.0,
         "seed_avg_matches": [
-          0.9
+          0.8778
         ],
-        "selection_score": 1.05109,
-        "random_unfiltered_avg": 0.7222,
-        "random_filtered_avg": 0.7222,
-        "random_uplift": 0.1778,
+        "selection_score": 1.048315,
+        "random_unfiltered_avg": 0.7333,
+        "random_filtered_avg": 0.7333,
+        "random_uplift": 0.1445,
         "random_filtered_baseline": {
           "config": "random",
           "tested_periods": 90,
           "evaluated_seeds": 1,
-          "avg_matches": 0.7222,
-          "average_matches_per_ticket": 0.7222,
-          "hit_rate_1match": 0.5889,
+          "avg_matches": 0.7333,
+          "average_matches_per_ticket": 0.7333,
+          "hit_rate_1match": 0.6,
           "hit_rate_2match": 0.1333,
           "hit_rate_3match": 0.0,
           "hit_rate_4match": 0.0,
@@ -1068,17 +1111,17 @@
           "hit_rate_7match": 0.0,
           "avg_matches_std": 0.0,
           "seed_avg_matches": [
-            0.7222
+            0.7333
           ]
         },
         "weights": {
-          "freq": 0.3,
-          "recent": 0.18,
-          "pair": 0.28,
-          "triplet": 0.06,
-          "delay": 0.0,
-          "dist": 0.18,
-          "repeat": 0.0
+          "freq": 0.41789166,
+          "recent": 0.2869462,
+          "pair": 0.04308417,
+          "triplet": 0.01367016,
+          "delay": 0.15289242,
+          "dist": 0.01082294,
+          "repeat": 0.07469245
         },
         "filters": {
           "max_block": 3,
@@ -1086,7 +1129,7 @@
           "max_con": 1,
           "max_common": 3
         },
-        "search_origin": "fixed",
+        "search_origin": "random",
         "parent": null
       },
       {
@@ -1106,17 +1149,17 @@
         "seed_avg_matches": [
           0.9
         ],
-        "selection_score": 1.03888,
-        "random_unfiltered_avg": 0.7222,
-        "random_filtered_avg": 0.7222,
-        "random_uplift": 0.1778,
+        "selection_score": 1.034995,
+        "random_unfiltered_avg": 0.7333,
+        "random_filtered_avg": 0.7333,
+        "random_uplift": 0.1667,
         "random_filtered_baseline": {
           "config": "random",
           "tested_periods": 90,
           "evaluated_seeds": 1,
-          "avg_matches": 0.7222,
-          "average_matches_per_ticket": 0.7222,
-          "hit_rate_1match": 0.5889,
+          "avg_matches": 0.7333,
+          "average_matches_per_ticket": 0.7333,
+          "hit_rate_1match": 0.6,
           "hit_rate_2match": 0.1333,
           "hit_rate_3match": 0.0,
           "hit_rate_4match": 0.0,
@@ -1125,7 +1168,7 @@
           "hit_rate_7match": 0.0,
           "avg_matches_std": 0.0,
           "seed_avg_matches": [
-            0.7222
+            0.7333
           ]
         },
         "weights": {
@@ -1145,17 +1188,74 @@
         },
         "search_origin": "random",
         "parent": null
+      },
+      {
+        "config": "freq_pair_strict",
+        "tested_periods": 90,
+        "evaluated_seeds": 1,
+        "avg_matches": 0.8778,
+        "average_matches_per_ticket": 0.8778,
+        "hit_rate_1match": 0.6444,
+        "hit_rate_2match": 0.2111,
+        "hit_rate_3match": 0.0111,
+        "hit_rate_4match": 0.0111,
+        "hit_rate_5match": 0.0,
+        "hit_rate_6match": 0.0,
+        "hit_rate_7match": 0.0,
+        "avg_matches_std": 0.0,
+        "seed_avg_matches": [
+          0.8778
+        ],
+        "selection_score": 1.013905,
+        "random_unfiltered_avg": 0.7333,
+        "random_filtered_avg": 0.7333,
+        "random_uplift": 0.1445,
+        "random_filtered_baseline": {
+          "config": "random",
+          "tested_periods": 90,
+          "evaluated_seeds": 1,
+          "avg_matches": 0.7333,
+          "average_matches_per_ticket": 0.7333,
+          "hit_rate_1match": 0.6,
+          "hit_rate_2match": 0.1333,
+          "hit_rate_3match": 0.0,
+          "hit_rate_4match": 0.0,
+          "hit_rate_5match": 0.0,
+          "hit_rate_6match": 0.0,
+          "hit_rate_7match": 0.0,
+          "avg_matches_std": 0.0,
+          "seed_avg_matches": [
+            0.7333
+          ]
+        },
+        "weights": {
+          "freq": 0.3,
+          "recent": 0.18,
+          "pair": 0.28,
+          "triplet": 0.06,
+          "delay": 0.0,
+          "dist": 0.18,
+          "repeat": 0.0
+        },
+        "filters": {
+          "max_block": 3,
+          "max_first": 2,
+          "max_con": 1,
+          "max_common": 3
+        },
+        "search_origin": "fixed",
+        "parent": null
       }
     ],
-    "selected_config": "local_03_dist_heavy_strict",
+    "selected_config": "local_05_random_02",
     "selected_weights": {
-      "freq": 0.15969398,
-      "recent": 0.23118669,
-      "pair": 0.36117577,
-      "triplet": 0.0,
-      "delay": 0.0,
-      "dist": 0.24794356,
-      "repeat": 0.0
+      "freq": 0.23329198,
+      "recent": 0.0,
+      "pair": 0.31007863,
+      "triplet": 0.13487861,
+      "delay": 0.06743508,
+      "dist": 0.08733757,
+      "repeat": 0.16697813
     },
     "selected_filters": {
       "max_block": 3,
@@ -1183,106 +1283,106 @@
     "feature_ablation": [
       {
         "feature": "freq",
-        "original_weight": 0.15969398,
+        "original_weight": 0.23329198,
         "active": true,
-        "baseline_config": "local_03_dist_heavy_strict",
-        "ablated_config": "local_03_dist_heavy_strict__without_freq",
-        "baseline_avg_matches": 0.922233,
-        "ablated_avg_matches": 0.829633,
-        "avg_matches_drop": 0.0926,
-        "avg_matches_drop_percent": 10.040847,
-        "baseline_selection_score": 1.100434,
-        "ablated_selection_score": 0.97566,
-        "selection_score_drop": 0.124774,
-        "selection_score_drop_percent": 11.338617,
+        "baseline_config": "local_05_random_02",
+        "ablated_config": "local_05_random_02__without_freq",
+        "baseline_avg_matches": 0.940733,
+        "ablated_avg_matches": 0.762967,
+        "avg_matches_drop": 0.177766,
+        "avg_matches_drop_percent": 18.896541,
+        "baseline_selection_score": 1.116424,
+        "ablated_selection_score": 0.839774,
+        "selection_score_drop": 0.27665,
+        "selection_score_drop_percent": 24.780012,
         "ablated_weights": {
           "freq": 0.0,
-          "recent": 0.23118669,
-          "pair": 0.36117577,
-          "triplet": 0.0,
-          "delay": 0.0,
-          "dist": 0.24794356,
-          "repeat": 0.0
+          "recent": 0.0,
+          "pair": 0.31007863,
+          "triplet": 0.13487861,
+          "delay": 0.06743508,
+          "dist": 0.08733757,
+          "repeat": 0.16697813
         },
         "tested_periods": 90,
         "evaluated_seeds": 3,
         "rank": 1
       },
       {
-        "feature": "recent",
-        "original_weight": 0.23118669,
+        "feature": "delay",
+        "original_weight": 0.06743508,
         "active": true,
-        "baseline_config": "local_03_dist_heavy_strict",
-        "ablated_config": "local_03_dist_heavy_strict__without_recent",
-        "baseline_avg_matches": 0.922233,
-        "ablated_avg_matches": 0.844433,
-        "avg_matches_drop": 0.0778,
-        "avg_matches_drop_percent": 8.436046,
-        "baseline_selection_score": 1.100434,
-        "ablated_selection_score": 0.961943,
-        "selection_score_drop": 0.138491,
-        "selection_score_drop_percent": 12.585126,
+        "baseline_config": "local_05_random_02",
+        "ablated_config": "local_05_random_02__without_delay",
+        "baseline_avg_matches": 0.940733,
+        "ablated_avg_matches": 0.866667,
+        "avg_matches_drop": 0.074066,
+        "avg_matches_drop_percent": 7.873222,
+        "baseline_selection_score": 1.116424,
+        "ablated_selection_score": 1.005542,
+        "selection_score_drop": 0.110882,
+        "selection_score_drop_percent": 9.93189,
         "ablated_weights": {
-          "freq": 0.15969398,
+          "freq": 0.23329198,
           "recent": 0.0,
-          "pair": 0.36117577,
-          "triplet": 0.0,
+          "pair": 0.31007863,
+          "triplet": 0.13487861,
           "delay": 0.0,
-          "dist": 0.24794356,
-          "repeat": 0.0
+          "dist": 0.08733757,
+          "repeat": 0.16697813
         },
         "tested_periods": 90,
         "evaluated_seeds": 3,
         "rank": 2
       },
       {
-        "feature": "dist",
-        "original_weight": 0.24794356,
+        "feature": "pair",
+        "original_weight": 0.31007863,
         "active": true,
-        "baseline_config": "local_03_dist_heavy_strict",
-        "ablated_config": "local_03_dist_heavy_strict__without_dist",
-        "baseline_avg_matches": 0.922233,
-        "ablated_avg_matches": 0.9148,
-        "avg_matches_drop": 0.007433,
-        "avg_matches_drop_percent": 0.805979,
-        "baseline_selection_score": 1.100434,
-        "ablated_selection_score": 1.083012,
-        "selection_score_drop": 0.017422,
-        "selection_score_drop_percent": 1.583194,
+        "baseline_config": "local_05_random_02",
+        "ablated_config": "local_05_random_02__without_pair",
+        "baseline_avg_matches": 0.940733,
+        "ablated_avg_matches": 0.8889,
+        "avg_matches_drop": 0.051833,
+        "avg_matches_drop_percent": 5.509852,
+        "baseline_selection_score": 1.116424,
+        "ablated_selection_score": 1.036044,
+        "selection_score_drop": 0.08038,
+        "selection_score_drop_percent": 7.199774,
         "ablated_weights": {
-          "freq": 0.15969398,
-          "recent": 0.23118669,
-          "pair": 0.36117577,
-          "triplet": 0.0,
-          "delay": 0.0,
-          "dist": 0.0,
-          "repeat": 0.0
+          "freq": 0.23329198,
+          "recent": 0.0,
+          "pair": 0.0,
+          "triplet": 0.13487861,
+          "delay": 0.06743508,
+          "dist": 0.08733757,
+          "repeat": 0.16697813
         },
         "tested_periods": 90,
         "evaluated_seeds": 3,
         "rank": 3
       },
       {
-        "feature": "pair",
-        "original_weight": 0.36117577,
+        "feature": "repeat",
+        "original_weight": 0.16697813,
         "active": true,
-        "baseline_config": "local_03_dist_heavy_strict",
-        "ablated_config": "local_03_dist_heavy_strict__without_pair",
-        "baseline_avg_matches": 0.922233,
-        "ablated_avg_matches": 0.918533,
-        "avg_matches_drop": 0.0037,
-        "avg_matches_drop_percent": 0.4012,
-        "baseline_selection_score": 1.100434,
-        "ablated_selection_score": 1.088634,
-        "selection_score_drop": 0.0118,
-        "selection_score_drop_percent": 1.072304,
+        "baseline_config": "local_05_random_02",
+        "ablated_config": "local_05_random_02__without_repeat",
+        "baseline_avg_matches": 0.940733,
+        "ablated_avg_matches": 0.9111,
+        "avg_matches_drop": 0.029633,
+        "avg_matches_drop_percent": 3.14999,
+        "baseline_selection_score": 1.116424,
+        "ablated_selection_score": 1.081086,
+        "selection_score_drop": 0.035338,
+        "selection_score_drop_percent": 3.165285,
         "ablated_weights": {
-          "freq": 0.15969398,
-          "recent": 0.23118669,
-          "pair": 0.0,
-          "triplet": 0.0,
-          "delay": 0.0,
-          "dist": 0.24794356,
+          "freq": 0.23329198,
+          "recent": 0.0,
+          "pair": 0.31007863,
+          "triplet": 0.13487861,
+          "delay": 0.06743508,
+          "dist": 0.08733757,
           "repeat": 0.0
         },
         "tested_periods": 90,
@@ -1290,81 +1390,81 @@
         "rank": 4
       },
       {
-        "feature": "triplet",
+        "feature": "recent",
         "original_weight": 0.0,
         "active": false,
-        "baseline_config": "local_03_dist_heavy_strict",
-        "ablated_config": "local_03_dist_heavy_strict__without_triplet",
-        "baseline_avg_matches": 0.922233,
-        "ablated_avg_matches": 0.922233,
+        "baseline_config": "local_05_random_02",
+        "ablated_config": "local_05_random_02__without_recent",
+        "baseline_avg_matches": 0.940733,
+        "ablated_avg_matches": 0.940733,
         "avg_matches_drop": 0.0,
         "avg_matches_drop_percent": 0.0,
-        "baseline_selection_score": 1.100434,
-        "ablated_selection_score": 1.100434,
+        "baseline_selection_score": 1.116424,
+        "ablated_selection_score": 1.116424,
         "selection_score_drop": 0.0,
         "selection_score_drop_percent": 0.0,
         "ablated_weights": {
-          "freq": 0.15969398,
-          "recent": 0.23118669,
-          "pair": 0.36117577,
-          "triplet": 0.0,
-          "delay": 0.0,
-          "dist": 0.24794356,
-          "repeat": 0.0
+          "freq": 0.23329198,
+          "recent": 0.0,
+          "pair": 0.31007863,
+          "triplet": 0.13487861,
+          "delay": 0.06743508,
+          "dist": 0.08733757,
+          "repeat": 0.16697813
         },
         "tested_periods": 90,
         "evaluated_seeds": 3,
         "rank": 5
       },
       {
-        "feature": "delay",
-        "original_weight": 0.0,
-        "active": false,
-        "baseline_config": "local_03_dist_heavy_strict",
-        "ablated_config": "local_03_dist_heavy_strict__without_delay",
-        "baseline_avg_matches": 0.922233,
-        "ablated_avg_matches": 0.922233,
+        "feature": "triplet",
+        "original_weight": 0.13487861,
+        "active": true,
+        "baseline_config": "local_05_random_02",
+        "ablated_config": "local_05_random_02__without_triplet",
+        "baseline_avg_matches": 0.940733,
+        "ablated_avg_matches": 0.940733,
         "avg_matches_drop": 0.0,
         "avg_matches_drop_percent": 0.0,
-        "baseline_selection_score": 1.100434,
-        "ablated_selection_score": 1.100434,
-        "selection_score_drop": 0.0,
-        "selection_score_drop_percent": 0.0,
+        "baseline_selection_score": 1.116424,
+        "ablated_selection_score": 1.116612,
+        "selection_score_drop": -0.000188,
+        "selection_score_drop_percent": -0.016839,
         "ablated_weights": {
-          "freq": 0.15969398,
-          "recent": 0.23118669,
-          "pair": 0.36117577,
+          "freq": 0.23329198,
+          "recent": 0.0,
+          "pair": 0.31007863,
           "triplet": 0.0,
-          "delay": 0.0,
-          "dist": 0.24794356,
-          "repeat": 0.0
+          "delay": 0.06743508,
+          "dist": 0.08733757,
+          "repeat": 0.16697813
         },
         "tested_periods": 90,
         "evaluated_seeds": 3,
         "rank": 6
       },
       {
-        "feature": "repeat",
-        "original_weight": 0.0,
-        "active": false,
-        "baseline_config": "local_03_dist_heavy_strict",
-        "ablated_config": "local_03_dist_heavy_strict__without_repeat",
-        "baseline_avg_matches": 0.922233,
-        "ablated_avg_matches": 0.922233,
+        "feature": "dist",
+        "original_weight": 0.08733757,
+        "active": true,
+        "baseline_config": "local_05_random_02",
+        "ablated_config": "local_05_random_02__without_dist",
+        "baseline_avg_matches": 0.940733,
+        "ablated_avg_matches": 0.940733,
         "avg_matches_drop": 0.0,
         "avg_matches_drop_percent": 0.0,
-        "baseline_selection_score": 1.100434,
-        "ablated_selection_score": 1.100434,
-        "selection_score_drop": 0.0,
-        "selection_score_drop_percent": 0.0,
+        "baseline_selection_score": 1.116424,
+        "ablated_selection_score": 1.121945,
+        "selection_score_drop": -0.005521,
+        "selection_score_drop_percent": -0.494525,
         "ablated_weights": {
-          "freq": 0.15969398,
-          "recent": 0.23118669,
-          "pair": 0.36117577,
-          "triplet": 0.0,
-          "delay": 0.0,
-          "dist": 0.24794356,
-          "repeat": 0.0
+          "freq": 0.23329198,
+          "recent": 0.0,
+          "pair": 0.31007863,
+          "triplet": 0.13487861,
+          "delay": 0.06743508,
+          "dist": 0.0,
+          "repeat": 0.16697813
         },
         "tested_periods": 90,
         "evaluated_seeds": 3,
@@ -1375,18 +1475,40 @@
       {
         "pattern_id": "P1",
         "numbers": [
-          8,
-          18,
-          21,
+          2,
+          6,
+          19,
           26,
+          27,
+          38
+        ],
+        "score": 0.350017,
+        "model": "local_05_random_02",
+        "block_counts": [
+          2,
+          1,
+          2,
+          1
+        ],
+        "consecutive_count": 1,
+        "repeat_count": 1,
+        "estimated_probability": 1.6402977862213017e-07
+      },
+      {
+        "pattern_id": "P2",
+        "numbers": [
+          5,
+          10,
+          16,
+          32,
           37,
           42
         ],
-        "score": 0.396821,
-        "model": "local_03_dist_heavy_strict",
+        "score": 0.333245,
+        "model": "local_05_random_02",
         "block_counts": [
-          1,
           2,
+          1,
           1,
           2
         ],
@@ -1395,42 +1517,42 @@
         "estimated_probability": 1.6402977862213017e-07
       },
       {
-        "pattern_id": "P2",
+        "pattern_id": "P3",
         "numbers": [
-          2,
-          6,
-          10,
-          27,
+          8,
+          21,
+          22,
+          30,
           35,
           36
         ],
-        "score": 0.368313,
-        "model": "local_03_dist_heavy_strict",
+        "score": 0.313907,
+        "model": "local_05_random_02",
         "block_counts": [
-          3,
-          0,
           1,
+          1,
+          2,
           2
         ],
-        "consecutive_count": 1,
+        "consecutive_count": 2,
         "repeat_count": 1,
         "estimated_probability": 1.6402977862213017e-07
       },
       {
-        "pattern_id": "P3",
+        "pattern_id": "P4",
         "numbers": [
-          1,
-          5,
-          15,
-          24,
-          28,
-          38
+          14,
+          18,
+          20,
+          23,
+          25,
+          43
         ],
-        "score": 0.338536,
-        "model": "local_03_dist_heavy_strict",
+        "score": 0.290919,
+        "model": "local_05_random_02",
         "block_counts": [
-          2,
-          1,
+          0,
+          3,
           2,
           1
         ],
@@ -1439,46 +1561,24 @@
         "estimated_probability": 1.6402977862213017e-07
       },
       {
-        "pattern_id": "P4",
-        "numbers": [
-          16,
-          20,
-          25,
-          30,
-          40,
-          43
-        ],
-        "score": 0.285453,
-        "model": "local_03_dist_heavy_strict",
-        "block_counts": [
-          0,
-          2,
-          2,
-          2
-        ],
-        "consecutive_count": 0,
-        "repeat_count": 2,
-        "estimated_probability": 1.6402977862213017e-07
-      },
-      {
         "pattern_id": "P5",
         "numbers": [
-          11,
-          12,
-          14,
-          19,
-          29,
-          32
-        ],
-        "score": 0.242783,
-        "model": "local_03_dist_heavy_strict",
-        "block_counts": [
-          0,
           4,
-          2,
-          0
+          11,
+          15,
+          17,
+          24,
+          39
         ],
-        "consecutive_count": 1,
+        "score": 0.262396,
+        "model": "local_05_random_02",
+        "block_counts": [
+          1,
+          3,
+          1,
+          1
+        ],
+        "consecutive_count": 0,
         "repeat_count": 0,
         "estimated_probability": 1.6402977862213017e-07
       }
