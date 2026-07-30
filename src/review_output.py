@@ -118,6 +118,9 @@ def build_review_bundle(
             "selected_config": section.get("selected_config"),
             "selected_weights": section.get("selected_weights"),
             "selected_filters": section.get("selected_filters"),
+            "learning_summary": section.get(
+                "learning_summary"
+            ),
             "search_metadata": section.get("search_metadata"),
             "feature_ablation": section.get(
                 "feature_ablation"
