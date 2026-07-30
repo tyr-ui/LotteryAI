@@ -36,6 +36,7 @@ from feature_memory import (
 
 from optimizer_learning import (
     apply_learning_weights,
+    load_learning_strength,
     load_learning_weights,
 )
 
@@ -375,9 +376,14 @@ def optimize(
         best_config
     )
 
+    learning_strength = load_learning_strength(
+        str(game_config["kind"])
+    )
+
     final_weights = apply_learning_weights(
         base_weights,
         learning_weights,
+        strength=learning_strength,
     )
 
     final_context = build_model_context(
