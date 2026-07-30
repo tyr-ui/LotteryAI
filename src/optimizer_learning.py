@@ -1,6 +1,7 @@
+from datetime import datetime, timezone
 from pathlib import Path
 import json
-from typing import Mapping
+from typing import Mapping, Sequence
 
 from predictor import PredictionWeights
 
@@ -9,6 +10,10 @@ OUTPUT_DIR = ROOT / "output"
 ANALYSIS_PATH = (
     OUTPUT_DIR
     / "feature_memory_analysis.json"
+)
+LEARNING_STRENGTH_PATH = (
+    OUTPUT_DIR
+    / "learning_strength.json"
 )
 
 
@@ -25,6 +30,20 @@ def _load_analysis() -> dict:
     except Exception:
         return {}
 
+def _load_learning_strength_store() -> dict:
+    if not LEARNING_STRENGTH_PATH.exists():
+        return {}
+
+    try:
+        data = json.loads(
+            LEARNING_STRENGTH_PATH.read_text(
+                encoding="utf-8",
+            )
+        )
+    except Exception:
+        return {}
+
+    return data if isinstance(data, dict) else {}
 
 def load_learning_weights(
     game_name: str,
@@ -258,6 +277,37 @@ def apply_learning_weights(
 def load_learning_strength(
     game_name: str,
 ) -> float:
+    """
+    保存済みの最適strengthを優先して返す。
+
+    保存値が存在しない場合は、
+    Feature Memoryの実行回数に応じた
+    従来の段階値へフォールバックする。
+    """
+    store = _load_learning_strength_store()
+
+    stored_games = store.get("games")
+
+    if isinstance(stored_games, dict):
+        stored_game = stored_games.get(
+            game_name
+        )
+
+        if isinstance(stored_game, dict):
+            stored_strength = stored_game.get(
+                "best_strength"
+            )
+
+            try:
+                normalized_strength = float(
+                    stored_strength
+                )
+            except (TypeError, ValueError):
+                normalized_strength = -1.0
+
+            if 0.0 <= normalized_strength <= 1.0:
+                return normalized_strength
+
     analysis = _load_analysis()
 
     games = analysis.get("games")
@@ -270,12 +320,15 @@ def load_learning_strength(
     if not isinstance(game, dict):
         return 0.10
 
-    run_count = int(
-        game.get(
-            "total_run_count",
-            0,
+    try:
+        run_count = int(
+            game.get(
+                "total_run_count",
+                0,
+            )
         )
-    )
+    except (TypeError, ValueError):
+        run_count = 0
 
     if run_count >= 20:
         return 0.80
@@ -290,6 +343,82 @@ def load_learning_strength(
         return 0.20
 
     return 0.10
+    
+def save_learning_strength_evaluation(
+    game_name: str,
+    best_strength: float,
+    tested_strengths: Sequence[
+        Mapping[str, object]
+    ],
+) -> None:
+    """
+    strength候補の評価結果と最良値を
+    ゲーム別に保存する。
+    """
+    normalized_best = float(
+        best_strength
+    )
+
+    if not 0.0 <= normalized_best <= 1.0:
+        raise ValueError(
+            "best_strength must be "
+            "between 0.0 and 1.0."
+        )
+
+    store = _load_learning_strength_store()
+
+    games = store.get("games")
+
+    if not isinstance(games, dict):
+        games = {}
+
+    evaluated_at = datetime.now(
+        timezone.utc
+    ).isoformat()
+
+    games[str(game_name)] = {
+        "best_strength": round(
+            normalized_best,
+            6,
+        ),
+        "evaluated_at": evaluated_at,
+        "tested_strengths": [
+            dict(item)
+            for item in tested_strengths
+            if isinstance(item, Mapping)
+        ],
+    }
+
+    output = {
+        "schema_version": "1.0",
+        "updated_at": evaluated_at,
+        "games": games,
+    }
+
+    OUTPUT_DIR.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    temporary_path = (
+        LEARNING_STRENGTH_PATH.with_suffix(
+            ".json.tmp"
+        )
+    )
+
+    temporary_path.write_text(
+        json.dumps(
+            output,
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    temporary_path.replace(
+        LEARNING_STRENGTH_PATH
+    )
 
 def print_learning_weights(
     game_name: str,
@@ -322,4 +451,5 @@ __all__ = [
     "load_learning_strength",
     "load_learning_weights",
     "print_learning_weights",
+    "save_learning_strength_evaluation",
 ]
