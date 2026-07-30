@@ -36,12 +36,12 @@ def load_learning_weights(
     if not isinstance(game, dict):
         return {}
 
-    overall = game.get("overall")
+    overall = game.get("all_history")
 
     if not isinstance(overall, dict):
         return {}
 
-    ranking = overall.get("ranking")
+    ranking = overall.get("features")
 
     if not isinstance(ranking, list):
         return {}
@@ -53,7 +53,9 @@ def load_learning_weights(
             continue
 
         feature = item.get("feature")
-        score = item.get("avg_importance")
+        score = item.get(
+            "average_selection_score_drop_percent"
+        )
 
         if (
             not isinstance(feature, str)
@@ -64,13 +66,15 @@ def load_learning_weights(
         ):
             continue
 
-        score = max(
-            min(float(score), 1.0),
-            -1.0,
+        learning_score = float(score) / 100.0
+
+        learning_score = max(
+            min(learning_score, 1.0),
+                -1.0,
         )
 
         weights[feature] = round(
-            score * 0.10,
+            learning_score * 0.10,
             4,
         )
 
