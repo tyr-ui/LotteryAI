@@ -14,6 +14,9 @@ from feature_memory_analyzer import (
     save_feature_memory_analysis,
 )
 
+from optimizer_learning import (
+    print_learning_weights,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "output"
@@ -567,6 +570,8 @@ def main() -> None:
     for game_key, game_config in LOTTO_GAMES.items():
         result = optimizer_results[game_key]
         section = output[game_key]
+        
+        print_learning_weights(game_key)
 
         print_evaluation(
             game_config["display_name"],
