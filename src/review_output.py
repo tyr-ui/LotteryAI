@@ -76,6 +76,9 @@ def build_run_summary(
             "selected_config": section.get("selected_config"),
             "selected_weights": section.get("selected_weights"),
             "selected_filters": section.get("selected_filters"),
+            "feature_ablation": section.get(
+                "feature_ablation"
+            ),
             "prediction": _prediction_summary(
                 section.get("prediction", [])
             ),
@@ -116,6 +119,9 @@ def build_review_bundle(
             "selected_weights": section.get("selected_weights"),
             "selected_filters": section.get("selected_filters"),
             "search_metadata": section.get("search_metadata"),
+            "feature_ablation": section.get(
+                "feature_ablation"
+            ),
             "prediction": _prediction_summary(
                 section.get("prediction", [])
             ),
