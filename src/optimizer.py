@@ -443,7 +443,7 @@ def optimize(
             "learning_weights_loaded": (
                 learning_weights
             ),
-            "learning_applied": False,
+            "learning_applied": True,
             "base_config_count": len(
                 base_candidates
             ),
