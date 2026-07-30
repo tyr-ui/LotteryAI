@@ -10,6 +10,10 @@ from games import LOTTO_GAMES
 from optimizer import optimize
 from review_output import write_review_outputs
 
+from feature_memory_analyzer import (
+    save_feature_memory_analysis,
+)
+
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "output"
@@ -553,6 +557,8 @@ def main() -> None:
         output=output,
         game_keys=list(LOTTO_GAMES.keys()),
     )
+
+    save_feature_memory_analysis()
 
     print("\n=== REVIEW OUTPUTS ===")
     print(f"run_summary: {run_summary_path}")
