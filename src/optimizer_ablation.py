@@ -25,8 +25,6 @@ def _build_ablated_config(
     指定した特徴量の重みだけを0にした設定を作成する。
 
     元の設定は変更しない。
-    他の重みはevaluate_config内のprediction_weightsで
-    再正規化される。
     """
     if feature not in ABLATION_FEATURES:
         raise ValueError(
@@ -86,16 +84,14 @@ def _calculate_drop(
     ablated: float,
 ) -> tuple[float, float]:
     """
-    通常結果からアブレーション結果を引き、
+    基準結果からアブレーション結果を引き、
     絶対差と低下率を返す。
 
     正の値:
         特徴量を無効化すると性能が低下した。
-        その特徴量が有効である可能性が高い。
 
     負の値:
         特徴量を無効化すると性能が改善した。
-        その特徴量が悪影響を与えている可能性がある。
     """
     drop = baseline - ablated
 
@@ -129,27 +125,39 @@ def run_feature_ablation(
 ) -> list[dict[str, object]]:
     """
     選択済み設定について、特徴量を1つずつ無効化して
-    バックテストを実行する。
+    同一条件でバックテストする。
 
-    baseline_resultには、通常状態で複数seed評価された
-    best_resultを渡す。
-
-    結果はavg_matchesの低下量が大きい順に返す。
+    baseline_resultは互換性維持のため受け取るが、
+    比較基準はアブレーションと同じseedsで再評価する。
     """
     if not seeds:
         raise ValueError(
             "seeds must not be empty."
         )
 
+    # アブレーション結果と完全に同じ条件で、
+    # 通常設定を再評価する。
+    comparable_baseline = evaluate_config(
+        history,
+        game_config,
+        optimizer_config,
+        train_window=train_window,
+        tested_periods=tested_periods,
+        candidate_count=candidate_count,
+        seeds=seeds,
+        random_baselines=random_baselines,
+    )
+
     baseline_avg = float(
-        baseline_result.get(
+        comparable_baseline.get(
             "avg_matches",
             0.0,
         )
         or 0.0
     )
+
     baseline_score = float(
-        baseline_result.get(
+        comparable_baseline.get(
             "selection_score",
             0.0,
         )
@@ -159,25 +167,42 @@ def run_feature_ablation(
     results: list[dict[str, object]] = []
 
     for feature in ABLATION_FEATURES:
-        ablated_config = (
-            _build_ablated_config(
-                optimizer_config,
-                feature=feature,
-            )
+        raw_weights = optimizer_config.get(
+            "w",
+            {},
         )
 
-        ablated_result = evaluate_config(
-            history,
-            game_config,
-            ablated_config,
-            train_window=train_window,
-            tested_periods=tested_periods,
-            candidate_count=candidate_count,
-            seeds=seeds,
-            random_baselines=(
-                random_baselines
-            ),
+        if not isinstance(raw_weights, Mapping):
+            raw_weights = {}
+
+        original_weight = float(
+            raw_weights.get(
+                feature,
+                0.0,
+            )
+            or 0.0
         )
+
+        ablated_config = _build_ablated_config(
+            optimizer_config,
+            feature=feature,
+        )
+
+        # もともと重みが0なら、再実行しても設定は同じ。
+        # 不要なバックテストを避け、基準結果をそのまま使う。
+        if original_weight == 0.0:
+            ablated_result = comparable_baseline
+        else:
+            ablated_result = evaluate_config(
+                history,
+                game_config,
+                ablated_config,
+                train_window=train_window,
+                tested_periods=tested_periods,
+                candidate_count=candidate_count,
+                seeds=seeds,
+                random_baselines=random_baselines,
+            )
 
         ablated_avg = float(
             ablated_result.get(
@@ -186,6 +211,7 @@ def run_feature_ablation(
             )
             or 0.0
         )
+
         ablated_score = float(
             ablated_result.get(
                 "selection_score",
@@ -200,6 +226,7 @@ def run_feature_ablation(
                 ablated_avg,
             )
         )
+
         score_drop, score_drop_percent = (
             _calculate_drop(
                 baseline_score,
@@ -209,6 +236,11 @@ def run_feature_ablation(
 
         results.append({
             "feature": feature,
+            "original_weight": round(
+                original_weight,
+                8,
+            ),
+            "active": original_weight > 0.0,
             "baseline_config": str(
                 optimizer_config.get(
                     "name",
@@ -230,21 +262,15 @@ def run_feature_ablation(
             "avg_matches_drop_percent": (
                 avg_drop_percent
             ),
-            "baseline_selection_score": (
-                round(
-                    baseline_score,
-                    6,
-                )
+            "baseline_selection_score": round(
+                baseline_score,
+                6,
             ),
-            "ablated_selection_score": (
-                round(
-                    ablated_score,
-                    6,
-                )
+            "ablated_selection_score": round(
+                ablated_score,
+                6,
             ),
-            "selection_score_drop": (
-                score_drop
-            ),
+            "selection_score_drop": score_drop,
             (
                 "selection_score_"
                 "drop_percent"
@@ -258,9 +284,9 @@ def run_feature_ablation(
             "tested_periods": int(
                 ablated_result.get(
                     "tested_periods",
-                    0,
+                    tested_periods,
                 )
-                or 0
+                or tested_periods
             ),
             "evaluated_seeds": int(
                 ablated_result.get(
