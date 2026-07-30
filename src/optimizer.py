@@ -436,6 +436,18 @@ def optimize(
         "selected_filters": dict(
             best_config.get("f", {})
         ),
+        
+        "learning_summary": {
+            "strength": learning_strength,
+            "loaded_weights": learning_weights,
+            "base_prediction_weights": dict(
+                vars(base_weights)
+            ),
+            "applied_prediction_weights": dict(
+                vars(final_weights)
+            ),
+        },
+        
         "search_metadata": {
             "algorithm": (
                 "fixed_random_local_robust"
