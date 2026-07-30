@@ -35,6 +35,7 @@ from feature_memory import (
 )
 
 from optimizer_learning import (
+    apply_learning_weights,
     load_learning_weights,
 )
 
@@ -369,14 +370,21 @@ def optimize(
         game_config,
         best_config,
     )
-    final_weights = prediction_weights(
+
+    base_weights = prediction_weights(
         best_config
     )
+
+    final_weights = apply_learning_weights(
+        base_weights,
+        learning_weights,
+    )
+
     final_context = build_model_context(
         history,
         final_config,
     )
-
+    
     final_prediction = predict(
         final_context,
         final_config,
