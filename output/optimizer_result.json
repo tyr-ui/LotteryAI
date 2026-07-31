@@ -1,7 +1,7 @@
 {
   "status": "ok",
   "note": "run_pipeline evaluates the previous prediction if the target draw is now available, then creates the next prediction.",
-  "generated_at": "2026-07-31T03:17:28.750213+00:00",
+  "generated_at": "2026-07-31T04:14:36.964935+00:00",
   "previous_evaluation": {
     "loto6": {
       "draw_type": "loto6",
@@ -1248,14 +1248,14 @@
         },
         {
           "strength": 0.35,
-          "selection_score": 1.125445,
-          "avg_matches": 0.948133,
-          "average_matches_per_ticket": 0.948133,
+          "selection_score": 1.129399,
+          "avg_matches": 0.951833,
+          "average_matches_per_ticket": 0.951833,
           "hit_rate_2match": 0.2259,
           "hit_rate_3match": 0.0259,
           "hit_rate_4match": 0.0037,
-          "avg_matches_std": 0.044754,
-          "random_uplift": 0.266666
+          "avg_matches_std": 0.049963,
+          "random_uplift": 0.270366
         },
         {
           "strength": 0.5,
@@ -1281,12 +1281,12 @@
         }
       ],
       "loaded_weights": {
-        "freq": 0.0181,
-        "recent": 0.0063,
-        "delay": 0.005,
-        "pair": 0.0041,
-        "repeat": 0.0016,
-        "dist": 0.0005,
+        "freq": 0.0188,
+        "recent": 0.0056,
+        "delay": 0.0055,
+        "pair": 0.0045,
+        "repeat": 0.0018,
+        "dist": 0.0004,
         "triplet": -0.0
       },
       "base_prediction_weights": {
@@ -1305,12 +1305,12 @@
         "diversity": 0.35
       },
       "applied_prediction_weights": {
-        "global_frequency": 0.23667,
+        "global_frequency": 0.236801,
         "recent_frequency": 0.0,
-        "delay": 0.067705,
-        "pair": 0.311096,
+        "delay": 0.067732,
+        "pair": 0.311195,
         "triplet": 0.134879,
-        "repeat": 0.167192,
+        "repeat": 0.167219,
         "sum_shape": 0.014556,
         "odd_shape": 0.014556,
         "low_shape": 0.014556,
@@ -1320,12 +1320,12 @@
         "diversity": 0.35
       },
       "weight_diff": {
-        "global_frequency": 0.003378,
+        "global_frequency": 0.003509,
         "recent_frequency": 0.0,
-        "delay": 0.00027,
-        "pair": 0.001017,
+        "delay": 0.000297,
+        "pair": 0.001116,
         "triplet": 0.0,
-        "repeat": 0.000214,
+        "repeat": 0.000241,
         "sum_shape": -0.0,
         "odd_shape": -0.0,
         "low_shape": -0.0,
@@ -1338,12 +1338,12 @@
     "search_metadata": {
       "algorithm": "fixed_random_local_robust",
       "learning_weights_loaded": {
-        "freq": 0.0181,
-        "recent": 0.0063,
-        "delay": 0.005,
-        "pair": 0.0041,
-        "repeat": 0.0016,
-        "dist": 0.0005,
+        "freq": 0.0188,
+        "recent": 0.0056,
+        "delay": 0.0055,
+        "pair": 0.0045,
+        "repeat": 0.0018,
+        "dist": 0.0004,
         "triplet": -0.0
       },
       "learning_applied": true,
@@ -1552,7 +1552,7 @@
       }
     ],
     "optimizer_experience": {
-      "history_count": 2,
+      "history_count": 3,
       "history_limit": 20,
       "unique_config_count": 1,
       "best_config_name": "local_05_random_02",
@@ -1571,7 +1571,7 @@
           27,
           38
         ],
-        "score": 0.353032,
+        "score": 0.35317,
         "model": "experience_loto6_1",
         "block_counts": [
           2,
@@ -1593,7 +1593,7 @@
           42,
           43
         ],
-        "score": 0.335975,
+        "score": 0.336106,
         "model": "experience_loto6_1",
         "block_counts": [
           0,
@@ -1615,7 +1615,7 @@
           32,
           36
         ],
-        "score": 0.305754,
+        "score": 0.305867,
         "model": "experience_loto6_1",
         "block_counts": [
           2,
@@ -1637,7 +1637,7 @@
           30,
           31
         ],
-        "score": 0.296241,
+        "score": 0.296352,
         "model": "experience_loto6_1",
         "block_counts": [
           2,
@@ -1659,7 +1659,7 @@
           34,
           39
         ],
-        "score": 0.262901,
+        "score": 0.262993,
         "model": "experience_loto6_1",
         "block_counts": [
           1,
@@ -3117,7 +3117,7 @@
       }
     ],
     "optimizer_experience": {
-      "history_count": 2,
+      "history_count": 3,
       "history_limit": 20,
       "unique_config_count": 1,
       "best_config_name": "repeat_medium_strict",
@@ -4746,7 +4746,7 @@
       }
     ],
     "optimizer_experience": {
-      "history_count": 2,
+      "history_count": 3,
       "history_limit": 20,
       "unique_config_count": 1,
       "best_config_name": "local_02_repeat_medium_strict",
