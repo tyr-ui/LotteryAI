@@ -50,7 +50,12 @@ def load_learning_weights(
 ) -> dict[str, float]:
     analysis = _load_analysis()
 
-    game = analysis.get(game_name)
+    games = analysis.get("games")
+
+    if not isinstance(games, dict):
+        return {}
+
+    game = games.get(game_name)
 
     if not isinstance(game, dict):
         return {}
