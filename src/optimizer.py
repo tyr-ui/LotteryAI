@@ -556,10 +556,12 @@ def optimize(
         random_baselines=random_baselines,
     )
 
-    save_learning_strength_evaluation(
-        str(game_config["kind"]),
-        learning_strength,
-        learning_strength_results,
+    learning_strength = (
+        save_learning_strength_evaluation(
+            str(game_config["kind"]),
+            learning_strength,
+            learning_strength_results,
+        )
     )
 
     final_context = build_model_context(
