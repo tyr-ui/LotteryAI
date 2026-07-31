@@ -577,6 +577,23 @@ def optimize(
         )
     )
 
+    final_weights = (
+        apply_learning_weights(
+            base_weights,
+            learning_weights,
+            strength=learning_strength,
+        )
+    )
+
+    if not isinstance(
+        final_weights,
+        PredictionWeights,
+    ):
+        raise TypeError(
+            "Learning-adjusted weights "
+            "must be PredictionWeights."
+        )
+
     final_context = build_model_context(
         history,
         final_config,
