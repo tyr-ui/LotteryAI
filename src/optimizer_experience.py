@@ -664,6 +664,93 @@ def save_optimizer_experience(
         else new_entry
     )
 
+    score_sum = sum(
+        _normalize_float(
+            entry.get(
+                "selection_score"
+            )
+        )
+        for entry in normalized_history
+    )
+
+    average_selection_score = round(
+        score_sum
+        / len(normalized_history),
+        6,
+    )
+
+    config_statistics: dict[
+        str,
+        dict[str, object],
+    ] = {}
+
+    for entry in normalized_history:
+        config = entry.get("config")
+
+        if not isinstance(
+            config,
+            Mapping,
+        ):
+            continue
+
+        signature = _config_signature(
+            config
+        )
+
+        stats = config_statistics.setdefault(
+            signature,
+            {
+                "config_name": entry.get(
+                    "config_name"
+                ),
+                "wins": 0,
+                "best_selection_score": 0.0,
+                "average_selection_score": 0.0,
+                "score_sum": 0.0,
+            },
+        )
+
+        score = _normalize_float(
+            entry.get(
+                "selection_score"
+            )
+        )
+
+        stats["wins"] = (
+            int(stats["wins"]) + 1
+        )
+
+        stats["score_sum"] = (
+            float(stats["score_sum"])
+            + score
+        )
+
+        stats[
+            "best_selection_score"
+        ] = max(
+            float(
+                stats[
+                    "best_selection_score"
+                ]
+            ),
+            score,
+        )
+
+    for stats in (
+        config_statistics.values()
+    ):
+        wins = int(stats["wins"])
+
+        stats[
+            "average_selection_score"
+        ] = round(
+            float(stats["score_sum"])
+            / wins,
+            6,
+        )
+
+        del stats["score_sum"]
+
     game_output = {
         "updated_at": evaluated_at,
         "history_count": len(
@@ -674,6 +761,14 @@ def save_optimizer_experience(
         ),
         "unique_config_count": (
             unique_config_count
+        ),
+        "average_selection_score": (
+            average_selection_score
+        ),
+        "config_statistics": (
+            list(
+                config_statistics.values()
+            )
         ),
         "best_config_name": (
             best_entry.get(
