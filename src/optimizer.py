@@ -46,6 +46,7 @@ from optimizer_learning import (
 )
 
 from optimizer_experience import (
+    load_evolution_adaptation,
     load_experience_configs,
     save_optimizer_experience,
 )
@@ -393,6 +394,12 @@ def optimize(
         )
     )
 
+    evolution_adaptation = (
+        load_evolution_adaptation(
+            str(game_config["kind"])
+        )
+    )
+
     inherited_filters = dict(
         base_candidates[0].get("f", {})
     )
@@ -440,6 +447,21 @@ def optimize(
         generate_evolution_candidates(
             parent_configs,
             rng=rng,
+            count=int(
+                evolution_adaptation[
+                    "count"
+                ]
+            ),
+            mutation_rate=float(
+                evolution_adaptation[
+                    "mutation_rate"
+                ]
+            ),
+            mutation_scale=float(
+                evolution_adaptation[
+                    "mutation_scale"
+                ]
+            ),
         )
     )
 
@@ -724,6 +746,9 @@ def optimize(
             ),
             "evolution_config_count": len(
                 evolution_candidates
+            ),
+            "adaptive_evolution": (
+                evolution_adaptation
             ),
             "total_unique_config_count": (
                 len(all_configs)
