@@ -2,8 +2,8 @@
   "schema_version": "1.0",
   "status": "ok",
   "note": "run_pipeline evaluates the previous prediction if the target draw is now available, then creates the next prediction.",
-  "generated_at": "2026-07-31T09:39:31.887875+00:00",
-  "bundle_generated_at": "2026-07-31T09:39:31.896770+00:00",
+  "generated_at": "2026-07-31T10:34:53.448196+00:00",
+  "bundle_generated_at": "2026-07-31T10:34:53.457506+00:00",
   "top_configs_per_game": 5,
   "games": {
     "loto6": {
@@ -20,7 +20,7 @@
         "duplicate_main_numbers_rows": 0,
         "status": "ok"
       },
-      "selected_config": "experience_loto6_2",
+      "selected_config": "experience_loto6_1",
       "selected_weights": {
         "freq": 0.23329198,
         "recent": 0.0,
@@ -97,12 +97,12 @@
           }
         ],
         "loaded_weights": {
-          "freq": 0.0192,
-          "delay": 0.0061,
-          "pair": 0.0051,
-          "recent": 0.0046,
+          "freq": 0.0197,
+          "delay": 0.0064,
+          "pair": 0.0053,
+          "recent": 0.0042,
           "repeat": 0.0024,
-          "dist": 0.0006,
+          "dist": 0.0005,
           "triplet": 0.0001
         },
         "base_prediction_weights": {
@@ -121,10 +121,10 @@
           "diversity": 0.35
         },
         "applied_prediction_weights": {
-          "global_frequency": 0.236875,
+          "global_frequency": 0.236969,
           "recent_frequency": 0.0,
-          "delay": 0.067764,
-          "pair": 0.311344,
+          "delay": 0.06778,
+          "pair": 0.311393,
           "triplet": 0.134889,
           "repeat": 0.167299,
           "sum_shape": 0.014556,
@@ -136,10 +136,10 @@
           "diversity": 0.35
         },
         "weight_diff": {
-          "global_frequency": 0.003583,
+          "global_frequency": 0.003677,
           "recent_frequency": 0.0,
-          "delay": 0.000329,
-          "pair": 0.001265,
+          "delay": 0.000345,
+          "pair": 0.001314,
           "triplet": 1e-05,
           "repeat": 0.000321,
           "sum_shape": -0.0,
@@ -154,12 +154,12 @@
       "search_metadata": {
         "algorithm": "fixed_random_local_robust",
         "learning_weights_loaded": {
-          "freq": 0.0192,
-          "delay": 0.0061,
-          "pair": 0.0051,
-          "recent": 0.0046,
+          "freq": 0.0197,
+          "delay": 0.0064,
+          "pair": 0.0053,
+          "recent": 0.0042,
           "repeat": 0.0024,
-          "dist": 0.0006,
+          "dist": 0.0005,
           "triplet": 0.0001
         },
         "learning_applied": true,
@@ -182,8 +182,8 @@
           "feature": "freq",
           "original_weight": 0.23329198,
           "active": true,
-          "baseline_config": "experience_loto6_2",
-          "ablated_config": "experience_loto6_2__without_freq",
+          "baseline_config": "experience_loto6_1",
+          "ablated_config": "experience_loto6_1__without_freq",
           "baseline_avg_matches": 0.940733,
           "ablated_avg_matches": 0.762967,
           "avg_matches_drop": 0.177766,
@@ -209,8 +209,8 @@
           "feature": "delay",
           "original_weight": 0.06743508,
           "active": true,
-          "baseline_config": "experience_loto6_2",
-          "ablated_config": "experience_loto6_2__without_delay",
+          "baseline_config": "experience_loto6_1",
+          "ablated_config": "experience_loto6_1__without_delay",
           "baseline_avg_matches": 0.940733,
           "ablated_avg_matches": 0.866667,
           "avg_matches_drop": 0.074066,
@@ -236,8 +236,8 @@
           "feature": "pair",
           "original_weight": 0.31007863,
           "active": true,
-          "baseline_config": "experience_loto6_2",
-          "ablated_config": "experience_loto6_2__without_pair",
+          "baseline_config": "experience_loto6_1",
+          "ablated_config": "experience_loto6_1__without_pair",
           "baseline_avg_matches": 0.940733,
           "ablated_avg_matches": 0.8889,
           "avg_matches_drop": 0.051833,
@@ -263,8 +263,8 @@
           "feature": "repeat",
           "original_weight": 0.16697813,
           "active": true,
-          "baseline_config": "experience_loto6_2",
-          "ablated_config": "experience_loto6_2__without_repeat",
+          "baseline_config": "experience_loto6_1",
+          "ablated_config": "experience_loto6_1__without_repeat",
           "baseline_avg_matches": 0.940733,
           "ablated_avg_matches": 0.9111,
           "avg_matches_drop": 0.029633,
@@ -290,8 +290,8 @@
           "feature": "recent",
           "original_weight": 0.0,
           "active": false,
-          "baseline_config": "experience_loto6_2",
-          "ablated_config": "experience_loto6_2__without_recent",
+          "baseline_config": "experience_loto6_1",
+          "ablated_config": "experience_loto6_1__without_recent",
           "baseline_avg_matches": 0.940733,
           "ablated_avg_matches": 0.940733,
           "avg_matches_drop": 0.0,
@@ -317,8 +317,8 @@
           "feature": "triplet",
           "original_weight": 0.13487861,
           "active": true,
-          "baseline_config": "experience_loto6_2",
-          "ablated_config": "experience_loto6_2__without_triplet",
+          "baseline_config": "experience_loto6_1",
+          "ablated_config": "experience_loto6_1__without_triplet",
           "baseline_avg_matches": 0.940733,
           "ablated_avg_matches": 0.940733,
           "avg_matches_drop": 0.0,
@@ -344,8 +344,8 @@
           "feature": "dist",
           "original_weight": 0.08733757,
           "active": true,
-          "baseline_config": "experience_loto6_2",
-          "ablated_config": "experience_loto6_2__without_dist",
+          "baseline_config": "experience_loto6_1",
+          "ablated_config": "experience_loto6_1__without_dist",
           "baseline_avg_matches": 0.940733,
           "ablated_avg_matches": 0.940733,
           "avg_matches_drop": 0.0,
@@ -379,8 +379,8 @@
             27,
             38
           ],
-          "score": 0.353291,
-          "model": "experience_loto6_2"
+          "score": 0.353379,
+          "model": "experience_loto6_1"
         },
         {
           "pattern_id": "P2",
@@ -392,8 +392,8 @@
             42,
             43
           ],
-          "score": 0.336225,
-          "model": "experience_loto6_2"
+          "score": 0.336307,
+          "model": "experience_loto6_1"
         },
         {
           "pattern_id": "P3",
@@ -405,8 +405,8 @@
             32,
             36
           ],
-          "score": 0.305973,
-          "model": "experience_loto6_2"
+          "score": 0.306042,
+          "model": "experience_loto6_1"
         },
         {
           "pattern_id": "P4",
@@ -418,8 +418,8 @@
             30,
             31
           ],
-          "score": 0.296454,
-          "model": "experience_loto6_2"
+          "score": 0.296523,
+          "model": "experience_loto6_1"
         },
         {
           "pattern_id": "P5",
@@ -431,8 +431,8 @@
             34,
             39
           ],
-          "score": 0.263083,
-          "model": "experience_loto6_2"
+          "score": 0.263138,
+          "model": "experience_loto6_1"
         }
       ],
       "random_baseline": {
@@ -475,7 +475,7 @@
       },
       "top_ranked_configs": [
         {
-          "config": "experience_loto6_2",
+          "config": "experience_loto6_1",
           "tested_periods": 90,
           "evaluated_seeds": 1,
           "avg_matches": 0.9889,
@@ -553,7 +553,7 @@
           "parent": null
         },
         {
-          "config": "local_06_experience_loto6_2",
+          "config": "local_06_experience_loto6_1",
           "tested_periods": 90,
           "evaluated_seeds": 1,
           "avg_matches": 0.9889,
@@ -589,10 +589,10 @@
             "max_common": 3
           },
           "search_origin": "local",
-          "parent": "experience_loto6_2"
+          "parent": "experience_loto6_1"
         },
         {
-          "config": "local_05_experience_loto6_1",
+          "config": "local_05_experience_loto6_2",
           "tested_periods": 90,
           "evaluated_seeds": 1,
           "avg_matches": 0.9778,
@@ -628,10 +628,10 @@
             "max_common": 3
           },
           "search_origin": "local",
-          "parent": "experience_loto6_1"
+          "parent": "experience_loto6_2"
         },
         {
-          "config": "evolution_02_experience_loto6_1_experience_loto6_2",
+          "config": "evolution_02_experience_loto6_2_experience_loto6_1",
           "tested_periods": 90,
           "evaluated_seeds": 1,
           "avg_matches": 0.9667,
@@ -701,7 +701,7 @@
         "duplicate_main_numbers_rows": 0,
         "status": "ok"
       },
-      "selected_config": "local_05_repeat_medium_strict",
+      "selected_config": "experience_loto7_2",
       "selected_weights": {
         "freq": 0.13448709,
         "recent": 0.27079533,
@@ -745,14 +745,14 @@
           },
           {
             "strength": 0.35,
-            "selection_score": 1.661318,
-            "avg_matches": 1.3926,
-            "average_matches_per_ticket": 1.3926,
-            "hit_rate_2match": 0.422233,
+            "selection_score": 1.654402,
+            "avg_matches": 1.388867,
+            "average_matches_per_ticket": 1.388867,
+            "hit_rate_2match": 0.418533,
             "hit_rate_3match": 0.1259,
             "hit_rate_4match": 0.0148,
-            "avg_matches_std": 0.037733,
-            "random_uplift": 0.0889
+            "avg_matches_std": 0.041568,
+            "random_uplift": 0.085167
           },
           {
             "strength": 0.5,
@@ -767,24 +767,24 @@
           },
           {
             "strength": 0.8,
-            "selection_score": 1.666534,
-            "avg_matches": 1.3963,
-            "average_matches_per_ticket": 1.3963,
+            "selection_score": 1.661318,
+            "avg_matches": 1.3926,
+            "average_matches_per_ticket": 1.3926,
             "hit_rate_2match": 0.422233,
             "hit_rate_3match": 0.1259,
             "hit_rate_4match": 0.0148,
-            "avg_matches_std": 0.036628,
-            "random_uplift": 0.0926
+            "avg_matches_std": 0.037733,
+            "random_uplift": 0.0889
           }
         ],
         "loaded_weights": {
-          "recent": 0.0038,
-          "repeat": 0.0011,
-          "delay": 0.0,
+          "recent": 0.0041,
+          "repeat": 0.0014,
+          "delay": -0.0,
           "triplet": -0.0001,
-          "pair": -0.0038,
-          "freq": -0.0063,
-          "dist": -0.0072
+          "pair": -0.003,
+          "freq": -0.0055,
+          "dist": -0.0068
         },
         "base_prediction_weights": {
           "global_frequency": 0.13448709,
@@ -802,12 +802,12 @@
           "diversity": 0.35
         },
         "applied_prediction_weights": {
-          "global_frequency": 0.133809,
-          "recent_frequency": 0.271619,
+          "global_frequency": 0.133895,
+          "recent_frequency": 0.271684,
           "delay": 0.002011,
-          "pair": 0.160359,
+          "pair": 0.160462,
           "triplet": 0.031732,
-          "repeat": 0.184988,
+          "repeat": 0.185032,
           "sum_shape": 0.035883,
           "odd_shape": 0.035883,
           "low_shape": 0.035883,
@@ -817,12 +817,12 @@
           "diversity": 0.35
         },
         "weight_diff": {
-          "global_frequency": -0.000678,
-          "recent_frequency": 0.000824,
+          "global_frequency": -0.000592,
+          "recent_frequency": 0.000889,
           "delay": 0.0,
-          "pair": -0.000489,
+          "pair": -0.000386,
           "triplet": -2e-06,
-          "repeat": 0.000163,
+          "repeat": 0.000207,
           "sum_shape": -0.0,
           "odd_shape": -0.0,
           "low_shape": -0.0,
@@ -835,20 +835,20 @@
       "search_metadata": {
         "algorithm": "fixed_random_local_robust",
         "learning_weights_loaded": {
-          "recent": 0.0038,
-          "repeat": 0.0011,
-          "delay": 0.0,
+          "recent": 0.0041,
+          "repeat": 0.0014,
+          "delay": -0.0,
           "triplet": -0.0001,
-          "pair": -0.0038,
-          "freq": -0.0063,
-          "dist": -0.0072
+          "pair": -0.003,
+          "freq": -0.0055,
+          "dist": -0.0068
         },
         "learning_applied": true,
         "base_config_count": 10,
         "random_config_count": 4,
         "local_config_count": 6,
         "evolution_config_count": 4,
-        "total_unique_config_count": 23,
+        "total_unique_config_count": 24,
         "parent_count": 3,
         "robust_finalist_count": 4,
         "robust_seeds": [
@@ -863,8 +863,8 @@
           "feature": "recent",
           "original_weight": 0.27079533,
           "active": true,
-          "baseline_config": "local_05_repeat_medium_strict",
-          "ablated_config": "local_05_repeat_medium_strict__without_recent",
+          "baseline_config": "experience_loto7_2",
+          "ablated_config": "experience_loto7_2__without_recent",
           "baseline_avg_matches": 1.392567,
           "ablated_avg_matches": 1.3148,
           "avg_matches_drop": 0.077767,
@@ -890,8 +890,8 @@
           "feature": "pair",
           "original_weight": 0.16084812,
           "active": true,
-          "baseline_config": "local_05_repeat_medium_strict",
-          "ablated_config": "local_05_repeat_medium_strict__without_pair",
+          "baseline_config": "experience_loto7_2",
+          "ablated_config": "experience_loto7_2__without_pair",
           "baseline_avg_matches": 1.392567,
           "ablated_avg_matches": 1.337033,
           "avg_matches_drop": 0.055534,
@@ -917,8 +917,8 @@
           "feature": "repeat",
           "original_weight": 0.18482491,
           "active": true,
-          "baseline_config": "local_05_repeat_medium_strict",
-          "ablated_config": "local_05_repeat_medium_strict__without_repeat",
+          "baseline_config": "experience_loto7_2",
+          "ablated_config": "experience_loto7_2__without_repeat",
           "baseline_avg_matches": 1.392567,
           "ablated_avg_matches": 1.344433,
           "avg_matches_drop": 0.048134,
@@ -944,8 +944,8 @@
           "feature": "freq",
           "original_weight": 0.13448709,
           "active": true,
-          "baseline_config": "local_05_repeat_medium_strict",
-          "ablated_config": "local_05_repeat_medium_strict__without_freq",
+          "baseline_config": "experience_loto7_2",
+          "ablated_config": "experience_loto7_2__without_freq",
           "baseline_avg_matches": 1.392567,
           "ablated_avg_matches": 1.355567,
           "avg_matches_drop": 0.037,
@@ -971,8 +971,8 @@
           "feature": "triplet",
           "original_weight": 0.03173441,
           "active": true,
-          "baseline_config": "local_05_repeat_medium_strict",
-          "ablated_config": "local_05_repeat_medium_strict__without_triplet",
+          "baseline_config": "experience_loto7_2",
+          "ablated_config": "experience_loto7_2__without_triplet",
           "baseline_avg_matches": 1.392567,
           "ablated_avg_matches": 1.3852,
           "avg_matches_drop": 0.007367,
@@ -998,8 +998,8 @@
           "feature": "delay",
           "original_weight": 0.00201081,
           "active": true,
-          "baseline_config": "local_05_repeat_medium_strict",
-          "ablated_config": "local_05_repeat_medium_strict__without_delay",
+          "baseline_config": "experience_loto7_2",
+          "ablated_config": "experience_loto7_2__without_delay",
           "baseline_avg_matches": 1.392567,
           "ablated_avg_matches": 1.396267,
           "avg_matches_drop": -0.0037,
@@ -1025,8 +1025,8 @@
           "feature": "dist",
           "original_weight": 0.21529934,
           "active": true,
-          "baseline_config": "local_05_repeat_medium_strict",
-          "ablated_config": "local_05_repeat_medium_strict__without_dist",
+          "baseline_config": "experience_loto7_2",
+          "ablated_config": "experience_loto7_2__without_dist",
           "baseline_avg_matches": 1.392567,
           "ablated_avg_matches": 1.4074,
           "avg_matches_drop": -0.014833,
@@ -1061,8 +1061,8 @@
             29,
             34
           ],
-          "score": 0.423819,
-          "model": "local_05_repeat_medium_strict"
+          "score": 0.423941,
+          "model": "experience_loto7_2"
         },
         {
           "pattern_id": "P2",
@@ -1075,8 +1075,8 @@
             35,
             36
           ],
-          "score": 0.361964,
-          "model": "local_05_repeat_medium_strict"
+          "score": 0.362063,
+          "model": "experience_loto7_2"
         },
         {
           "pattern_id": "P3",
@@ -1089,8 +1089,8 @@
             26,
             33
           ],
-          "score": 0.329721,
-          "model": "local_05_repeat_medium_strict"
+          "score": 0.329802,
+          "model": "experience_loto7_2"
         },
         {
           "pattern_id": "P4",
@@ -1103,8 +1103,8 @@
             28,
             32
           ],
-          "score": 0.307254,
-          "model": "local_05_repeat_medium_strict"
+          "score": 0.307336,
+          "model": "experience_loto7_2"
         },
         {
           "pattern_id": "P5",
@@ -1117,8 +1117,8 @@
             24,
             30
           ],
-          "score": 0.288203,
-          "model": "local_05_repeat_medium_strict"
+          "score": 0.288278,
+          "model": "experience_loto7_2"
         }
       ],
       "random_baseline": {
@@ -1144,47 +1144,43 @@
       "selected_random_filtered_baseline": {
         "config": "random",
         "tested_periods": 90,
-        "evaluated_seeds": 3,
-        "avg_matches": 1.3037,
-        "average_matches_per_ticket": 1.3037,
-        "hit_rate_1match": 0.822233,
-        "hit_rate_2match": 0.366667,
-        "hit_rate_3match": 0.0963,
-        "hit_rate_4match": 0.0185,
+        "evaluated_seeds": 1,
+        "avg_matches": 1.3,
+        "average_matches_per_ticket": 1.3,
+        "hit_rate_1match": 0.8556,
+        "hit_rate_2match": 0.3222,
+        "hit_rate_3match": 0.1,
+        "hit_rate_4match": 0.0222,
         "hit_rate_5match": 0.0,
         "hit_rate_6match": 0.0,
         "hit_rate_7match": 0.0,
-        "avg_matches_std": 0.005233,
+        "avg_matches_std": 0.0,
         "seed_avg_matches": [
-          1.3,
-          1.3,
-          1.3111
+          1.3
         ]
       },
       "top_ranked_configs": [
         {
-          "config": "local_05_repeat_medium_strict",
+          "config": "experience_loto7_2",
           "tested_periods": 90,
-          "evaluated_seeds": 3,
-          "avg_matches": 1.392567,
-          "average_matches_per_ticket": 1.392567,
-          "hit_rate_1match": 0.8296,
-          "hit_rate_2match": 0.418533,
-          "hit_rate_3match": 0.1296,
-          "hit_rate_4match": 0.0148,
+          "evaluated_seeds": 1,
+          "avg_matches": 1.4444,
+          "average_matches_per_ticket": 1.4444,
+          "hit_rate_1match": 0.8444,
+          "hit_rate_2match": 0.4556,
+          "hit_rate_3match": 0.1222,
+          "hit_rate_4match": 0.0222,
           "hit_rate_5match": 0.0,
           "hit_rate_6match": 0.0,
           "hit_rate_7match": 0.0,
-          "avg_matches_std": 0.040907,
+          "avg_matches_std": 0.0,
           "seed_avg_matches": [
-            1.4444,
-            1.3444,
-            1.3889
+            1.4444
           ],
-          "selection_score": 1.662489,
-          "random_unfiltered_avg": 1.3037,
-          "random_filtered_avg": 1.3037,
-          "random_uplift": 0.088867,
+          "selection_score": 1.75602,
+          "random_unfiltered_avg": 1.3,
+          "random_filtered_avg": 1.3,
+          "random_uplift": 0.1444,
           "weights": {
             "freq": 0.13448709,
             "recent": 0.27079533,
@@ -1200,17 +1196,17 @@
             "max_con": 1,
             "max_common": 3
           },
-          "search_origin": "local",
-          "parent": "repeat_medium_strict"
+          "search_origin": null,
+          "parent": null
         },
         {
-          "config": "local_04_experience_loto7_2",
+          "config": "evolution_04_experience_loto7_2_repeat_medium_strict",
           "tested_periods": 90,
           "evaluated_seeds": 1,
-          "avg_matches": 1.3889,
-          "average_matches_per_ticket": 1.3889,
-          "hit_rate_1match": 0.8222,
-          "hit_rate_2match": 0.4333,
+          "avg_matches": 1.4333,
+          "average_matches_per_ticket": 1.4333,
+          "hit_rate_1match": 0.8556,
+          "hit_rate_2match": 0.4444,
           "hit_rate_3match": 0.1222,
           "hit_rate_4match": 0.0111,
           "hit_rate_5match": 0.0,
@@ -1218,59 +1214,20 @@
           "hit_rate_7match": 0.0,
           "avg_matches_std": 0.0,
           "seed_avg_matches": [
-            1.3889
+            1.4333
           ],
-          "selection_score": 1.661085,
+          "selection_score": 1.724355,
           "random_unfiltered_avg": 1.3,
           "random_filtered_avg": 1.3,
-          "random_uplift": 0.0889,
+          "random_uplift": 0.1333,
           "weights": {
-            "freq": 0.13359107,
-            "recent": 0.2624212,
-            "pair": 0.23897782,
-            "triplet": 0.03912079,
-            "delay": 0.0220742,
-            "dist": 0.1742723,
-            "repeat": 0.12954261
-          },
-          "filters": {
-            "max_block": 3,
-            "max_common": 3,
-            "max_con": 1,
-            "max_first": 2
-          },
-          "search_origin": "local",
-          "parent": "experience_loto7_2"
-        },
-        {
-          "config": "evolution_02_repeat_light_strict_repeat_medium_strict",
-          "tested_periods": 90,
-          "evaluated_seeds": 1,
-          "avg_matches": 1.3889,
-          "average_matches_per_ticket": 1.3889,
-          "hit_rate_1match": 0.8333,
-          "hit_rate_2match": 0.4333,
-          "hit_rate_3match": 0.1111,
-          "hit_rate_4match": 0.0111,
-          "hit_rate_5match": 0.0,
-          "hit_rate_6match": 0.0,
-          "hit_rate_7match": 0.0,
-          "avg_matches_std": 0.0,
-          "seed_avg_matches": [
-            1.3889
-          ],
-          "selection_score": 1.652205,
-          "random_unfiltered_avg": 1.3,
-          "random_filtered_avg": 1.3,
-          "random_uplift": 0.0889,
-          "weights": {
-            "delay": 0.0,
-            "dist": 0.1674335,
-            "freq": 0.13022605,
-            "pair": 0.21795492,
-            "recent": 0.2711212,
-            "repeat": 0.16009803,
-            "triplet": 0.05316629
+            "delay": 0.05728032,
+            "dist": 0.18238714,
+            "freq": 0.18416527,
+            "pair": 0.22095766,
+            "recent": 0.25581586,
+            "repeat": 0.09939375,
+            "triplet": 0.0
           },
           "filters": {
             "max_block": 3,
@@ -1282,7 +1239,85 @@
           "parent": null
         },
         {
-          "config": "experience_loto7_2",
+          "config": "local_05_experience_loto7_3",
+          "tested_periods": 90,
+          "evaluated_seeds": 1,
+          "avg_matches": 1.4222,
+          "average_matches_per_ticket": 1.4222,
+          "hit_rate_1match": 0.8333,
+          "hit_rate_2match": 0.4444,
+          "hit_rate_3match": 0.1333,
+          "hit_rate_4match": 0.0111,
+          "hit_rate_5match": 0.0,
+          "hit_rate_6match": 0.0,
+          "hit_rate_7match": 0.0,
+          "avg_matches_std": 0.0,
+          "seed_avg_matches": [
+            1.4222
+          ],
+          "selection_score": 1.71825,
+          "random_unfiltered_avg": 1.3,
+          "random_filtered_avg": 1.3,
+          "random_uplift": 0.1222,
+          "weights": {
+            "freq": 0.13582853,
+            "recent": 0.29128041,
+            "pair": 0.17505533,
+            "triplet": 0.03214662,
+            "delay": 0.00201779,
+            "dist": 0.22284621,
+            "repeat": 0.14082511
+          },
+          "filters": {
+            "max_block": 3,
+            "max_common": 3,
+            "max_con": 1,
+            "max_first": 2
+          },
+          "search_origin": "local",
+          "parent": "experience_loto7_3"
+        },
+        {
+          "config": "evolution_01_experience_loto7_2_experience_loto7_3",
+          "tested_periods": 90,
+          "evaluated_seeds": 1,
+          "avg_matches": 1.4111,
+          "average_matches_per_ticket": 1.4111,
+          "hit_rate_1match": 0.8222,
+          "hit_rate_2match": 0.4444,
+          "hit_rate_3match": 0.1333,
+          "hit_rate_4match": 0.0111,
+          "hit_rate_5match": 0.0,
+          "hit_rate_6match": 0.0,
+          "hit_rate_7match": 0.0,
+          "avg_matches_std": 0.0,
+          "seed_avg_matches": [
+            1.4111
+          ],
+          "selection_score": 1.703265,
+          "random_unfiltered_avg": 1.3,
+          "random_filtered_avg": 1.3,
+          "random_uplift": 0.1111,
+          "weights": {
+            "delay": 0.0,
+            "dist": 0.19451454,
+            "freq": 0.14003177,
+            "pair": 0.20739269,
+            "recent": 0.28583737,
+            "repeat": 0.14010231,
+            "triplet": 0.03212133
+          },
+          "filters": {
+            "max_block": 3,
+            "max_common": 3,
+            "max_con": 1,
+            "max_first": 2
+          },
+          "search_origin": null,
+          "parent": null
+        },
+        {
+          "config": "experience_loto7_3",
           "tested_periods": 90,
           "evaluated_seeds": 1,
           "avg_matches": 1.3778,
@@ -1319,48 +1354,9 @@
           },
           "search_origin": null,
           "parent": null
-        },
-        {
-          "config": "repeat_medium_strict",
-          "tested_periods": 90,
-          "evaluated_seeds": 1,
-          "avg_matches": 1.3778,
-          "average_matches_per_ticket": 1.3778,
-          "hit_rate_1match": 0.8111,
-          "hit_rate_2match": 0.4444,
-          "hit_rate_3match": 0.1111,
-          "hit_rate_4match": 0.0111,
-          "hit_rate_5match": 0.0,
-          "hit_rate_6match": 0.0,
-          "hit_rate_7match": 0.0,
-          "avg_matches_std": 0.0,
-          "seed_avg_matches": [
-            1.3778
-          ],
-          "selection_score": 1.64055,
-          "random_unfiltered_avg": 1.3,
-          "random_filtered_avg": 1.3,
-          "random_uplift": 0.0778,
-          "weights": {
-            "freq": 0.14,
-            "recent": 0.27,
-            "pair": 0.22,
-            "triplet": 0.05,
-            "delay": 0.0,
-            "dist": 0.17,
-            "repeat": 0.15
-          },
-          "filters": {
-            "max_block": 3,
-            "max_first": 2,
-            "max_con": 1,
-            "max_common": 3
-          },
-          "search_origin": "fixed",
-          "parent": null
         }
       ],
-      "ranked_config_count": 23,
+      "ranked_config_count": 24,
       "previous_evaluation": {
         "draw_type": "loto7",
         "status": "pending",
