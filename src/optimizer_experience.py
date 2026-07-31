@@ -251,6 +251,9 @@ def _build_search_source_statistics(
 
     historyには各実行の最終勝者が保存されるため、
     countは探索元ごとの勝者数を表す。
+
+    recent_countとrecent_shareは、
+    evaluated_atを基準とした直近10回から算出する。
     """
     source_names = (
         "base",
@@ -270,11 +273,12 @@ def _build_search_source_statistics(
             "best_selection_score": 0.0,
             "average_selection_score": 0.0,
             "latest_selection_score": 0.0,
+            "latest_evaluated_at": "",
             "share": 0.0,
             "recent_count": 0,
             "recent_share": 0.0,
             "rank": 0,
-        }
+            "is_best_source": False,
         }
         for source in source_names
     }
@@ -290,6 +294,13 @@ def _build_search_source_statistics(
                 "selection_score"
             )
         )
+        evaluated_at = str(
+            entry.get(
+                "evaluated_at",
+                "",
+            )
+            or ""
+        )
 
         stats = statistics[source]
 
@@ -303,9 +314,6 @@ def _build_search_source_statistics(
         stats[
             "best_selection_score"
         ] = max(
-        stats[
-            "latest_selection_score"
-        ] = selection_score
             float(
                 stats[
                     "best_selection_score"
@@ -313,6 +321,25 @@ def _build_search_source_statistics(
             ),
             selection_score,
         )
+
+        latest_evaluated_at = str(
+            stats.get(
+                "latest_evaluated_at",
+                "",
+            )
+            or ""
+        )
+
+        if (
+            evaluated_at
+            >= latest_evaluated_at
+        ):
+            stats[
+                "latest_evaluated_at"
+            ] = evaluated_at
+            stats[
+                "latest_selection_score"
+            ] = selection_score
 
         total_count += 1
 
@@ -344,11 +371,34 @@ def _build_search_source_statistics(
             ),
             6,
         )
+        stats[
+            "latest_selection_score"
+        ] = round(
+            float(
+                stats[
+                    "latest_selection_score"
+                ]
+            ),
+            6,
+        )
 
         del stats["score_sum"]
-        
-        recent_history = history[-10:]
+        del stats["latest_evaluated_at"]
 
+    chronological_history = sorted(
+        history,
+        key=lambda entry: str(
+            entry.get(
+                "evaluated_at",
+                "",
+            )
+            or ""
+        ),
+    )
+
+    recent_history = (
+        chronological_history[-10:]
+    )
     recent_total = len(
         recent_history
     )
@@ -360,11 +410,15 @@ def _build_search_source_statistics(
             )
         )
 
-        statistics[source][
+        source_stats = statistics[
+            source
+        ]
+
+        source_stats[
             "recent_count"
         ] = (
             int(
-                statistics[source][
+                source_stats[
                     "recent_count"
                 ]
             )
@@ -387,8 +441,16 @@ def _build_search_source_statistics(
                 6,
             )
 
+    active_sources = [
+        item
+        for item in statistics.items()
+        if int(
+            item[1]["count"]
+        ) > 0
+    ]
+
     ranked_sources = sorted(
-        statistics.items(),
+        active_sources,
         key=lambda item: (
             int(
                 item[1]["count"]
@@ -401,6 +463,11 @@ def _build_search_source_statistics(
             float(
                 item[1][
                     "best_selection_score"
+                ]
+            ),
+            float(
+                item[1][
+                    "recent_share"
                 ]
             ),
         ),
@@ -417,18 +484,15 @@ def _build_search_source_statistics(
         stats["rank"] = rank
 
     if ranked_sources:
-        strongest = ranked_sources[
-            0
-        ][0]
+        strongest_source = (
+            ranked_sources[0][0]
+        )
 
-        for source, stats in (
-            statistics.items()
-        ):
-            stats[
-                "is_best_source"
-            ] = (
-                source == strongest
-            )
+        statistics[
+            strongest_source
+        ][
+            "is_best_source"
+        ] = True
 
     return statistics
 
