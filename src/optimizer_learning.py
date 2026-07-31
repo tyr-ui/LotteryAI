@@ -349,16 +349,282 @@ def load_learning_strength(
 
     return 0.10
     
+def _normalize_tested_strengths(
+    tested_strengths: Sequence[
+        Mapping[str, object]
+    ],
+) -> list[dict[str, object]]:
+    """
+    保存可能なstrength評価結果だけを
+    正規化して返す。
+    """
+    normalized_results: list[
+        dict[str, object]
+    ] = []
+
+    for item in tested_strengths:
+        if not isinstance(item, Mapping):
+            continue
+
+        try:
+            strength = float(
+                item.get("strength")
+            )
+            selection_score = float(
+                item.get(
+                    "selection_score"
+                )
+            )
+        except (
+            TypeError,
+            ValueError,
+        ):
+            continue
+
+        if not 0.0 <= strength <= 1.0:
+            continue
+
+        normalized_item = dict(item)
+        normalized_item["strength"] = round(
+            strength,
+            6,
+        )
+        normalized_item[
+            "selection_score"
+        ] = round(
+            selection_score,
+            6,
+        )
+
+        normalized_results.append(
+            normalized_item
+        )
+
+    normalized_results.sort(
+        key=lambda item: float(
+            item["strength"]
+        )
+    )
+
+    return normalized_results
+
+
+def _build_strength_summary(
+    evaluation_history: Sequence[
+        Mapping[str, object]
+    ],
+) -> list[dict[str, object]]:
+    """
+    過去の評価履歴からstrength別の
+    長期平均成績を集計する。
+    """
+    score_store: dict[
+        float,
+        list[float],
+    ] = {}
+
+    win_store: dict[
+        float,
+        int,
+    ] = {}
+
+    for history_item in evaluation_history:
+        if not isinstance(
+            history_item,
+            Mapping,
+        ):
+            continue
+
+        tested_strengths = (
+            history_item.get(
+                "tested_strengths"
+            )
+        )
+
+        if not isinstance(
+            tested_strengths,
+            list,
+        ):
+            continue
+
+        valid_results = (
+            _normalize_tested_strengths(
+                tested_strengths
+            )
+        )
+
+        if not valid_results:
+            continue
+
+        best_result = max(
+            valid_results,
+            key=lambda item: (
+                float(
+                    item[
+                        "selection_score"
+                    ]
+                ),
+                -float(
+                    item["strength"]
+                ),
+            ),
+        )
+
+        best_strength = float(
+            best_result["strength"]
+        )
+
+        win_store[best_strength] = (
+            win_store.get(
+                best_strength,
+                0,
+            )
+            + 1
+        )
+
+        for result in valid_results:
+            strength = float(
+                result["strength"]
+            )
+            selection_score = float(
+                result[
+                    "selection_score"
+                ]
+            )
+
+            score_store.setdefault(
+                strength,
+                [],
+            ).append(
+                selection_score
+            )
+
+    summary: list[
+        dict[str, object]
+    ] = []
+
+    for strength in sorted(
+        score_store
+    ):
+        scores = score_store[strength]
+
+        if not scores:
+            continue
+
+        average_score = (
+            sum(scores) / len(scores)
+        )
+
+        summary.append({
+            "strength": round(
+                strength,
+                6,
+            ),
+            "evaluation_count": len(
+                scores
+            ),
+            "win_count": win_store.get(
+                strength,
+                0,
+            ),
+            "average_selection_score": (
+                round(
+                    average_score,
+                    6,
+                )
+            ),
+            "minimum_selection_score": (
+                round(
+                    min(scores),
+                    6,
+                )
+            ),
+            "maximum_selection_score": (
+                round(
+                    max(scores),
+                    6,
+                )
+            ),
+        })
+
+    return summary
+
+
+def _select_stable_strength(
+    strength_summary: Sequence[
+        Mapping[str, object]
+    ],
+    *,
+    fallback_strength: float,
+) -> float:
+    """
+    長期平均selection_scoreが
+    最も高いstrengthを返す。
+
+    同点の場合は弱いstrengthを優先する。
+    """
+    valid_summary: list[
+        tuple[float, float]
+    ] = []
+
+    for item in strength_summary:
+        if not isinstance(item, Mapping):
+            continue
+
+        try:
+            strength = float(
+                item.get("strength")
+            )
+            average_score = float(
+                item.get(
+                    "average_selection_score"
+                )
+            )
+        except (
+            TypeError,
+            ValueError,
+        ):
+            continue
+
+        if not 0.0 <= strength <= 1.0:
+            continue
+
+        valid_summary.append((
+            strength,
+            average_score,
+        ))
+
+    if not valid_summary:
+        return float(
+            fallback_strength
+        )
+
+    best_strength, _ = max(
+        valid_summary,
+        key=lambda item: (
+            item[1],
+            -item[0],
+        ),
+    )
+
+    return best_strength
+
+
 def save_learning_strength_evaluation(
     game_name: str,
     best_strength: float,
     tested_strengths: Sequence[
         Mapping[str, object]
     ],
-) -> None:
+    *,
+    history_limit: int = 20,
+) -> float:
     """
-    strength候補の評価結果と最良値を
-    ゲーム別に保存する。
+    今回のstrength評価結果を履歴へ追加し、
+    長期平均から選んだ安定strengthを保存する。
+
+    戻り値は長期履歴を反映した
+    stable strength。
     """
     normalized_best = float(
         best_strength
@@ -370,6 +636,23 @@ def save_learning_strength_evaluation(
             "between 0.0 and 1.0."
         )
 
+    normalized_history_limit = max(
+        1,
+        int(history_limit),
+    )
+
+    normalized_results = (
+        _normalize_tested_strengths(
+            tested_strengths
+        )
+    )
+
+    if not normalized_results:
+        raise ValueError(
+            "tested_strengths contains "
+            "no valid evaluation results."
+        )
+
     store = _load_learning_strength_store()
 
     games = store.get("games")
@@ -377,25 +660,151 @@ def save_learning_strength_evaluation(
     if not isinstance(games, dict):
         games = {}
 
+    existing_game = games.get(
+        str(game_name)
+    )
+
+    if not isinstance(
+        existing_game,
+        dict,
+    ):
+        existing_game = {}
+
+    evaluation_history = (
+        existing_game.get(
+            "evaluation_history"
+        )
+    )
+
+    if not isinstance(
+        evaluation_history,
+        list,
+    ):
+        evaluation_history = []
+
+        previous_results = (
+            existing_game.get(
+                "tested_strengths"
+            )
+        )
+
+        previous_evaluated_at = (
+            existing_game.get(
+                "evaluated_at"
+            )
+        )
+
+        previous_best = (
+            existing_game.get(
+                "best_strength"
+            )
+        )
+
+        if isinstance(
+            previous_results,
+            list,
+        ):
+            normalized_previous = (
+                _normalize_tested_strengths(
+                    previous_results
+                )
+            )
+
+            if normalized_previous:
+                try:
+                    previous_best_value = (
+                        float(previous_best)
+                    )
+                except (
+                    TypeError,
+                    ValueError,
+                ):
+                    previous_best_value = (
+                        float(
+                            normalized_previous[
+                                0
+                            ]["strength"]
+                        )
+                    )
+
+                evaluation_history.append({
+                    "evaluated_at": (
+                        previous_evaluated_at
+                    ),
+                    "best_strength": round(
+                        previous_best_value,
+                        6,
+                    ),
+                    "tested_strengths": (
+                        normalized_previous
+                    ),
+                })
+
     evaluated_at = datetime.now(
         timezone.utc
     ).isoformat()
 
-    games[str(game_name)] = {
+    evaluation_history.append({
+        "evaluated_at": evaluated_at,
         "best_strength": round(
             normalized_best,
             6,
         ),
+        "tested_strengths": (
+            normalized_results
+        ),
+    })
+
+    evaluation_history = (
+        evaluation_history[
+            -normalized_history_limit:
+        ]
+    )
+
+    strength_summary = (
+        _build_strength_summary(
+            evaluation_history
+        )
+    )
+
+    stable_strength = (
+        _select_stable_strength(
+            strength_summary,
+            fallback_strength=(
+                normalized_best
+            ),
+        )
+    )
+
+    games[str(game_name)] = {
+        "best_strength": round(
+            stable_strength,
+            6,
+        ),
+        "latest_best_strength": round(
+            normalized_best,
+            6,
+        ),
         "evaluated_at": evaluated_at,
-        "tested_strengths": [
-            dict(item)
-            for item in tested_strengths
-            if isinstance(item, Mapping)
-        ],
+        "history_count": len(
+            evaluation_history
+        ),
+        "history_limit": (
+            normalized_history_limit
+        ),
+        "strength_summary": (
+            strength_summary
+        ),
+        "tested_strengths": (
+            normalized_results
+        ),
+        "evaluation_history": (
+            evaluation_history
+        ),
     }
 
     output = {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "updated_at": evaluated_at,
         "games": games,
     }
@@ -424,6 +833,9 @@ def save_learning_strength_evaluation(
     temporary_path.replace(
         LEARNING_STRENGTH_PATH
     )
+
+    return stable_strength
+
 
 def print_learning_weights(
     game_name: str,
