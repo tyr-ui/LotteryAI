@@ -637,17 +637,15 @@ def save_optimizer_experience(
         new_entry
     )
 
-    normalized_history = (
-        normalized_history[
-            -normalized_history_limit:
-        ]
-    )
-
     ranked_history = sorted(
         normalized_history,
         key=_entry_sort_key,
         reverse=True,
     )
+
+    normalized_history = ranked_history[
+        :normalized_history_limit
+    ]
 
     unique_config_count = len({
         _config_signature(
