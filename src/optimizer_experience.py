@@ -12,7 +12,7 @@ EXPERIENCE_PATH = (
     OUTPUT_DIR / "optimizer_experience.json"
 )
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
 DEFAULT_HISTORY_LIMIT = 20
 DEFAULT_EXPERIENCE_LIMIT = 3
 
@@ -238,6 +238,241 @@ def _entry_sort_key(
     )
 
 
+def _build_config_statistics(
+    history: Sequence[
+        Mapping[str, object]
+    ],
+) -> list[dict[str, object]]:
+    """
+    Experience履歴をConfig単位で集計する。
+
+    experience_scoreは以下を使用する。
+
+    - 平均selection_score: 50%
+    - 最良selection_score: 30%
+    - 直近selection_score: 20%
+    - 複数回勝利したConfigには最大5%の
+      信頼度補正を加える
+    """
+    statistics_by_signature: dict[
+        str,
+        dict[str, object],
+    ] = {}
+
+    for entry in history:
+        config = entry.get("config")
+
+        if not isinstance(
+            config,
+            Mapping,
+        ):
+            continue
+
+        signature = _config_signature(
+            config
+        )
+        selection_score = _normalize_float(
+            entry.get(
+                "selection_score"
+            )
+        )
+        evaluated_at = str(
+            entry.get(
+                "evaluated_at",
+                "",
+            )
+            or ""
+        )
+
+        stats = (
+            statistics_by_signature.setdefault(
+                signature,
+                {
+                    "signature": signature,
+                    "config_name": str(
+                        entry.get(
+                            "config_name",
+                            "unknown",
+                        )
+                    ),
+                    "wins": 0,
+                    "best_selection_score": (
+                        selection_score
+                    ),
+                    "average_selection_score": (
+                        0.0
+                    ),
+                    "latest_selection_score": (
+                        selection_score
+                    ),
+                    "score_sum": 0.0,
+                    "last_used": evaluated_at,
+                    "config": {
+                        "w": dict(
+                            config.get(
+                                "w",
+                                {},
+                            )
+                        ),
+                        "f": dict(
+                            config.get(
+                                "f",
+                                {},
+                            )
+                        ),
+                    },
+                },
+            )
+        )
+
+        stats["wins"] = (
+            int(stats["wins"]) + 1
+        )
+        stats["score_sum"] = (
+            float(stats["score_sum"])
+            + selection_score
+        )
+        stats[
+            "best_selection_score"
+        ] = max(
+            float(
+                stats[
+                    "best_selection_score"
+                ]
+            ),
+            selection_score,
+        )
+
+        current_last_used = str(
+            stats.get(
+                "last_used",
+                "",
+            )
+            or ""
+        )
+
+        if evaluated_at >= current_last_used:
+            stats["last_used"] = (
+                evaluated_at
+            )
+            stats[
+                "latest_selection_score"
+            ] = selection_score
+            stats["config_name"] = str(
+                entry.get(
+                    "config_name",
+                    "unknown",
+                )
+            )
+            stats["config"] = {
+                "w": dict(
+                    config.get(
+                        "w",
+                        {},
+                    )
+                ),
+                "f": dict(
+                    config.get(
+                        "f",
+                        {},
+                    )
+                ),
+            }
+
+    results: list[
+        dict[str, object]
+    ] = []
+
+    for stats in (
+        statistics_by_signature.values()
+    ):
+        wins = int(stats["wins"])
+
+        if wins <= 0:
+            continue
+
+        average_score = (
+            float(stats["score_sum"])
+            / wins
+        )
+        best_score = float(
+            stats[
+                "best_selection_score"
+            ]
+        )
+        latest_score = float(
+            stats[
+                "latest_selection_score"
+            ]
+        )
+
+        base_experience_score = (
+            average_score * 0.50
+            + best_score * 0.30
+            + latest_score * 0.20
+        )
+
+        reliability_multiplier = (
+            1.0
+            + min(
+                max(wins - 1, 0),
+                5,
+            )
+            * 0.01
+        )
+
+        stats[
+            "average_selection_score"
+        ] = round(
+            average_score,
+            6,
+        )
+        stats["experience_score"] = round(
+            base_experience_score
+            * reliability_multiplier,
+            6,
+        )
+
+        del stats["score_sum"]
+        results.append(stats)
+
+    results.sort(
+        key=lambda item: (
+            _normalize_float(
+                item.get(
+                    "experience_score"
+                )
+            ),
+            _normalize_float(
+                item.get(
+                    "best_selection_score"
+                )
+            ),
+            _normalize_float(
+                item.get(
+                    "average_selection_score"
+                )
+            ),
+            int(
+                item.get(
+                    "wins",
+                    0,
+                )
+            ),
+            str(
+                item.get(
+                    "last_used",
+                    "",
+                )
+                or ""
+            ),
+        ),
+        reverse=True,
+    )
+
+    return results
+
+
 def _normalize_history_entry(
     entry: Mapping[str, object],
 ) -> dict[str, object] | None:
@@ -409,28 +644,24 @@ def load_experience_configs(
                 normalized
             )
 
-    normalized_history.sort(
-        key=_entry_sort_key,
-        reverse=True,
+    config_statistics = (
+        _build_config_statistics(
+            normalized_history
+        )
     )
 
-    selected: list[dict[str, object]] = []
-    seen_signatures: set[str] = set()
+    selected: list[
+        dict[str, object]
+    ] = []
 
-    for entry in normalized_history:
-        config = entry["config"]
+    for stats in config_statistics:
+        config = stats.get("config")
 
-        if not isinstance(config, Mapping):
+        if not isinstance(
+            config,
+            Mapping,
+        ):
             continue
-
-        signature = _config_signature(
-            config
-        )
-
-        if signature in seen_signatures:
-            continue
-
-        seen_signatures.add(signature)
 
         experience_index = (
             len(selected) + 1
@@ -443,10 +674,16 @@ def load_experience_configs(
                 f"{experience_index}"
             ),
             "w": dict(
-                config.get("w", {})
+                config.get(
+                    "w",
+                    {},
+                )
             ),
             "f": dict(
-                config.get("f", {})
+                config.get(
+                    "f",
+                    {},
+                )
             ),
         })
 
@@ -679,77 +916,29 @@ def save_optimizer_experience(
         6,
     )
 
-    config_statistics: dict[
-        str,
-        dict[str, object],
-    ] = {}
-
-    for entry in normalized_history:
-        config = entry.get("config")
-
-        if not isinstance(
-            config,
-            Mapping,
-        ):
-            continue
-
-        signature = _config_signature(
-            config
+    config_statistics = (
+        _build_config_statistics(
+            normalized_history
         )
+    )
 
-        stats = config_statistics.setdefault(
-            signature,
-            {
-                "config_name": entry.get(
-                    "config_name"
-                ),
-                "wins": 0,
-                "best_selection_score": 0.0,
-                "average_selection_score": 0.0,
-                "score_sum": 0.0,
-            },
-        )
+    public_config_statistics = [
+        {
+            key: value
+            for key, value in stats.items()
+            if key not in {
+                "signature",
+                "config",
+            }
+        }
+        for stats in config_statistics
+    ]
 
-        score = _normalize_float(
-            entry.get(
-                "selection_score"
-            )
-        )
-
-        stats["wins"] = (
-            int(stats["wins"]) + 1
-        )
-
-        stats["score_sum"] = (
-            float(stats["score_sum"])
-            + score
-        )
-
-        stats[
-            "best_selection_score"
-        ] = max(
-            float(
-                stats[
-                    "best_selection_score"
-                ]
-            ),
-            score,
-        )
-
-    for stats in (
-        config_statistics.values()
-    ):
-        wins = int(stats["wins"])
-
-        stats[
-            "average_selection_score"
-        ] = round(
-            float(stats["score_sum"])
-            / wins,
-            6,
-        )
-
-        del stats["score_sum"]
+    best_experience = (
+        config_statistics[0]
+        if config_statistics
+        else None
+    )
 
     game_output = {
         "updated_at": evaluated_at,
@@ -766,9 +955,23 @@ def save_optimizer_experience(
             average_selection_score
         ),
         "config_statistics": (
-            list(
-                config_statistics.values()
+            public_config_statistics
+        ),
+        "best_experience_config_name": (
+            best_experience.get(
+                "config_name"
             )
+            if best_experience
+            is not None
+            else None
+        ),
+        "best_experience_score": (
+            best_experience.get(
+                "experience_score"
+            )
+            if best_experience
+            is not None
+            else None
         ),
         "best_config_name": (
             best_entry.get(
@@ -842,6 +1045,22 @@ def save_optimizer_experience(
         ),
         "latest_selection_score": (
             new_entry["selection_score"]
+        ),
+        "best_experience_config_name": (
+            best_experience.get(
+                "config_name"
+            )
+            if best_experience
+            is not None
+            else None
+        ),
+        "best_experience_score": (
+            best_experience.get(
+                "experience_score"
+            )
+            if best_experience
+            is not None
+            else None
         ),
     }
 
