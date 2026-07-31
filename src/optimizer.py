@@ -27,6 +27,10 @@ from optimizer_search import (
     generate_random_candidates,
 )
 
+from optimizer_evolution import (
+    generate_evolution_candidates,
+)
+
 from optimizer_ablation import (
     run_feature_ablation,
 )
@@ -432,9 +436,17 @@ def optimize(
         rng=rng,
     )
 
+    evolution_candidates = (
+        generate_evolution_candidates(
+            parent_configs,
+            rng=rng,
+        )
+    )
+
     all_configs = deduplicate_configs([
         *stage_one_configs,
         *local_candidates,
+        *evolution_candidates,
     ])
 
     evaluated_names = {
@@ -709,6 +721,9 @@ def optimize(
             ),
             "local_config_count": len(
                 local_candidates
+            ),
+            "evolution_config_count": len(
+                evolution_candidates
             ),
             "total_unique_config_count": (
                 len(all_configs)
