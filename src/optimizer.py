@@ -41,6 +41,11 @@ from optimizer_learning import (
     save_learning_strength_evaluation,
 )
 
+from optimizer_experience import (
+    load_experience_configs,
+    save_optimizer_experience,
+)
+
 from predictor import (
     PredictionResult,
     PredictionWeights,
@@ -377,6 +382,13 @@ def optimize(
     )
 
     base_candidates = build_base_candidates()
+
+    experience_candidates = (
+        load_experience_configs(
+            str(game_config["kind"])
+        )
+    )
+
     inherited_filters = dict(
         base_candidates[0].get("f", {})
     )
@@ -393,6 +405,7 @@ def optimize(
 
     stage_one_configs = deduplicate_configs([
         *base_candidates,
+        *experience_candidates,
         *random_candidates,
     ])
 
@@ -586,6 +599,17 @@ def optimize(
         model_name=best_name,
     )
 
+    experience_summary = (
+        save_optimizer_experience(
+            str(game_config["kind"]),
+            best_name,
+            best_config,
+            best_result,
+            asdict(final_weights),
+            learning_strength,
+        )
+    )
+
     selected_random_baseline = (
         best_result[
             "random_filtered_baseline"
@@ -693,6 +717,9 @@ def optimize(
         },
         "feature_ablation": (
             ablation_results
+        ),
+        "optimizer_experience": (
+            experience_summary
         ),
         "prediction": prediction,
     }
