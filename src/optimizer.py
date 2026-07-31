@@ -563,7 +563,10 @@ def optimize(
     )
 
     final_context = build_model_context(
-    
+        history,
+        final_config,
+    )
+
     final_prediction = predict(
         final_context,
         final_config,
