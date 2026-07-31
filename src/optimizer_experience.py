@@ -12,9 +12,14 @@ EXPERIENCE_PATH = (
     OUTPUT_DIR / "optimizer_experience.json"
 )
 
-SCHEMA_VERSION = "1.1"
+SCHEMA_VERSION = "1.2"
 DEFAULT_HISTORY_LIMIT = 20
 DEFAULT_EXPERIENCE_LIMIT = 3
+
+DEFAULT_EVOLUTION_COUNT = 4
+DEFAULT_MUTATION_RATE = 0.25
+DEFAULT_MUTATION_SCALE = 0.08
+MIN_ADAPTATION_SAMPLES = 5
 
 
 def _load_store() -> dict[str, object]:
@@ -199,6 +204,142 @@ def _config_signature(
         separators=(",", ":"),
     )
 
+def _resolve_search_source(
+    config_name: object,
+) -> str:
+    """
+    Config名から探索元を判定する。
+
+    既知の接頭辞に一致しない設定は
+    baseとして扱う。
+    """
+    normalized_name = str(
+        config_name
+        or ""
+    ).lower()
+
+    if normalized_name.startswith(
+        "evolution_"
+    ):
+        return "evolution"
+
+    if normalized_name.startswith(
+        "local_"
+    ):
+        return "local"
+
+    if normalized_name.startswith(
+        "random_"
+    ):
+        return "random"
+
+    if normalized_name.startswith(
+        "experience_"
+    ):
+        return "experience"
+
+    return "base"
+
+
+def _build_search_source_statistics(
+    history: Sequence[
+        Mapping[str, object]
+    ],
+) -> dict[str, dict[str, object]]:
+    """
+    保存履歴を探索元単位で集計する。
+
+    historyには各実行の最終勝者が保存されるため、
+    countは探索元ごとの勝者数を表す。
+    """
+    source_names = (
+        "base",
+        "experience",
+        "random",
+        "local",
+        "evolution",
+    )
+
+    statistics: dict[
+        str,
+        dict[str, object],
+    ] = {
+        source: {
+            "count": 0,
+            "score_sum": 0.0,
+            "best_selection_score": 0.0,
+            "average_selection_score": 0.0,
+            "share": 0.0,
+        }
+        for source in source_names
+    }
+
+    total_count = 0
+
+    for entry in history:
+        source = _resolve_search_source(
+            entry.get("config_name")
+        )
+        selection_score = _normalize_float(
+            entry.get(
+                "selection_score"
+            )
+        )
+
+        stats = statistics[source]
+
+        stats["count"] = (
+            int(stats["count"]) + 1
+        )
+        stats["score_sum"] = (
+            float(stats["score_sum"])
+            + selection_score
+        )
+        stats[
+            "best_selection_score"
+        ] = max(
+            float(
+                stats[
+                    "best_selection_score"
+                ]
+            ),
+            selection_score,
+        )
+
+        total_count += 1
+
+    for stats in statistics.values():
+        count = int(stats["count"])
+
+        if count > 0:
+            stats[
+                "average_selection_score"
+            ] = round(
+                float(stats["score_sum"])
+                / count,
+                6,
+            )
+
+        if total_count > 0:
+            stats["share"] = round(
+                count / total_count,
+                6,
+            )
+
+        stats[
+            "best_selection_score"
+        ] = round(
+            float(
+                stats[
+                    "best_selection_score"
+                ]
+            ),
+            6,
+        )
+
+        del stats["score_sum"]
+
+    return statistics
 
 def _entry_sort_key(
     entry: Mapping[str, object],
@@ -584,6 +725,165 @@ def _normalize_history_entry(
         ),
     }
 
+def load_evolution_adaptation(
+    game_name: str,
+) -> dict[str, object]:
+    """
+    保存済みの最終勝者履歴から、
+    次回Evolutionの探索強度を決定する。
+
+    サンプル不足時:
+    - 既定値を使用する
+
+    Evolution勝者率が高い場合:
+    - 候補数を増やす
+    - 突然変異を弱めて既存の強い領域を深掘りする
+
+    Evolution勝者率が低い場合:
+    - 候補数を少し減らす
+    - 突然変異を強めて探索範囲を広げる
+    """
+    default_result = {
+        "adaptive": False,
+        "reason": "insufficient_history",
+        "sample_count": 0,
+        "evolution_win_count": 0,
+        "evolution_win_rate": 0.0,
+        "count": DEFAULT_EVOLUTION_COUNT,
+        "mutation_rate": (
+            DEFAULT_MUTATION_RATE
+        ),
+        "mutation_scale": (
+            DEFAULT_MUTATION_SCALE
+        ),
+        "source_statistics": (
+            _build_search_source_statistics(
+                []
+            )
+        ),
+    }
+
+    store = _load_store()
+    games = store.get("games")
+
+    if not isinstance(games, Mapping):
+        return default_result
+
+    game_store = games.get(
+        str(game_name)
+    )
+
+    if not isinstance(
+        game_store,
+        Mapping,
+    ):
+        return default_result
+
+    history = game_store.get("history")
+
+    if not isinstance(history, list):
+        return default_result
+
+    normalized_history: list[
+        dict[str, object]
+    ] = []
+
+    for item in history:
+        if not isinstance(
+            item,
+            Mapping,
+        ):
+            continue
+
+        normalized = (
+            _normalize_history_entry(
+                item
+            )
+        )
+
+        if normalized is not None:
+            normalized_history.append(
+                normalized
+            )
+
+    source_statistics = (
+        _build_search_source_statistics(
+            normalized_history
+        )
+    )
+
+    sample_count = len(
+        normalized_history
+    )
+
+    evolution_stats = (
+        source_statistics["evolution"]
+    )
+    evolution_win_count = int(
+        evolution_stats["count"]
+    )
+
+    evolution_win_rate = (
+        evolution_win_count
+        / sample_count
+        if sample_count > 0
+        else 0.0
+    )
+
+    if sample_count < MIN_ADAPTATION_SAMPLES:
+        return {
+            **default_result,
+            "sample_count": sample_count,
+            "evolution_win_count": (
+                evolution_win_count
+            ),
+            "evolution_win_rate": round(
+                evolution_win_rate,
+                6,
+            ),
+            "source_statistics": (
+                source_statistics
+            ),
+        }
+
+    if evolution_win_rate >= 0.40:
+        count = 6
+        mutation_rate = 0.18
+        mutation_scale = 0.06
+        reason = "evolution_high_performance"
+    elif evolution_win_rate >= 0.20:
+        count = DEFAULT_EVOLUTION_COUNT
+        mutation_rate = (
+            DEFAULT_MUTATION_RATE
+        )
+        mutation_scale = (
+            DEFAULT_MUTATION_SCALE
+        )
+        reason = "evolution_normal_performance"
+    else:
+        count = 3
+        mutation_rate = 0.35
+        mutation_scale = 0.10
+        reason = "evolution_low_performance"
+
+    return {
+        "adaptive": True,
+        "reason": reason,
+        "sample_count": sample_count,
+        "evolution_win_count": (
+            evolution_win_count
+        ),
+        "evolution_win_rate": round(
+            evolution_win_rate,
+            6,
+        ),
+        "count": count,
+        "mutation_rate": mutation_rate,
+        "mutation_scale": mutation_scale,
+        "source_statistics": (
+            source_statistics
+        ),
+    }
 
 def load_experience_configs(
     game_name: str,
@@ -1066,6 +1366,7 @@ def save_optimizer_experience(
 
 
 __all__ = [
+    "load_evolution_adaptation",
     "load_experience_configs",
     "save_optimizer_experience",
 ]
