@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import asdict
 import math
 from random import Random
 from typing import Mapping, Sequence
@@ -36,11 +37,15 @@ from feature_memory import (
 
 from optimizer_learning import (
     apply_learning_weights,
-    load_learning_strength,
     load_learning_weights,
+    save_learning_strength_evaluation,
 )
 
-from predictor import PredictionResult, predict
+from predictor import (
+    PredictionResult,
+    PredictionWeights,
+    predict,
+)
 
 
 SEED = 2025
@@ -52,6 +57,14 @@ LOCAL_SEARCH_COUNT = 6
 PARENT_COUNT = 3
 ROBUST_FINALIST_COUNT = 4
 ROBUST_SEEDS = (SEED, SEED + 1, SEED + 2)
+
+LEARNING_STRENGTH_CANDIDATES = (
+    0.10,
+    0.20,
+    0.35,
+    0.50,
+    0.80,
+)
 
 
 def _resolve_game_config(
@@ -152,6 +165,152 @@ def _prediction_to_legacy(
         })
 
     return converted
+
+
+def _find_best_learning_strength(
+    history: Sequence[Sequence[int]],
+    game_config: Mapping[str, object],
+    best_config: Mapping[str, object],
+    base_weights: PredictionWeights,
+    learning_weights: Mapping[str, float],
+    *,
+    train_window: int,
+    tested_periods: int,
+    candidate_count: int,
+    seeds: Sequence[int],
+    random_baselines: Mapping[
+        int,
+        Mapping[str, object],
+    ],
+) -> tuple[
+    float,
+    PredictionWeights,
+    list[dict[str, object]],
+]:
+    """
+    複数のlearning strengthを
+    同一条件のバックテストで比較する。
+
+    selection_scoreが同点の場合は、
+    過学習を避けるため弱いstrengthを優先する。
+    """
+    tested_strengths: list[
+        dict[str, object]
+    ] = []
+
+    best_strength = (
+        LEARNING_STRENGTH_CANDIDATES[0]
+    )
+    best_weights = apply_learning_weights(
+        base_weights,
+        learning_weights,
+        strength=best_strength,
+    )
+
+    if not isinstance(
+        best_weights,
+        PredictionWeights,
+    ):
+        raise TypeError(
+            "Learning-adjusted weights must "
+            "be PredictionWeights."
+        )
+
+    best_score: float | None = None
+
+    for strength in (
+        LEARNING_STRENGTH_CANDIDATES
+    ):
+        adjusted_weights = (
+            apply_learning_weights(
+                base_weights,
+                learning_weights,
+                strength=strength,
+            )
+        )
+
+        if not isinstance(
+            adjusted_weights,
+            PredictionWeights,
+        ):
+            raise TypeError(
+                "Learning-adjusted weights "
+                "must be PredictionWeights."
+            )
+
+        evaluation = evaluate_config(
+            history,
+            game_config,
+            best_config,
+            train_window=train_window,
+            tested_periods=tested_periods,
+            candidate_count=candidate_count,
+            seeds=seeds,
+            random_baselines=random_baselines,
+            weights_override=adjusted_weights,
+        )
+
+        selection_score = float(
+            evaluation.get(
+                "selection_score",
+                0.0,
+            )
+            or 0.0
+        )
+
+        tested_strengths.append({
+            "strength": strength,
+            "selection_score": (
+                selection_score
+            ),
+            "avg_matches": evaluation.get(
+                "avg_matches"
+            ),
+            "average_matches_per_ticket": (
+                evaluation.get(
+                    "average_matches_per_ticket"
+                )
+            ),
+            "hit_rate_2match": (
+                evaluation.get(
+                    "hit_rate_2match"
+                )
+            ),
+            "hit_rate_3match": (
+                evaluation.get(
+                    "hit_rate_3match"
+                )
+            ),
+            "hit_rate_4match": (
+                evaluation.get(
+                    "hit_rate_4match"
+                )
+            ),
+            "avg_matches_std": (
+                evaluation.get(
+                    "avg_matches_std"
+                )
+            ),
+            "random_uplift": (
+                evaluation.get(
+                    "random_uplift"
+                )
+            ),
+        })
+
+        if (
+            best_score is None
+            or selection_score > best_score
+        ):
+            best_score = selection_score
+            best_strength = strength
+            best_weights = adjusted_weights
+
+    return (
+        best_strength,
+        best_weights,
+        tested_strengths,
+    )
 
 
 def optimize(
@@ -376,20 +535,34 @@ def optimize(
         best_config
     )
 
-    learning_strength = load_learning_strength(
-        str(game_config["kind"])
-    )
-
-    final_weights = apply_learning_weights(
+    (
+        learning_strength,
+        final_weights,
+        learning_strength_results,
+    ) = _find_best_learning_strength(
+        history,
+        game_config,
+        best_config,
         base_weights,
         learning_weights,
-        strength=learning_strength,
+        train_window=int(train_window),
+        tested_periods=int(
+            tested_periods
+        ),
+        candidate_count=int(
+            bt_candidates
+        ),
+        seeds=ROBUST_SEEDS,
+        random_baselines=random_baselines,
+    )
+
+    save_learning_strength_evaluation(
+        str(game_config["kind"]),
+        learning_strength,
+        learning_strength_results,
     )
 
     final_context = build_model_context(
-        history,
-        final_config,
-    )
     
     final_prediction = predict(
         final_context,
@@ -439,12 +612,18 @@ def optimize(
         
         "learning_summary": {
             "strength": learning_strength,
-            "loaded_weights": learning_weights,
-            "base_prediction_weights": dict(
-                vars(base_weights)
+            "strength_optimized": True,
+            "tested_strengths": (
+                learning_strength_results
             ),
-            "applied_prediction_weights": dict(
-                vars(final_weights)
+            "loaded_weights": (
+                learning_weights
+            ),
+            "base_prediction_weights": (
+                asdict(base_weights)
+            ),
+            "applied_prediction_weights": (
+                asdict(final_weights)
             ),
             "weight_diff": {
                 key: round(
@@ -462,7 +641,9 @@ def optimize(
                     ),
                     6,
                 )
-                for key in vars(base_weights)
+                for key in asdict(
+                    base_weights
+                )
             },
         },
         
