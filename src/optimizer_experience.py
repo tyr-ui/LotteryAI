@@ -12,7 +12,7 @@ EXPERIENCE_PATH = (
     OUTPUT_DIR / "optimizer_experience.json"
 )
 
-SCHEMA_VERSION = "1.2"
+SCHEMA_VERSION = "1.3"
 DEFAULT_HISTORY_LIMIT = 20
 DEFAULT_EXPERIENCE_LIMIT = 3
 
@@ -269,7 +269,12 @@ def _build_search_source_statistics(
             "score_sum": 0.0,
             "best_selection_score": 0.0,
             "average_selection_score": 0.0,
+            "latest_selection_score": 0.0,
             "share": 0.0,
+            "recent_count": 0,
+            "recent_share": 0.0,
+            "rank": 0,
+        }
         }
         for source in source_names
     }
@@ -298,6 +303,9 @@ def _build_search_source_statistics(
         stats[
             "best_selection_score"
         ] = max(
+        stats[
+            "latest_selection_score"
+        ] = selection_score
             float(
                 stats[
                     "best_selection_score"
@@ -338,6 +346,89 @@ def _build_search_source_statistics(
         )
 
         del stats["score_sum"]
+        
+        recent_history = history[-10:]
+
+    recent_total = len(
+        recent_history
+    )
+
+    for entry in recent_history:
+        source = _resolve_search_source(
+            entry.get(
+                "config_name"
+            )
+        )
+
+        statistics[source][
+            "recent_count"
+        ] = (
+            int(
+                statistics[source][
+                    "recent_count"
+                ]
+            )
+            + 1
+        )
+
+    if recent_total > 0:
+        for stats in (
+            statistics.values()
+        ):
+            stats[
+                "recent_share"
+            ] = round(
+                int(
+                    stats[
+                        "recent_count"
+                    ]
+                )
+                / recent_total,
+                6,
+            )
+
+    ranked_sources = sorted(
+        statistics.items(),
+        key=lambda item: (
+            int(
+                item[1]["count"]
+            ),
+            float(
+                item[1][
+                    "average_selection_score"
+                ]
+            ),
+            float(
+                item[1][
+                    "best_selection_score"
+                ]
+            ),
+        ),
+        reverse=True,
+    )
+
+    for rank, (
+        _,
+        stats,
+    ) in enumerate(
+        ranked_sources,
+        start=1,
+    ):
+        stats["rank"] = rank
+
+    if ranked_sources:
+        strongest = ranked_sources[
+            0
+        ][0]
+
+        for source, stats in (
+            statistics.items()
+        ):
+            stats[
+                "is_best_source"
+            ] = (
+                source == strongest
+            )
 
     return statistics
 
@@ -1256,6 +1347,11 @@ def save_optimizer_experience(
         ),
         "config_statistics": (
             public_config_statistics
+        ),
+        "search_source_statistics": (
+            _build_search_source_statistics(
+                normalized_history
+            )
         ),
         "best_experience_config_name": (
             best_experience.get(
