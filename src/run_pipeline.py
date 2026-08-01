@@ -44,6 +44,33 @@ def game_family(config: dict) -> str:
     return str(config.get("family", "lotto")).lower()
 
 
+
+
+def save_prediction_outputs(
+    output_dir: Path,
+    optimizer_results: dict[str, dict],
+    game_configs: dict[str, dict],
+) -> None:
+    """
+    各ゲームの予想結果を個別JSONへ保存する。
+
+    Numbers系では、通常予想に加えて
+    BOX専用予想も保存する。
+    """
+    for game_key, game_config in game_configs.items():
+        result = optimizer_results[game_key]
+
+        save_json(
+            output_dir / game_config["prediction_filename"],
+            result["prediction"],
+        )
+
+        if game_family(game_config) == "numbers":
+            save_json(
+                output_dir / f"prediction_box_{game_key}.json",
+                result.get("box_prediction", []),
+            )
+
 def is_scheduled_no_new_data(
     previous_output: dict,
     validations: dict[str, dict],
@@ -602,19 +629,11 @@ def main() -> None:
         output,
     )
 
-    for game_key, game_config in LOTTO_GAMES.items():
-        result = optimizer_results[game_key]
-
-        save_json(
-            OUTPUT_DIR / game_config["prediction_filename"],
-            result["prediction"],
-        )
-
-        if game_family(game_config) == "numbers":
-            save_json(
-                OUTPUT_DIR / f"prediction_box_{game_key}.json",
-                result.get("box_prediction", []),
-            )
+    save_prediction_outputs(
+        OUTPUT_DIR,
+        optimizer_results,
+        LOTTO_GAMES,
+    )
 
     save_json(history_path, evaluation_history)
     save_json(summary_path, evaluation_summary)
