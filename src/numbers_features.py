@@ -72,7 +72,7 @@ class NumbersModelContext:
         Mapping[int, float],
     ]
     ordered_pair_frequency: Mapping[
-        tuple[int, int, int],
+        tuple[int, int, int, int],
         float,
     ]
     ordered_triplet_frequency: Mapping[
@@ -391,12 +391,19 @@ def unordered_digit_matches(
 
 def _ordered_pair_frequency(
     history: Sequence[NumberRow],
-) -> dict[tuple[int, int, int], float]:
-    counts: Counter[tuple[int, int, int]] = Counter()
+) -> dict[
+    tuple[int, int, int, int],
+    float,
+]:
+    counts: Counter[
+        tuple[int, int, int, int]
+    ] = Counter()
     total = 0
 
     for row in history:
-        for left_position in range(len(row)):
+        for left_position in range(
+            len(row)
+        ):
             for right_position in range(
                 left_position + 1,
                 len(row),
@@ -404,6 +411,7 @@ def _ordered_pair_frequency(
                 counts[
                     (
                         left_position,
+                        right_position,
                         row[left_position],
                         row[right_position],
                     )
