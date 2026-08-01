@@ -1,7 +1,7 @@
 {
   "status": "ok",
   "note": "run_pipeline evaluates the previous prediction if the target draw is now available, then creates the next prediction.",
-  "generated_at": "2026-08-01T11:54:15.075964+00:00",
+  "generated_at": "2026-08-01T13:06:56.541207+00:00",
   "previous_evaluation": {
     "loto6": {
       "draw_type": "loto6",
@@ -26,13 +26,17 @@
     },
     "numbers3": {
       "draw_type": "numbers3",
-      "status": "no_previous_output",
-      "message": "前回のoptimizer_result.jsonがないため、答え合わせ対象がありません。"
+      "status": "pending",
+      "target_draw_no": 7040,
+      "latest_draw_no": 7039,
+      "message": "まだ前回予想対象回の結果がデータに反映されていません。"
     },
     "numbers4": {
       "draw_type": "numbers4",
-      "status": "no_previous_output",
-      "message": "前回のoptimizer_result.jsonがないため、答え合わせ対象がありません。"
+      "status": "pending",
+      "target_draw_no": 7040,
+      "latest_draw_no": 7039,
+      "message": "まだ前回予想対象回の結果がデータに反映されていません。"
     }
   },
   "evaluation_summary": {
@@ -3826,9 +3830,9 @@
         "tested_periods": 180,
         "digit_count": 3,
         "average_best_position_matches": 1.266667,
-        "average_position_matches_per_ticket": 0.315556,
+        "average_position_matches_per_ticket": 0.318889,
         "average_best_unordered_matches": 1.872222,
-        "average_unordered_matches_per_ticket": 0.848889,
+        "average_unordered_matches_per_ticket": 0.85,
         "straight_hit_rate": 0.011111,
         "box_hit_rate": 0.061111,
         "hit_rate_1_position": 0.966667,
@@ -3862,9 +3866,9 @@
       "tested_periods": 180,
       "digit_count": 3,
       "average_best_position_matches": 1.266667,
-      "average_position_matches_per_ticket": 0.315556,
+      "average_position_matches_per_ticket": 0.318889,
       "average_best_unordered_matches": 1.872222,
-      "average_unordered_matches_per_ticket": 0.848889,
+      "average_unordered_matches_per_ticket": 0.85,
       "straight_hit_rate": 0.011111,
       "box_hit_rate": 0.061111,
       "hit_rate_1_position": 0.966667,
@@ -3887,14 +3891,14 @@
           3
         ],
         "number": "473",
-        "score": 2.837467,
+        "score": 2.8358,
         "model": "numbers_default",
         "components": {
           "position_frequency": 0.09935123360325804,
           "recent_position_frequency": 0.18666666666666665,
           "position_delay": 0.0006629729601742672,
           "overall_frequency": 0.10001420656343231,
-          "ordered_pair": 0.0052090732585121,
+          "ordered_pair": 0.0031254439551072592,
           "ordered_triplet": 0.0007103281716152863,
           "duplicate_pattern": 0.7179997158687313,
           "sum_shape": 0.991714,
@@ -3910,29 +3914,29 @@
       {
         "pattern_id": "P2",
         "numbers": [
-          5,
+          4,
           2,
-          6
+          7
         ],
         "digits": [
-          5,
+          4,
           2,
-          6
+          7
         ],
-        "number": "526",
-        "score": 2.577351,
+        "number": "427",
+        "score": 2.772103,
         "model": "numbers_default",
         "components": {
-          "position_frequency": 0.09466306767059714,
-          "recent_position_frequency": 0.11249999999999999,
-          "position_delay": 0.001136525074584458,
-          "overall_frequency": 0.0979779324714685,
-          "ordered_pair": 0.004893371848905305,
-          "ordered_triplet": 0.0015627219775536298,
+          "position_frequency": 0.09987214092910925,
+          "recent_position_frequency": 0.24666666666666665,
+          "position_delay": 0.0003314864800871336,
+          "overall_frequency": 0.09969850515382551,
+          "ordered_pair": 0.003330649871351676,
+          "ordered_triplet": 0.001136525074584458,
           "duplicate_pattern": 0.7179997158687313,
           "sum_shape": 0.987637,
           "odd_shape": 0.75606,
-          "high_shape": 0.744119,
+          "high_shape": 0.750451,
           "adjacent_difference": 0.99297,
           "exact_repeat": 0.743437,
           "unordered_repeat": 0.458145
@@ -3942,72 +3946,6 @@
       },
       {
         "pattern_id": "P3",
-        "numbers": [
-          0,
-          8,
-          7
-        ],
-        "digits": [
-          0,
-          8,
-          7
-        ],
-        "number": "087",
-        "score": 2.613936,
-        "model": "numbers_default",
-        "components": {
-          "position_frequency": 0.09797793247146848,
-          "recent_position_frequency": 0.12416666666666668,
-          "position_delay": 0.0008050385944973244,
-          "overall_frequency": 0.10017205726823569,
-          "ordered_pair": 0.005287998610913797,
-          "ordered_triplet": 0.001136525074584458,
-          "duplicate_pattern": 0.7179997158687313,
-          "sum_shape": 0.920092,
-          "odd_shape": 0.75606,
-          "high_shape": 0.744119,
-          "adjacent_difference": 0.701694,
-          "exact_repeat": 0.743437,
-          "unordered_repeat": 0.880319
-        },
-        "exact_repeat_count": 0,
-        "unordered_repeat_count": 1
-      },
-      {
-        "pattern_id": "P4",
-        "numbers": [
-          9,
-          3,
-          2
-        ],
-        "digits": [
-          9,
-          3,
-          2
-        ],
-        "number": "932",
-        "score": 2.609459,
-        "model": "numbers_default",
-        "components": {
-          "position_frequency": 0.10460766207321115,
-          "recent_position_frequency": 0.17083333333333334,
-          "position_delay": 0.0008050385944973244,
-          "overall_frequency": 0.10209783586683714,
-          "ordered_pair": 0.006345598333096557,
-          "ordered_triplet": 0.0008523938059383435,
-          "duplicate_pattern": 0.7179997158687313,
-          "sum_shape": 0.991714,
-          "odd_shape": 0.751525,
-          "high_shape": 0.750451,
-          "adjacent_difference": 0.99297,
-          "exact_repeat": 0.354298,
-          "unordered_repeat": 0.880319
-        },
-        "exact_repeat_count": 1,
-        "unordered_repeat_count": 1
-      },
-      {
-        "pattern_id": "P5",
         "numbers": [
           4,
           6,
@@ -4019,14 +3957,14 @@
           3
         ],
         "number": "463",
-        "score": 2.763176,
+        "score": 2.761597,
         "model": "numbers_default",
         "components": {
           "position_frequency": 0.09807264289435053,
           "recent_position_frequency": 0.18,
           "position_delay": 0.0013259459203485344,
           "overall_frequency": 0.10004577670439298,
-          "ordered_pair": 0.005587914950040252,
+          "ordered_pair": 0.00361478113999779,
           "ordered_triplet": 0.0014206563432305726,
           "duplicate_pattern": 0.7179997158687313,
           "sum_shape": 0.987637,
@@ -4040,40 +3978,7 @@
         "unordered_repeat_count": 1
       },
       {
-        "pattern_id": "P6",
-        "numbers": [
-          1,
-          5,
-          8
-        ],
-        "digits": [
-          1,
-          5,
-          8
-        ],
-        "number": "158",
-        "score": 2.534262,
-        "model": "numbers_default",
-        "components": {
-          "position_frequency": 0.10138750769522187,
-          "recent_position_frequency": 0.1225,
-          "position_delay": 0.0007103281716152862,
-          "overall_frequency": 0.09854619500876072,
-          "ordered_pair": 0.005950971571088065,
-          "ordered_triplet": 0.0009944594402614007,
-          "duplicate_pattern": 0.7179997158687313,
-          "sum_shape": 0.991714,
-          "odd_shape": 0.751525,
-          "high_shape": 0.744119,
-          "adjacent_difference": 0.99297,
-          "exact_repeat": 0.354298,
-          "unordered_repeat": 0.880319
-        },
-        "exact_repeat_count": 1,
-        "unordered_repeat_count": 1
-      },
-      {
-        "pattern_id": "P7",
+        "pattern_id": "P4",
         "numbers": [
           3,
           2,
@@ -4085,14 +3990,14 @@
           9
         ],
         "number": "329",
-        "score": 2.688247,
+        "score": 2.686479,
         "model": "numbers_default",
         "components": {
           "position_frequency": 0.10110337642657574,
           "recent_position_frequency": 0.10583333333333333,
           "position_delay": 0.001136525074584458,
           "overall_frequency": 0.10209783586683714,
-          "ordered_pair": 0.005272213540433459,
+          "ordered_pair": 0.0030623036731859004,
           "ordered_triplet": 0.00042619690296917176,
           "duplicate_pattern": 0.7179997158687313,
           "sum_shape": 0.991714,
@@ -4106,7 +4011,7 @@
         "unordered_repeat_count": 1
       },
       {
-        "pattern_id": "P8",
+        "pattern_id": "P5",
         "numbers": [
           3,
           7,
@@ -4118,14 +4023,14 @@
           4
         ],
         "number": "374",
-        "score": 2.674927,
+        "score": 2.673071,
         "model": "numbers_default",
         "components": {
           "position_frequency": 0.09939858881469905,
           "recent_position_frequency": 0.07,
           "position_delay": 0.0007576833830563054,
           "overall_frequency": 0.1000142065634323,
-          "ordered_pair": 0.0058246910072453474,
+          "ordered_pair": 0.0035042856466354125,
           "ordered_triplet": 0.0014206563432305726,
           "duplicate_pattern": 0.7179997158687313,
           "sum_shape": 0.991714,
@@ -4139,31 +4044,97 @@
         "unordered_repeat_count": 1
       },
       {
-        "pattern_id": "P9",
+        "pattern_id": "P6",
         "numbers": [
-          4,
-          2,
+          0,
+          8,
           7
         ],
         "digits": [
-          4,
-          2,
+          0,
+          8,
           7
         ],
-        "number": "427",
-        "score": 2.773858,
+        "number": "087",
+        "score": 2.612281,
         "model": "numbers_default",
         "components": {
-          "position_frequency": 0.09987214092910925,
-          "recent_position_frequency": 0.24666666666666665,
-          "position_delay": 0.0003314864800871336,
-          "overall_frequency": 0.09969850515382551,
-          "ordered_pair": 0.005524774668118893,
+          "position_frequency": 0.09797793247146848,
+          "recent_position_frequency": 0.12416666666666668,
+          "position_delay": 0.0008050385944973244,
+          "overall_frequency": 0.10017205726823569,
+          "ordered_pair": 0.0032201543779892977,
           "ordered_triplet": 0.001136525074584458,
+          "duplicate_pattern": 0.7179997158687313,
+          "sum_shape": 0.920092,
+          "odd_shape": 0.75606,
+          "high_shape": 0.744119,
+          "adjacent_difference": 0.701694,
+          "exact_repeat": 0.743437,
+          "unordered_repeat": 0.880319
+        },
+        "exact_repeat_count": 0,
+        "unordered_repeat_count": 1
+      },
+      {
+        "pattern_id": "P7",
+        "numbers": [
+          9,
+          3,
+          2
+        ],
+        "digits": [
+          9,
+          3,
+          2
+        ],
+        "number": "932",
+        "score": 2.607338,
+        "model": "numbers_default",
+        "components": {
+          "position_frequency": 0.10460766207321115,
+          "recent_position_frequency": 0.17083333333333334,
+          "position_delay": 0.0008050385944973244,
+          "overall_frequency": 0.10209783586683714,
+          "ordered_pair": 0.0036937064923994885,
+          "ordered_triplet": 0.0008523938059383435,
+          "duplicate_pattern": 0.7179997158687313,
+          "sum_shape": 0.991714,
+          "odd_shape": 0.751525,
+          "high_shape": 0.750451,
+          "adjacent_difference": 0.99297,
+          "exact_repeat": 0.354298,
+          "unordered_repeat": 0.880319
+        },
+        "exact_repeat_count": 1,
+        "unordered_repeat_count": 1
+      },
+      {
+        "pattern_id": "P8",
+        "numbers": [
+          5,
+          2,
+          6
+        ],
+        "digits": [
+          5,
+          2,
+          6
+        ],
+        "number": "526",
+        "score": 2.576037,
+        "model": "numbers_default",
+        "components": {
+          "position_frequency": 0.09466306767059714,
+          "recent_position_frequency": 0.11249999999999999,
+          "position_delay": 0.001136525074584458,
+          "overall_frequency": 0.0979779324714685,
+          "ordered_pair": 0.0032517245189499773,
+          "ordered_triplet": 0.0015627219775536298,
           "duplicate_pattern": 0.7179997158687313,
           "sum_shape": 0.987637,
           "odd_shape": 0.75606,
-          "high_shape": 0.750451,
+          "high_shape": 0.744119,
           "adjacent_difference": 0.99297,
           "exact_repeat": 0.743437,
           "unordered_repeat": 0.458145
@@ -4172,7 +4143,7 @@
         "unordered_repeat_count": 0
       },
       {
-        "pattern_id": "P10",
+        "pattern_id": "P9",
         "numbers": [
           7,
           8,
@@ -4184,14 +4155,14 @@
           0
         ],
         "number": "780",
-        "score": 2.540694,
+        "score": 2.538825,
         "model": "numbers_default",
         "components": {
           "position_frequency": 0.0972676042998532,
           "recent_position_frequency": 0.07250000000000001,
           "position_delay": 0.0008523938059383436,
           "overall_frequency": 0.10017205726823569,
-          "ordered_pair": 0.005398494104276176,
+          "ordered_pair": 0.0030623036731859013,
           "ordered_triplet": 0.00042619690296917176,
           "duplicate_pattern": 0.7179997158687313,
           "sum_shape": 0.920092,
@@ -4202,6 +4173,39 @@
           "unordered_repeat": 0.880319
         },
         "exact_repeat_count": 0,
+        "unordered_repeat_count": 1
+      },
+      {
+        "pattern_id": "P10",
+        "numbers": [
+          1,
+          5,
+          8
+        ],
+        "digits": [
+          1,
+          5,
+          8
+        ],
+        "number": "158",
+        "score": 2.532519,
+        "model": "numbers_default",
+        "components": {
+          "position_frequency": 0.10138750769522187,
+          "recent_position_frequency": 0.1225,
+          "position_delay": 0.0007103281716152862,
+          "overall_frequency": 0.09854619500876072,
+          "ordered_pair": 0.003772631844801187,
+          "ordered_triplet": 0.0009944594402614007,
+          "duplicate_pattern": 0.7179997158687313,
+          "sum_shape": 0.991714,
+          "odd_shape": 0.751525,
+          "high_shape": 0.744119,
+          "adjacent_difference": 0.99297,
+          "exact_repeat": 0.354298,
+          "unordered_repeat": 0.880319
+        },
+        "exact_repeat_count": 1,
         "unordered_repeat_count": 1
       }
     ]
@@ -4230,16 +4234,16 @@
         "tested_periods": 180,
         "digit_count": 4,
         "average_best_position_matches": 1.505556,
-        "average_position_matches_per_ticket": 0.408889,
-        "average_best_unordered_matches": 2.311111,
-        "average_unordered_matches_per_ticket": 1.285556,
+        "average_position_matches_per_ticket": 0.410556,
+        "average_best_unordered_matches": 2.316667,
+        "average_unordered_matches_per_ticket": 1.286111,
         "straight_hit_rate": 0.005556,
         "box_hit_rate": 0.005556,
         "hit_rate_1_position": 1.0,
-        "hit_rate_2_position": 0.466667,
-        "hit_rate_3_position": 0.033333,
+        "hit_rate_2_position": 0.461111,
+        "hit_rate_3_position": 0.038889,
         "hit_rate_4_position": 0.005556,
-        "selection_score": 1.733064
+        "selection_score": 1.737925
       }
     ],
     "selected_config": "numbers_default",
@@ -4266,16 +4270,16 @@
       "tested_periods": 180,
       "digit_count": 4,
       "average_best_position_matches": 1.505556,
-      "average_position_matches_per_ticket": 0.408889,
-      "average_best_unordered_matches": 2.311111,
-      "average_unordered_matches_per_ticket": 1.285556,
+      "average_position_matches_per_ticket": 0.410556,
+      "average_best_unordered_matches": 2.316667,
+      "average_unordered_matches_per_ticket": 1.286111,
       "straight_hit_rate": 0.005556,
       "box_hit_rate": 0.005556,
       "hit_rate_1_position": 1.0,
-      "hit_rate_2_position": 0.466667,
-      "hit_rate_3_position": 0.033333,
+      "hit_rate_2_position": 0.461111,
+      "hit_rate_3_position": 0.038889,
       "hit_rate_4_position": 0.005556,
-      "selection_score": 1.733064
+      "selection_score": 1.737925
     },
     "prediction": [
       {
@@ -4293,14 +4297,14 @@
           4
         ],
         "number": "8514",
-        "score": 2.865437,
+        "score": 2.863628,
         "model": "numbers_default",
         "components": {
           "position_frequency": 0.10122176445517829,
           "recent_position_frequency": 0.170625,
           "position_delay": 0.0004261969029691717,
           "overall_frequency": 0.09999644835914193,
-          "ordered_pair": 0.003954160155325094,
+          "ordered_pair": 0.0016929488090164323,
           "ordered_triplet": 0.0004617133115499361,
           "duplicate_pattern": 0.5090211677795141,
           "sum_shape": 0.999587,
@@ -4328,14 +4332,14 @@
           3
         ],
         "number": "2673",
-        "score": 2.763323,
+        "score": 2.761501,
         "model": "numbers_default",
         "components": {
           "position_frequency": 0.09870009944594403,
           "recent_position_frequency": 0.11,
           "position_delay": 0.0007813609887768148,
           "overall_frequency": 0.09829166074726524,
-          "ordered_pair": 0.00385550346482297,
+          "ordered_pair": 0.0015785070480339696,
           "ordered_triplet": 0.0006037789458729933,
           "duplicate_pattern": 0.5090211677795141,
           "sum_shape": 0.999587,
@@ -4351,36 +4355,36 @@
       {
         "pattern_id": "P3",
         "numbers": [
-          7,
           9,
-          0,
-          0
+          5,
+          2,
+          4
         ],
         "digits": [
-          7,
           9,
-          0,
-          0
+          5,
+          2,
+          4
         ],
-        "number": "7900",
-        "score": 2.643591,
+        "number": "9524",
+        "score": 2.758768,
         "model": "numbers_default",
         "components": {
-          "position_frequency": 0.10296206847563574,
-          "recent_position_frequency": 0.151875,
-          "position_delay": 0.0007458445801960506,
-          "overall_frequency": 0.10194985083108396,
-          "ordered_pair": 0.003906804943884074,
-          "ordered_triplet": 0.000568262537292229,
-          "duplicate_pattern": 0.42818582184969456,
-          "sum_shape": 0.881773,
+          "position_frequency": 0.09898423071459014,
+          "recent_position_frequency": 0.1375,
+          "position_delay": 0.001704787611876687,
+          "overall_frequency": 0.09996981105270636,
+          "ordered_pair": 0.0016732174709160076,
+          "ordered_triplet": 0.00046171331154993607,
+          "duplicate_pattern": 0.5090211677795141,
+          "sum_shape": 0.904182,
           "odd_shape": 0.999426,
           "high_shape": 0.999692,
-          "adjacent_difference": 0.938858,
-          "exact_repeat": 0.518978,
+          "adjacent_difference": 0.960096,
+          "exact_repeat": 0.684397,
           "unordered_repeat": 0.936086
         },
-        "exact_repeat_count": 1,
+        "exact_repeat_count": 0,
         "unordered_repeat_count": 1
       },
       {
@@ -4398,14 +4402,14 @@
           1
         ],
         "number": "4851",
-        "score": 2.748675,
+        "score": 2.746904,
         "model": "numbers_default",
         "components": {
           "position_frequency": 0.10083108396078988,
           "recent_position_frequency": 0.10250000000000001,
           "position_delay": 0.0008879102145191078,
           "overall_frequency": 0.09999644835914193,
-          "ordered_pair": 0.003875234802923395,
+          "ordered_pair": 0.0016613786680557529,
           "ordered_triplet": 0.00042619690296917176,
           "duplicate_pattern": 0.5090211677795141,
           "sum_shape": 0.999587,
@@ -4421,36 +4425,36 @@
       {
         "pattern_id": "P5",
         "numbers": [
-          0,
           2,
-          9,
-          7
+          0,
+          7,
+          9
         ],
         "digits": [
-          0,
           2,
-          9,
-          7
+          0,
+          7,
+          9
         ],
-        "number": "0297",
-        "score": 2.70993,
+        "number": "2079",
+        "score": 2.716485,
         "model": "numbers_default",
         "components": {
-          "position_frequency": 0.09845148458587868,
-          "recent_position_frequency": 0.141875,
-          "position_delay": 0.000568262537292229,
-          "overall_frequency": 0.1005291944878534,
-          "ordered_pair": 0.003823933323862291,
-          "ordered_triplet": 0.0004972297201307004,
+          "position_frequency": 0.10232277312118197,
+          "recent_position_frequency": 0.07875000000000001,
+          "position_delay": 0.00205995169768433,
+          "overall_frequency": 0.10052919448785338,
+          "ordered_pair": 0.0017047876118766868,
+          "ordered_triplet": 0.0003196476772268788,
           "duplicate_pattern": 0.5090211677795141,
           "sum_shape": 0.999587,
           "odd_shape": 0.999426,
           "high_shape": 0.999692,
           "adjacent_difference": 0.938858,
-          "exact_repeat": 0.518978,
+          "exact_repeat": 0.684397,
           "unordered_repeat": 0.936086
         },
-        "exact_repeat_count": 1,
+        "exact_repeat_count": 0,
         "unordered_repeat_count": 1
       },
       {
@@ -4468,14 +4472,14 @@
           4
         ],
         "number": "5364",
-        "score": 2.715895,
+        "score": 2.714089,
         "model": "numbers_default",
         "components": {
           "position_frequency": 0.0991262963489132,
           "recent_position_frequency": 0.141875,
           "position_delay": 0.0007458445801960507,
           "overall_frequency": 0.09915293365534877,
-          "ordered_pair": 0.0038949661410238204,
+          "ordered_pair": 0.0016377010623352432,
           "ordered_triplet": 0.0004972297201307004,
           "duplicate_pattern": 0.5090211677795141,
           "sum_shape": 0.999587,
@@ -4491,75 +4495,40 @@
       {
         "pattern_id": "P7",
         "numbers": [
-          1,
-          4,
-          8,
-          5
+          0,
+          2,
+          9,
+          7
         ],
         "digits": [
-          1,
-          4,
-          8,
-          5
+          0,
+          2,
+          9,
+          7
         ],
-        "number": "1485",
-        "score": 2.695359,
+        "number": "0297",
+        "score": 2.70813,
         "model": "numbers_default",
         "components": {
-          "position_frequency": 0.0985225174030402,
-          "recent_position_frequency": 0.050625,
-          "position_delay": 0.0024151157834919734,
-          "overall_frequency": 0.09999644835914193,
-          "ordered_pair": 0.0036542438161986392,
+          "position_frequency": 0.09845148458587868,
+          "recent_position_frequency": 0.141875,
+          "position_delay": 0.000568262537292229,
+          "overall_frequency": 0.1005291944878534,
+          "ordered_pair": 0.0015745607804138846,
           "ordered_triplet": 0.0004972297201307004,
           "duplicate_pattern": 0.5090211677795141,
           "sum_shape": 0.999587,
           "odd_shape": 0.999426,
           "high_shape": 0.999692,
-          "adjacent_difference": 0.999342,
-          "exact_repeat": 0.684397,
+          "adjacent_difference": 0.938858,
+          "exact_repeat": 0.518978,
           "unordered_repeat": 0.936086
         },
-        "exact_repeat_count": 0,
+        "exact_repeat_count": 1,
         "unordered_repeat_count": 1
       },
       {
         "pattern_id": "P8",
-        "numbers": [
-          2,
-          0,
-          7,
-          9
-        ],
-        "digits": [
-          2,
-          0,
-          7,
-          9
-        ],
-        "number": "2079",
-        "score": 2.718395,
-        "model": "numbers_default",
-        "components": {
-          "position_frequency": 0.10232277312118197,
-          "recent_position_frequency": 0.07875000000000001,
-          "position_delay": 0.00205995169768433,
-          "overall_frequency": 0.10052919448785338,
-          "ordered_pair": 0.004092279522028066,
-          "ordered_triplet": 0.0003196476772268788,
-          "duplicate_pattern": 0.5090211677795141,
-          "sum_shape": 0.999587,
-          "odd_shape": 0.999426,
-          "high_shape": 0.999692,
-          "adjacent_difference": 0.938858,
-          "exact_repeat": 0.684397,
-          "unordered_repeat": 0.936086
-        },
-        "exact_repeat_count": 0,
-        "unordered_repeat_count": 1
-      },
-      {
-        "pattern_id": "P9",
         "numbers": [
           7,
           2,
@@ -4573,14 +4542,14 @@
           6
         ],
         "number": "7236",
-        "score": 2.700927,
+        "score": 2.699291,
         "model": "numbers_default",
         "components": {
           "position_frequency": 0.09557465549083677,
           "recent_position_frequency": 0.13312500000000002,
           "position_delay": 0.0009589430316806365,
           "overall_frequency": 0.09829166074726524,
-          "ordered_pair": 0.0037055452952597435,
+          "ordered_pair": 0.0016613786680557529,
           "ordered_triplet": 0.00042619690296917176,
           "duplicate_pattern": 0.5090211677795141,
           "sum_shape": 0.999587,
@@ -4594,38 +4563,73 @@
         "unordered_repeat_count": 1
       },
       {
-        "pattern_id": "P10",
+        "pattern_id": "P9",
         "numbers": [
-          9,
-          5,
-          2,
-          4
+          1,
+          4,
+          8,
+          5
         ],
         "digits": [
-          9,
-          5,
-          2,
-          4
+          1,
+          4,
+          8,
+          5
         ],
-        "number": "9524",
-        "score": 2.760558,
+        "number": "1485",
+        "score": 2.693692,
         "model": "numbers_default",
         "components": {
-          "position_frequency": 0.09898423071459014,
-          "recent_position_frequency": 0.1375,
-          "position_delay": 0.001704787611876687,
-          "overall_frequency": 0.09996981105270636,
-          "ordered_pair": 0.003910751211504159,
-          "ordered_triplet": 0.00046171331154993607,
+          "position_frequency": 0.0985225174030402,
+          "recent_position_frequency": 0.050625,
+          "position_delay": 0.0024151157834919734,
+          "overall_frequency": 0.09999644835914193,
+          "ordered_pair": 0.0015706145127937995,
+          "ordered_triplet": 0.0004972297201307004,
           "duplicate_pattern": 0.5090211677795141,
-          "sum_shape": 0.904182,
+          "sum_shape": 0.999587,
           "odd_shape": 0.999426,
           "high_shape": 0.999692,
-          "adjacent_difference": 0.960096,
+          "adjacent_difference": 0.999342,
           "exact_repeat": 0.684397,
           "unordered_repeat": 0.936086
         },
         "exact_repeat_count": 0,
+        "unordered_repeat_count": 1
+      },
+      {
+        "pattern_id": "P10",
+        "numbers": [
+          7,
+          9,
+          0,
+          0
+        ],
+        "digits": [
+          7,
+          9,
+          0,
+          0
+        ],
+        "number": "7900",
+        "score": 2.641852,
+        "model": "numbers_default",
+        "components": {
+          "position_frequency": 0.10296206847563574,
+          "recent_position_frequency": 0.151875,
+          "position_delay": 0.0007458445801960506,
+          "overall_frequency": 0.10194985083108396,
+          "ordered_pair": 0.0017324114852172816,
+          "ordered_triplet": 0.000568262537292229,
+          "duplicate_pattern": 0.42818582184969456,
+          "sum_shape": 0.881773,
+          "odd_shape": 0.999426,
+          "high_shape": 0.999692,
+          "adjacent_difference": 0.938858,
+          "exact_repeat": 0.518978,
+          "unordered_repeat": 0.936086
+        },
+        "exact_repeat_count": 1,
         "unordered_repeat_count": 1
       }
     ]
