@@ -603,9 +603,17 @@ def main() -> None:
     )
 
     for game_key, game_config in LOTTO_GAMES.items():
+        result = optimizer_results[game_key]
+
         save_json(
             OUTPUT_DIR / game_config["prediction_filename"],
-            optimizer_results[game_key]["prediction"],
+            result["prediction"],
+        )
+
+    if game_family(game_config) == "numbers":
+        save_json(
+            OUTPUT_DIR / f"prediction_box_{game_key}.json",
+            result.get("box_prediction", []),
         )
 
     save_json(history_path, evaluation_history)
