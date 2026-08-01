@@ -149,8 +149,6 @@ def download_game_csv(
         default=None,
     )
 
-    # Numbers3/4など、公式CSVが用意されていないゲームは
-    # fallbackのみで取得できるようにする。
     if not official_url:
         if not fallback_kind:
             raise ValueError(
@@ -190,7 +188,6 @@ def download_game_csv(
         ),
         "official",
     )
-
 
 def read_csv_text(text: str) -> pd.DataFrame:
     try:
@@ -313,6 +310,8 @@ def _column_candidates(
     fixed = {
         "draw_no": (
             "draw_no",
+            "No",
+            "No.",
             "回別",
             "回号",
             "開催回",
@@ -453,7 +452,7 @@ def _extract_number_string(
         return None
 
     if len(digits) > digit_count:
-        digits = digits[-digit_count:]
+        return None
 
     return digits.zfill(
         digit_count
@@ -600,41 +599,20 @@ def _normalize_numbers_dataframe(
             required_columns,
         )
 
-    minimum_column_count = (
-        len(required_columns)
-    )
+    missing = [
+        column
+        for column, source
+        in direct_mapping.items()
+        if source is None
+    ]
 
-    if (
-        result.shape[1]
-        < minimum_column_count
-    ):
-        missing = [
-            column
-            for column, source
-            in direct_mapping.items()
-            if source is None
-        ]
-
-        raise ValueError(
-            "Numbers CSV has too few "
-            "columns or unknown column "
-            "names. "
-            f"Missing mappings: {missing}; "
-            "actual columns: "
-            f"{list(result.columns)}"
-        )
-
-    normalized = result.iloc[
-        :,
-        :minimum_column_count,
-    ].copy()
-    normalized.columns = list(
-        required_columns
-    )
-
-    return clean_numeric(
-        normalized,
-        required_columns,
+    raise ValueError(
+        "Numbers CSV column mapping failed. "
+        "Positional fallback is disabled to prevent "
+        "prize and sales columns from being treated "
+        "as draw digits. "
+        f"Missing mappings: {missing}; "
+        f"actual columns: {list(result.columns)}"
     )
 
 
