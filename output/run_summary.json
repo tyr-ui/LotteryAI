@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
   "status": "ok",
-  "generated_at": "2026-07-31T14:01:04.110960+00:00",
-  "summary_generated_at": "2026-07-31T14:01:04.115979+00:00",
+  "generated_at": "2026-08-01T11:54:15.075964+00:00",
+  "summary_generated_at": "2026-08-01T11:54:15.081859+00:00",
   "games": {
     "loto6": {
       "latest_draw_no": 2124,
@@ -203,116 +203,10 @@
       ],
       "previous_evaluation": {
         "draw_type": "loto7",
-        "status": "evaluated",
-        "draw_no": 688,
-        "actual_numbers": [
-          4,
-          21,
-          25,
-          28,
-          30,
-          35,
-          37
-        ],
-        "evaluated_at": "2026-07-31T13:56:29.915962+00:00",
-        "predictions": [
-          {
-            "pattern_id": "P1",
-            "numbers": [
-              9,
-              12,
-              13,
-              15,
-              22,
-              29,
-              34
-            ],
-            "matches": 0,
-            "matched_numbers": [],
-            "score": 0.429459,
-            "model": "local_05_experience_loto7_3"
-          },
-          {
-            "pattern_id": "P2",
-            "numbers": [
-              4,
-              7,
-              14,
-              18,
-              31,
-              35,
-              36
-            ],
-            "matches": 2,
-            "matched_numbers": [
-              4,
-              35
-            ],
-            "score": 0.360175,
-            "model": "local_05_experience_loto7_3"
-          },
-          {
-            "pattern_id": "P3",
-            "numbers": [
-              1,
-              6,
-              10,
-              17,
-              25,
-              26,
-              33
-            ],
-            "matches": 1,
-            "matched_numbers": [
-              25
-            ],
-            "score": 0.324839,
-            "model": "local_05_experience_loto7_3"
-          },
-          {
-            "pattern_id": "P4",
-            "numbers": [
-              8,
-              11,
-              17,
-              23,
-              27,
-              28,
-              32
-            ],
-            "matches": 1,
-            "matched_numbers": [
-              28
-            ],
-            "score": 0.302746,
-            "model": "local_05_experience_loto7_3"
-          },
-          {
-            "pattern_id": "P5",
-            "numbers": [
-              3,
-              5,
-              9,
-              16,
-              21,
-              22,
-              24
-            ],
-            "matches": 1,
-            "matched_numbers": [
-              21
-            ],
-            "score": 0.28783,
-            "model": "local_05_experience_loto7_3"
-          }
-        ],
-        "best_match_count": 2,
-        "avg_match_count": 1.0,
-        "hit_rate_1match": 0.8,
-        "hit_rate_2match": 0.2,
-        "hit_rate_3match": 0.0,
-        "hit_rate_4match": 0.0,
-        "hit_rate_5match": 0.0
+        "status": "pending",
+        "target_draw_no": 689,
+        "latest_draw_no": 688,
+        "message": "まだ前回予想対象回の結果がデータに反映されていません。"
       },
       "evaluation_summary": {
         "evaluated_draws": 4,
@@ -420,6 +314,264 @@
         "max_best_match_count": 2,
         "best_draw_no": 1397,
         "latest_evaluated_draw_no": 1397
+      }
+    },
+    "numbers3": {
+      "latest_draw_no": 7039,
+      "next_draw_no": 7040,
+      "rows": 7039,
+      "selected_config": "numbers_default",
+      "selected_weights": {},
+      "selected_filters": {},
+      "feature_ablation": [],
+      "prediction": [
+        {
+          "pattern_id": "P1",
+          "numbers": [
+            4,
+            7,
+            3
+          ],
+          "score": 2.837467,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P2",
+          "numbers": [
+            5,
+            2,
+            6
+          ],
+          "score": 2.577351,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P3",
+          "numbers": [
+            0,
+            8,
+            7
+          ],
+          "score": 2.613936,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P4",
+          "numbers": [
+            9,
+            3,
+            2
+          ],
+          "score": 2.609459,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P5",
+          "numbers": [
+            4,
+            6,
+            3
+          ],
+          "score": 2.763176,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P6",
+          "numbers": [
+            1,
+            5,
+            8
+          ],
+          "score": 2.534262,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P7",
+          "numbers": [
+            3,
+            2,
+            9
+          ],
+          "score": 2.688247,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P8",
+          "numbers": [
+            3,
+            7,
+            4
+          ],
+          "score": 2.674927,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P9",
+          "numbers": [
+            4,
+            2,
+            7
+          ],
+          "score": 2.773858,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P10",
+          "numbers": [
+            7,
+            8,
+            0
+          ],
+          "score": 2.540694,
+          "model": "numbers_default"
+        }
+      ],
+      "previous_evaluation": {
+        "draw_type": "numbers3",
+        "status": "no_previous_output",
+        "message": "前回のoptimizer_result.jsonがないため、答え合わせ対象がありません。"
+      },
+      "evaluation_summary": {
+        "evaluated_draws": 0,
+        "avg_best_match_count": null,
+        "avg_all_pattern_matches": null,
+        "max_best_match_count": null,
+        "best_draw_no": null,
+        "latest_evaluated_draw_no": null
+      }
+    },
+    "numbers4": {
+      "latest_draw_no": 7039,
+      "next_draw_no": 7040,
+      "rows": 7039,
+      "selected_config": "numbers_default",
+      "selected_weights": {},
+      "selected_filters": {},
+      "feature_ablation": [],
+      "prediction": [
+        {
+          "pattern_id": "P1",
+          "numbers": [
+            8,
+            5,
+            1,
+            4
+          ],
+          "score": 2.865437,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P2",
+          "numbers": [
+            2,
+            6,
+            7,
+            3
+          ],
+          "score": 2.763323,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P3",
+          "numbers": [
+            7,
+            9,
+            0,
+            0
+          ],
+          "score": 2.643591,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P4",
+          "numbers": [
+            4,
+            8,
+            5,
+            1
+          ],
+          "score": 2.748675,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P5",
+          "numbers": [
+            0,
+            2,
+            9,
+            7
+          ],
+          "score": 2.70993,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P6",
+          "numbers": [
+            5,
+            3,
+            6,
+            4
+          ],
+          "score": 2.715895,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P7",
+          "numbers": [
+            1,
+            4,
+            8,
+            5
+          ],
+          "score": 2.695359,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P8",
+          "numbers": [
+            2,
+            0,
+            7,
+            9
+          ],
+          "score": 2.718395,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P9",
+          "numbers": [
+            7,
+            2,
+            3,
+            6
+          ],
+          "score": 2.700927,
+          "model": "numbers_default"
+        },
+        {
+          "pattern_id": "P10",
+          "numbers": [
+            9,
+            5,
+            2,
+            4
+          ],
+          "score": 2.760558,
+          "model": "numbers_default"
+        }
+      ],
+      "previous_evaluation": {
+        "draw_type": "numbers4",
+        "status": "no_previous_output",
+        "message": "前回のoptimizer_result.jsonがないため、答え合わせ対象がありません。"
+      },
+      "evaluation_summary": {
+        "evaluated_draws": 0,
+        "avg_best_match_count": null,
+        "avg_all_pattern_matches": null,
+        "max_best_match_count": null,
+        "best_draw_no": null,
+        "latest_evaluated_draw_no": null
       }
     }
   }
