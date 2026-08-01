@@ -610,11 +610,11 @@ def main() -> None:
             result["prediction"],
         )
 
-    if game_family(game_config) == "numbers":
-        save_json(
-            OUTPUT_DIR / f"prediction_box_{game_key}.json",
-            result.get("box_prediction", []),
-        )
+        if game_family(game_config) == "numbers":
+            save_json(
+                OUTPUT_DIR / f"prediction_box_{game_key}.json",
+                result.get("box_prediction", []),
+            )
 
     save_json(history_path, evaluation_history)
     save_json(summary_path, evaluation_summary)
