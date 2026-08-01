@@ -255,6 +255,7 @@ def _ordered_pair_score(
                     .get(
                         (
                             left_position,
+                             right_position,
                             int(
                                 candidate[
                                     left_position
