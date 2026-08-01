@@ -137,4 +137,76 @@ LOTTO_GAMES = {
         "final_candidates": 10000,
         "prediction_filename": "prediction_optimizer_miniloto.json",
     },
+    
+    "numbers3": {
+        "display_name": "NUMBERS3",
+        "family": "numbers",
+        "kind": "numbers3",
+        "official_url": "",
+        "fallback_kind": "numbers3",
+
+        "digit_count": 3,
+        "digit_min": 0,
+        "digit_max": 9,
+
+        "main_cols": [
+            "digit1",
+            "digit2",
+            "digit3",
+        ],
+
+        "bonus_cols": [],
+        "all_columns": [
+            "draw_no",
+            "date",
+            "digit1",
+            "digit2",
+            "digit3",
+        ],
+
+        "train_window": 1000,
+        "tested_periods": 180,
+        "backtest_candidates": 500,
+        "final_candidates": 10000,
+
+        "prediction_filename":
+            "prediction_optimizer_numbers3.json",
+    },
+
+    "numbers4": {
+        "display_name": "NUMBERS4",
+        "family": "numbers",
+        "kind": "numbers4",
+        "official_url": "",
+        "fallback_kind": "numbers4",
+
+        "digit_count": 4,
+        "digit_min": 0,
+        "digit_max": 9,
+
+        "main_cols": [
+            "digit1",
+            "digit2",
+            "digit3",
+            "digit4",
+        ],
+
+        "bonus_cols": [],
+        "all_columns": [
+            "draw_no",
+            "date",
+            "digit1",
+            "digit2",
+            "digit3",
+            "digit4",
+        ],
+
+        "train_window": 1000,
+        "tested_periods": 180,
+        "backtest_candidates": 500,
+        "final_candidates": 10000,
+
+        "prediction_filename":
+            "prediction_optimizer_numbers4.json",
+    },
 }
