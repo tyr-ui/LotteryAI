@@ -324,6 +324,7 @@ def _column_candidates(
         "number": (
             "number",
             "当選番号",
+            "当選数字",
             "抽せん数字",
             "抽選数字",
             "本数字",
