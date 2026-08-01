@@ -141,6 +141,7 @@ def download_game_csv(
             "official_url",
             default="",
         )
+        or ""
     )
     fallback_kind = _config_value(
         config,
@@ -148,24 +149,14 @@ def download_game_csv(
         default=None,
     )
 
+    # Numbers3/4など、公式CSVが用意されていないゲームは
+    # fallbackのみで取得できるようにする。
     if not official_url:
-        raise ValueError(
-            "official_url is not configured "
-            f"for game: {game_name}"
-        )
-
-    response = requests.get(
-        official_url,
-        headers=get_headers(),
-        timeout=30,
-    )
-
-    if response.status_code == 403:
         if not fallback_kind:
-            raise RuntimeError(
-                "Official CSV was blocked and "
-                "no fallback is configured: "
-                f"{game_name}"
+            raise ValueError(
+                "Neither official_url nor "
+                "fallback_kind is configured "
+                f"for game: {game_name}"
             )
 
         return (
@@ -175,7 +166,23 @@ def download_game_csv(
             "mk-mode",
         )
 
-    response.raise_for_status()
+    try:
+        response = requests.get(
+            official_url,
+            headers=get_headers(),
+            timeout=30,
+        )
+        response.raise_for_status()
+    except requests.RequestException:
+        if not fallback_kind:
+            raise
+
+        return (
+            download_from_mkmode(
+                str(fallback_kind)
+            ),
+            "mk-mode",
+        )
 
     return (
         decode_content(
