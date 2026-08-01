@@ -659,6 +659,14 @@ def select_diverse(
             )
         )
 
+    selected.sort(
+        key=lambda item: (
+            item.total_score,
+            item.candidate,
+        ),
+        reverse=True,
+    )
+
     return tuple(selected)
 
 
