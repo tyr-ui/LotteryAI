@@ -159,6 +159,47 @@ def _normalize_history(
     )
 
 
+def _build_box_prediction(
+    ranked_candidates: Sequence,
+    *,
+    top_k: int,
+    model_name: str,
+) -> list[dict[str, object]]:
+    selected: list[dict[str, object]] = []
+    seen_box_keys: set[tuple[int, ...]] = set()
+
+    for item in ranked_candidates:
+        box_digits = tuple(
+            sorted(int(value) for value in item.candidate)
+        )
+
+        if box_digits in seen_box_keys:
+            continue
+
+        seen_box_keys.add(box_digits)
+        selected.append({
+            "pattern_id": f"B{len(selected) + 1}",
+            "numbers": list(box_digits),
+            "digits": list(box_digits),
+            "number": "".join(
+                str(value) for value in box_digits
+            ),
+            "representative_straight": item.number,
+            "score": round(float(item.total_score), 6),
+            "model": model_name,
+            "components": dict(item.components),
+            "exact_repeat_count": item.exact_repeat_count,
+            "unordered_repeat_count": (
+                item.unordered_repeat_count
+            ),
+        })
+
+        if len(selected) >= top_k:
+            break
+
+    return selected
+
+
 def _summary_sort_key(
     summary: NumbersBacktestSummary,
 ) -> tuple[float, float, float, float, float]:
@@ -400,6 +441,12 @@ def optimize_numbers(
         )
     ]
 
+    box_prediction = _build_box_prediction(
+        prediction_result.ranked,
+        top_k=top_k,
+        model_name=str(selected["config"]),
+    )
+
     public_ranked = [
         {
             key: value
@@ -456,6 +503,11 @@ def optimize_numbers(
             "candidate_space_size": (
                 prediction_result.generated_count
             ),
+            "box_prediction_enabled": True,
+            "box_prediction_version": 1,
+            "box_prediction_count": len(
+                box_prediction
+            ),
             "base_config_count": len(BASE_WEIGHT_CONFIGS),
             "local_config_count": max(
                 0,
@@ -472,6 +524,7 @@ def optimize_numbers(
         "optimizer_experience": {},
         "numbers_backtest": full_backtest.to_dict(),
         "prediction": prediction,
+        "box_prediction": box_prediction,
     }
 
 
