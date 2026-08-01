@@ -12,9 +12,7 @@ from optimizer import optimize
 from review_output import write_review_outputs
 from feature_memory_analyzer import save_feature_memory_analysis
 from optimizer_learning import print_learning_weights
-from numbers_backtester import run_numbers_backtest
-from numbers_features import build_numbers_model_context
-from numbers_predictor import predict_numbers
+from numbers_optimizer import optimize_numbers
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -460,65 +458,11 @@ def run_numbers_game(
         df,
         game_config,
     )
-    context = build_numbers_model_context(
+
+    return optimize_numbers(
         history,
         game_config,
     )
-    top_k = int(
-        game_config.get("top_k", 10)
-    )
-
-    prediction_result = predict_numbers(
-        context,
-        top_k=top_k,
-    )
-    backtest = run_numbers_backtest(
-        history,
-        game_config,
-        train_window=int(game_config["train_window"]),
-        tested_periods=int(game_config["tested_periods"]),
-        top_k=top_k,
-    )
-    backtest_output = backtest.to_dict()
-
-    return {
-        "random_baseline": {},
-        "selected_random_filtered_baseline": {},
-        "ranked_configs": [{
-            "config": "numbers_default",
-            **backtest_output,
-        }],
-        "selected_config": "numbers_default",
-        "selected_weights": {},
-        "selected_filters": {},
-        "learning_summary": {
-            "strength": 0.0,
-            "strength_optimized": False,
-            "tested_strengths": [],
-            "loaded_weights": {},
-            "base_prediction_weights": {},
-            "applied_prediction_weights": {},
-            "weight_diff": {},
-        },
-        "search_metadata": {
-            "algorithm": "numbers_full_enumeration",
-            "candidate_space_size": (
-                prediction_result.generated_count
-            ),
-            "optimizer_connected": False,
-            "note": (
-                "Numbers3/4 currently use full candidate "
-                "enumeration with default weights. "
-                "Numbers optimizer integration is the next phase."
-            ),
-        },
-        "feature_ablation": [],
-        "optimizer_experience": {},
-        "numbers_backtest": backtest_output,
-        "prediction": numbers_prediction_to_output(
-            prediction_result
-        ),
-    }
 
 
 def main() -> None:
