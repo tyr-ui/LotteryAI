@@ -2,8 +2,8 @@
   "schema_version": "1.0",
   "status": "ok",
   "note": "run_pipeline evaluates the previous prediction if the target draw is now available, then creates the next prediction.",
-  "generated_at": "2026-08-01T13:06:56.541207+00:00",
-  "bundle_generated_at": "2026-08-01T13:06:56.549937+00:00",
+  "generated_at": "2026-08-01T14:34:18.688620+00:00",
+  "bundle_generated_at": "2026-08-01T14:34:18.698085+00:00",
   "top_configs_per_game": 5,
   "games": {
     "loto6": {
@@ -1133,23 +1133,88 @@
         "missing_digit_columns": [],
         "status": "ok"
       },
-      "selected_config": "numbers_default",
-      "selected_weights": {},
+      "selected_config": "local_1",
+      "selected_weights": {
+        "position_frequency": 1.227721,
+        "recent_position_frequency": 1.481673,
+        "position_delay": 0.69373,
+        "overall_frequency": 0.347726,
+        "ordered_pair": 0.640143,
+        "ordered_triplet": 0.297329,
+        "duplicate_pattern": 0.61673,
+        "sum_shape": 0.371841,
+        "odd_shape": 0.288105,
+        "high_shape": 0.245202,
+        "adjacent_difference": 0.387418,
+        "exact_repeat": 0.656041,
+        "unordered_repeat": 0.293909,
+        "diversity": 0.259431
+      },
       "selected_filters": {},
       "learning_summary": {
-        "strength": 0.0,
-        "strength_optimized": false,
+        "strength": 1.0,
+        "strength_optimized": true,
         "tested_strengths": [],
         "loaded_weights": {},
-        "base_prediction_weights": {},
-        "applied_prediction_weights": {},
-        "weight_diff": {}
+        "base_prediction_weights": {
+          "position_frequency": 1.2,
+          "recent_position_frequency": 1.4,
+          "position_delay": 0.7,
+          "overall_frequency": 0.4,
+          "ordered_pair": 0.8,
+          "ordered_triplet": 0.25,
+          "duplicate_pattern": 0.6,
+          "sum_shape": 0.45,
+          "odd_shape": 0.3,
+          "high_shape": 0.3,
+          "adjacent_difference": 0.35,
+          "exact_repeat": 0.55,
+          "unordered_repeat": 0.35,
+          "diversity": 0.3
+        },
+        "applied_prediction_weights": {
+          "position_frequency": 1.227721,
+          "recent_position_frequency": 1.481673,
+          "position_delay": 0.69373,
+          "overall_frequency": 0.347726,
+          "ordered_pair": 0.640143,
+          "ordered_triplet": 0.297329,
+          "duplicate_pattern": 0.61673,
+          "sum_shape": 0.371841,
+          "odd_shape": 0.288105,
+          "high_shape": 0.245202,
+          "adjacent_difference": 0.387418,
+          "exact_repeat": 0.656041,
+          "unordered_repeat": 0.293909,
+          "diversity": 0.259431
+        },
+        "weight_diff": {
+          "position_frequency": 0.027721,
+          "recent_position_frequency": 0.081673,
+          "position_delay": -0.00627,
+          "overall_frequency": -0.052274,
+          "ordered_pair": -0.159857,
+          "ordered_triplet": 0.047329,
+          "duplicate_pattern": 0.01673,
+          "sum_shape": -0.078159,
+          "odd_shape": -0.011895,
+          "high_shape": -0.054798,
+          "adjacent_difference": 0.037418,
+          "exact_repeat": 0.106041,
+          "unordered_repeat": -0.056091,
+          "diversity": -0.040569
+        }
       },
       "search_metadata": {
-        "algorithm": "numbers_full_enumeration",
+        "algorithm": "numbers_base_plus_local_search",
+        "optimizer_connected": true,
         "candidate_space_size": 1000,
-        "optimizer_connected": false,
-        "note": "Numbers3/4 currently use full candidate enumeration with default weights. Numbers optimizer integration is the next phase."
+        "base_config_count": 6,
+        "local_config_count": 2,
+        "evaluated_config_count": 8,
+        "search_tested_periods": 24,
+        "full_tested_periods": 180,
+        "seed": 2025
       },
       "feature_ablation": [],
       "prediction": [
@@ -1160,8 +1225,8 @@
             7,
             3
           ],
-          "score": 2.8358,
-          "model": "numbers_default"
+          "score": 2.799706,
+          "model": "local_1"
         },
         {
           "pattern_id": "P2",
@@ -1170,8 +1235,8 @@
             2,
             7
           ],
-          "score": 2.772103,
-          "model": "numbers_default"
+          "score": 2.764874,
+          "model": "local_1"
         },
         {
           "pattern_id": "P3",
@@ -1180,8 +1245,8 @@
             6,
             3
           ],
-          "score": 2.761597,
-          "model": "numbers_default"
+          "score": 2.718305,
+          "model": "local_1"
         },
         {
           "pattern_id": "P4",
@@ -1190,8 +1255,8 @@
             2,
             9
           ],
-          "score": 2.686479,
-          "model": "numbers_default"
+          "score": 2.639515,
+          "model": "local_1"
         },
         {
           "pattern_id": "P5",
@@ -1200,28 +1265,28 @@
             7,
             4
           ],
-          "score": 2.673071,
-          "model": "numbers_default"
+          "score": 2.627422,
+          "model": "local_1"
         },
         {
           "pattern_id": "P6",
+          "numbers": [
+            4,
+            8,
+            5
+          ],
+          "score": 2.624348,
+          "model": "local_1"
+        },
+        {
+          "pattern_id": "P7",
           "numbers": [
             0,
             8,
             7
           ],
-          "score": 2.612281,
-          "model": "numbers_default"
-        },
-        {
-          "pattern_id": "P7",
-          "numbers": [
-            9,
-            3,
-            2
-          ],
-          "score": 2.607338,
-          "model": "numbers_default"
+          "score": 2.566033,
+          "model": "local_1"
         },
         {
           "pattern_id": "P8",
@@ -1230,18 +1295,18 @@
             2,
             6
           ],
-          "score": 2.576037,
-          "model": "numbers_default"
+          "score": 2.558172,
+          "model": "local_1"
         },
         {
           "pattern_id": "P9",
           "numbers": [
-            7,
-            8,
-            0
+            9,
+            3,
+            2
           ],
-          "score": 2.538825,
-          "model": "numbers_default"
+          "score": 2.528638,
+          "model": "local_1"
         },
         {
           "pattern_id": "P10",
@@ -1250,20 +1315,152 @@
             5,
             8
           ],
-          "score": 2.532519,
-          "model": "numbers_default"
+          "score": 2.45031,
+          "model": "local_1"
         }
       ],
-      "random_baseline": {},
+      "random_baseline": {
+        "config": "default",
+        "source": "base",
+        "weights": {
+          "position_frequency": 1.2,
+          "recent_position_frequency": 1.4,
+          "position_delay": 0.7,
+          "overall_frequency": 0.4,
+          "ordered_pair": 0.8,
+          "ordered_triplet": 0.25,
+          "duplicate_pattern": 0.6,
+          "sum_shape": 0.45,
+          "odd_shape": 0.3,
+          "high_shape": 0.3,
+          "adjacent_difference": 0.35,
+          "exact_repeat": 0.55,
+          "unordered_repeat": 0.35,
+          "diversity": 0.3
+        },
+        "tested_periods": 24,
+        "digit_count": 3,
+        "average_best_position_matches": 1.5,
+        "average_position_matches_per_ticket": 0.341667,
+        "average_best_unordered_matches": 1.916667,
+        "average_unordered_matches_per_ticket": 0.833333,
+        "straight_hit_rate": 0.0,
+        "box_hit_rate": 0.0,
+        "hit_rate_1_position": 1.0,
+        "hit_rate_2_position": 0.5,
+        "hit_rate_3_position": 0.0,
+        "hit_rate_4_position": 0.0,
+        "selection_score": 1.902778
+      },
       "selected_random_filtered_baseline": {},
       "top_ranked_configs": [
         {
-          "config": "numbers_default",
-          "tested_periods": 180,
-          "selection_score": 2.010924
+          "config": "local_1",
+          "tested_periods": 24,
+          "selection_score": 1.968056,
+          "weights": {
+            "position_frequency": 1.227721,
+            "recent_position_frequency": 1.481673,
+            "position_delay": 0.69373,
+            "overall_frequency": 0.347726,
+            "ordered_pair": 0.640143,
+            "ordered_triplet": 0.297329,
+            "duplicate_pattern": 0.61673,
+            "sum_shape": 0.371841,
+            "odd_shape": 0.288105,
+            "high_shape": 0.245202,
+            "adjacent_difference": 0.387418,
+            "exact_repeat": 0.656041,
+            "unordered_repeat": 0.293909,
+            "diversity": 0.259431
+          }
+        },
+        {
+          "config": "default",
+          "tested_periods": 24,
+          "selection_score": 1.902778,
+          "weights": {
+            "position_frequency": 1.2,
+            "recent_position_frequency": 1.4,
+            "position_delay": 0.7,
+            "overall_frequency": 0.4,
+            "ordered_pair": 0.8,
+            "ordered_triplet": 0.25,
+            "duplicate_pattern": 0.6,
+            "sum_shape": 0.45,
+            "odd_shape": 0.3,
+            "high_shape": 0.3,
+            "adjacent_difference": 0.35,
+            "exact_repeat": 0.55,
+            "unordered_repeat": 0.35,
+            "diversity": 0.3
+          }
+        },
+        {
+          "config": "ordered_patterns",
+          "tested_periods": 24,
+          "selection_score": 1.8875,
+          "weights": {
+            "position_frequency": 1.1,
+            "recent_position_frequency": 1.25,
+            "position_delay": 0.45,
+            "overall_frequency": 0.25,
+            "ordered_pair": 1.6,
+            "ordered_triplet": 0.85,
+            "duplicate_pattern": 0.45,
+            "sum_shape": 0.3,
+            "odd_shape": 0.2,
+            "high_shape": 0.2,
+            "adjacent_difference": 0.3,
+            "exact_repeat": 0.35,
+            "unordered_repeat": 0.2,
+            "diversity": 0.3
+          }
+        },
+        {
+          "config": "shape_balanced",
+          "tested_periods": 24,
+          "selection_score": 1.852777,
+          "weights": {
+            "position_frequency": 1.0,
+            "recent_position_frequency": 1.1,
+            "position_delay": 0.45,
+            "overall_frequency": 0.25,
+            "ordered_pair": 0.55,
+            "ordered_triplet": 0.15,
+            "duplicate_pattern": 0.95,
+            "sum_shape": 0.9,
+            "odd_shape": 0.65,
+            "high_shape": 0.65,
+            "adjacent_difference": 0.75,
+            "exact_repeat": 0.35,
+            "unordered_repeat": 0.25,
+            "diversity": 0.35
+          }
+        },
+        {
+          "config": "local_2",
+          "tested_periods": 24,
+          "selection_score": 1.802778,
+          "weights": {
+            "position_frequency": 0.973377,
+            "recent_position_frequency": 1.405723,
+            "position_delay": 0.778086,
+            "overall_frequency": 0.351082,
+            "ordered_pair": 0.700591,
+            "ordered_triplet": 0.270823,
+            "duplicate_pattern": 0.715494,
+            "sum_shape": 0.529255,
+            "odd_shape": 0.316644,
+            "high_shape": 0.350554,
+            "adjacent_difference": 0.329626,
+            "exact_repeat": 0.640679,
+            "unordered_repeat": 0.363394,
+            "diversity": 0.304152
+          }
         }
       ],
-      "ranked_config_count": 1,
+      "ranked_config_count": 8,
       "previous_evaluation": {
         "draw_type": "numbers3",
         "status": "pending",
@@ -1296,23 +1493,88 @@
         "missing_digit_columns": [],
         "status": "ok"
       },
-      "selected_config": "numbers_default",
-      "selected_weights": {},
+      "selected_config": "position_delay",
+      "selected_weights": {
+        "position_frequency": 1.4,
+        "recent_position_frequency": 1.2,
+        "position_delay": 1.25,
+        "overall_frequency": 0.25,
+        "ordered_pair": 0.65,
+        "ordered_triplet": 0.2,
+        "duplicate_pattern": 0.45,
+        "sum_shape": 0.35,
+        "odd_shape": 0.25,
+        "high_shape": 0.25,
+        "adjacent_difference": 0.25,
+        "exact_repeat": 0.4,
+        "unordered_repeat": 0.25,
+        "diversity": 0.3
+      },
       "selected_filters": {},
       "learning_summary": {
-        "strength": 0.0,
-        "strength_optimized": false,
+        "strength": 1.0,
+        "strength_optimized": true,
         "tested_strengths": [],
         "loaded_weights": {},
-        "base_prediction_weights": {},
-        "applied_prediction_weights": {},
-        "weight_diff": {}
+        "base_prediction_weights": {
+          "position_frequency": 1.2,
+          "recent_position_frequency": 1.4,
+          "position_delay": 0.7,
+          "overall_frequency": 0.4,
+          "ordered_pair": 0.8,
+          "ordered_triplet": 0.25,
+          "duplicate_pattern": 0.6,
+          "sum_shape": 0.45,
+          "odd_shape": 0.3,
+          "high_shape": 0.3,
+          "adjacent_difference": 0.35,
+          "exact_repeat": 0.55,
+          "unordered_repeat": 0.35,
+          "diversity": 0.3
+        },
+        "applied_prediction_weights": {
+          "position_frequency": 1.4,
+          "recent_position_frequency": 1.2,
+          "position_delay": 1.25,
+          "overall_frequency": 0.25,
+          "ordered_pair": 0.65,
+          "ordered_triplet": 0.2,
+          "duplicate_pattern": 0.45,
+          "sum_shape": 0.35,
+          "odd_shape": 0.25,
+          "high_shape": 0.25,
+          "adjacent_difference": 0.25,
+          "exact_repeat": 0.4,
+          "unordered_repeat": 0.25,
+          "diversity": 0.3
+        },
+        "weight_diff": {
+          "position_frequency": 0.2,
+          "recent_position_frequency": -0.2,
+          "position_delay": 0.55,
+          "overall_frequency": -0.15,
+          "ordered_pair": -0.15,
+          "ordered_triplet": -0.05,
+          "duplicate_pattern": -0.15,
+          "sum_shape": -0.1,
+          "odd_shape": -0.05,
+          "high_shape": -0.05,
+          "adjacent_difference": -0.1,
+          "exact_repeat": -0.15,
+          "unordered_repeat": -0.1,
+          "diversity": 0.0
+        }
       },
       "search_metadata": {
-        "algorithm": "numbers_full_enumeration",
+        "algorithm": "numbers_base_plus_local_search",
+        "optimizer_connected": true,
         "candidate_space_size": 10000,
-        "optimizer_connected": false,
-        "note": "Numbers3/4 currently use full candidate enumeration with default weights. Numbers optimizer integration is the next phase."
+        "base_config_count": 6,
+        "local_config_count": 2,
+        "evaluated_config_count": 8,
+        "search_tested_periods": 12,
+        "full_tested_periods": 180,
+        "seed": 2025
       },
       "feature_ablation": [],
       "prediction": [
@@ -1324,8 +1586,8 @@
             1,
             4
           ],
-          "score": 2.863628,
-          "model": "numbers_default"
+          "score": 2.24905,
+          "model": "position_delay"
         },
         {
           "pattern_id": "P2",
@@ -1335,85 +1597,85 @@
             7,
             3
           ],
-          "score": 2.761501,
-          "model": "numbers_default"
+          "score": 2.16293,
+          "model": "position_delay"
         },
         {
           "pattern_id": "P3",
-          "numbers": [
-            9,
-            5,
-            2,
-            4
-          ],
-          "score": 2.758768,
-          "model": "numbers_default"
-        },
-        {
-          "pattern_id": "P4",
           "numbers": [
             4,
             8,
             5,
             1
           ],
-          "score": 2.746904,
-          "model": "numbers_default"
+          "score": 2.152182,
+          "model": "position_delay"
         },
         {
-          "pattern_id": "P5",
-          "numbers": [
-            2,
-            0,
-            7,
-            9
-          ],
-          "score": 2.716485,
-          "model": "numbers_default"
-        },
-        {
-          "pattern_id": "P6",
+          "pattern_id": "P4",
           "numbers": [
             5,
             3,
             6,
             4
           ],
-          "score": 2.714089,
-          "model": "numbers_default"
+          "score": 2.135615,
+          "model": "position_delay"
         },
         {
-          "pattern_id": "P7",
+          "pattern_id": "P5",
           "numbers": [
             0,
             2,
             9,
             7
           ],
-          "score": 2.70813,
-          "model": "numbers_default"
+          "score": 2.129624,
+          "model": "position_delay"
         },
         {
-          "pattern_id": "P8",
+          "pattern_id": "P6",
+          "numbers": [
+            0,
+            5,
+            4,
+            9
+          ],
+          "score": 2.122036,
+          "model": "position_delay"
+        },
+        {
+          "pattern_id": "P7",
           "numbers": [
             7,
             2,
             3,
             6
           ],
-          "score": 2.699291,
-          "model": "numbers_default"
+          "score": 2.120377,
+          "model": "position_delay"
         },
         {
-          "pattern_id": "P9",
+          "pattern_id": "P8",
           "numbers": [
             1,
             4,
             8,
             5
           ],
-          "score": 2.693692,
-          "model": "numbers_default"
+          "score": 2.103685,
+          "model": "position_delay"
+        },
+        {
+          "pattern_id": "P9",
+          "numbers": [
+            9,
+            7,
+            0,
+            2
+          ],
+          "score": 2.101023,
+          "model": "position_delay"
         },
         {
           "pattern_id": "P10",
@@ -1423,20 +1685,152 @@
             0,
             0
           ],
-          "score": 2.641852,
-          "model": "numbers_default"
+          "score": 2.082264,
+          "model": "position_delay"
         }
       ],
-      "random_baseline": {},
+      "random_baseline": {
+        "config": "default",
+        "source": "base",
+        "weights": {
+          "position_frequency": 1.2,
+          "recent_position_frequency": 1.4,
+          "position_delay": 0.7,
+          "overall_frequency": 0.4,
+          "ordered_pair": 0.8,
+          "ordered_triplet": 0.25,
+          "duplicate_pattern": 0.6,
+          "sum_shape": 0.45,
+          "odd_shape": 0.3,
+          "high_shape": 0.3,
+          "adjacent_difference": 0.35,
+          "exact_repeat": 0.55,
+          "unordered_repeat": 0.35,
+          "diversity": 0.3
+        },
+        "tested_periods": 12,
+        "digit_count": 4,
+        "average_best_position_matches": 1.5,
+        "average_position_matches_per_ticket": 0.391667,
+        "average_best_unordered_matches": 2.166667,
+        "average_unordered_matches_per_ticket": 1.266667,
+        "straight_hit_rate": 0.0,
+        "box_hit_rate": 0.0,
+        "hit_rate_1_position": 1.0,
+        "hit_rate_2_position": 0.5,
+        "hit_rate_3_position": 0.0,
+        "hit_rate_4_position": 0.0,
+        "selection_score": 1.570833
+      },
       "selected_random_filtered_baseline": {},
       "top_ranked_configs": [
         {
-          "config": "numbers_default",
-          "tested_periods": 180,
-          "selection_score": 1.737925
+          "config": "position_delay",
+          "tested_periods": 12,
+          "selection_score": 1.997916,
+          "weights": {
+            "position_frequency": 1.4,
+            "recent_position_frequency": 1.2,
+            "position_delay": 1.25,
+            "overall_frequency": 0.25,
+            "ordered_pair": 0.65,
+            "ordered_triplet": 0.2,
+            "duplicate_pattern": 0.45,
+            "sum_shape": 0.35,
+            "odd_shape": 0.25,
+            "high_shape": 0.25,
+            "adjacent_difference": 0.25,
+            "exact_repeat": 0.4,
+            "unordered_repeat": 0.25,
+            "diversity": 0.3
+          }
+        },
+        {
+          "config": "repeat_balanced",
+          "tested_periods": 12,
+          "selection_score": 1.910416,
+          "weights": {
+            "position_frequency": 1.05,
+            "recent_position_frequency": 1.2,
+            "position_delay": 0.55,
+            "overall_frequency": 0.3,
+            "ordered_pair": 0.6,
+            "ordered_triplet": 0.2,
+            "duplicate_pattern": 0.5,
+            "sum_shape": 0.4,
+            "odd_shape": 0.3,
+            "high_shape": 0.3,
+            "adjacent_difference": 0.35,
+            "exact_repeat": 1.15,
+            "unordered_repeat": 0.85,
+            "diversity": 0.35
+          }
+        },
+        {
+          "config": "local_1",
+          "tested_periods": 12,
+          "selection_score": 1.704166,
+          "weights": {
+            "position_frequency": 1.432341,
+            "recent_position_frequency": 1.270006,
+            "position_delay": 1.238803,
+            "overall_frequency": 0.217328,
+            "ordered_pair": 0.520116,
+            "ordered_triplet": 0.237863,
+            "duplicate_pattern": 0.462548,
+            "sum_shape": 0.28921,
+            "odd_shape": 0.240087,
+            "high_shape": 0.204335,
+            "adjacent_difference": 0.276727,
+            "exact_repeat": 0.477121,
+            "unordered_repeat": 0.209935,
+            "diversity": 0.259431
+          }
+        },
+        {
+          "config": "ordered_patterns",
+          "tested_periods": 12,
+          "selection_score": 1.685417,
+          "weights": {
+            "position_frequency": 1.1,
+            "recent_position_frequency": 1.25,
+            "position_delay": 0.45,
+            "overall_frequency": 0.25,
+            "ordered_pair": 1.6,
+            "ordered_triplet": 0.85,
+            "duplicate_pattern": 0.45,
+            "sum_shape": 0.3,
+            "odd_shape": 0.2,
+            "high_shape": 0.2,
+            "adjacent_difference": 0.3,
+            "exact_repeat": 0.35,
+            "unordered_repeat": 0.2,
+            "diversity": 0.3
+          }
+        },
+        {
+          "config": "shape_balanced",
+          "tested_periods": 12,
+          "selection_score": 1.575,
+          "weights": {
+            "position_frequency": 1.0,
+            "recent_position_frequency": 1.1,
+            "position_delay": 0.45,
+            "overall_frequency": 0.25,
+            "ordered_pair": 0.55,
+            "ordered_triplet": 0.15,
+            "duplicate_pattern": 0.95,
+            "sum_shape": 0.9,
+            "odd_shape": 0.65,
+            "high_shape": 0.65,
+            "adjacent_difference": 0.75,
+            "exact_repeat": 0.35,
+            "unordered_repeat": 0.25,
+            "diversity": 0.35
+          }
         }
       ],
-      "ranked_config_count": 1,
+      "ranked_config_count": 8,
       "previous_evaluation": {
         "draw_type": "numbers4",
         "status": "pending",
