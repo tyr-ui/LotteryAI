@@ -11,8 +11,9 @@ from games import LOTTO_GAMES
 from optimizer import optimize
 from review_output import write_review_outputs
 from feature_memory_analyzer import save_feature_memory_analysis
-from optimizer_learning import print_learning_weights
+from optimizer_learning import load_learning_strength, print_learning_weights
 from numbers_optimizer import optimize_numbers
+from optimizer_experience import save_optimizer_experience
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -477,6 +478,104 @@ def numbers_prediction_to_output(
     ]
 
 
+def build_experience_prediction_weights(
+    selected_weights: dict[str, object],
+) -> dict[str, float]:
+    """
+    Optimizerの選択重みを、Experience保存用の
+    PredictionWeights相当のJSON形式へ変換する。
+    """
+    weight_keys = (
+        "freq",
+        "recent",
+        "pair",
+        "triplet",
+        "delay",
+        "dist",
+        "repeat",
+    )
+    normalized = {
+        key: max(0.0, float(selected_weights.get(key, 0.0)))
+        for key in weight_keys
+    }
+    total = sum(normalized.values())
+
+    if total <= 0.0:
+        equal = 1.0 / len(weight_keys)
+        normalized = {key: equal for key in weight_keys}
+    else:
+        normalized = {
+            key: value / total
+            for key, value in normalized.items()
+        }
+
+    shape_weight = normalized["dist"] / 6.0
+
+    return {
+        "global_frequency": round(normalized["freq"], 6),
+        "recent_frequency": round(normalized["recent"], 6),
+        "delay": round(normalized["delay"], 6),
+        "pair": round(normalized["pair"], 6),
+        "triplet": round(normalized["triplet"], 6),
+        "repeat": round(normalized["repeat"], 6),
+        "sum_shape": round(shape_weight, 6),
+        "odd_shape": round(shape_weight, 6),
+        "low_shape": round(shape_weight, 6),
+        "consecutive_shape": round(shape_weight, 6),
+        "span_shape": round(shape_weight, 6),
+        "block_shape": round(shape_weight, 6),
+        "diversity": 0.35,
+    }
+
+
+def save_lotto_optimizer_experience(
+    game_key: str,
+    optimizer_result: dict[str, object],
+) -> dict[str, object]:
+    """LOTO系Optimizerの今回の勝者をExperienceへ保存する。"""
+    ranked_configs = optimizer_result.get("ranked_configs", [])
+    if not isinstance(ranked_configs, list) or not ranked_configs:
+        raise ValueError(
+            f"{game_key}: ranked_configs is empty; "
+            "optimizer experience cannot be saved."
+        )
+
+    best_evaluation = ranked_configs[0]
+    if not isinstance(best_evaluation, dict):
+        raise TypeError(
+            f"{game_key}: best optimizer evaluation must be a mapping."
+        )
+
+    selected_weights = optimizer_result.get("selected_weights", {})
+    selected_filters = optimizer_result.get("selected_filters", {})
+    if not isinstance(selected_weights, dict):
+        raise TypeError(
+            f"{game_key}: selected_weights must be a mapping."
+        )
+    if not isinstance(selected_filters, dict):
+        selected_filters = {}
+
+    selected_config = str(optimizer_result.get("selected_config", ""))
+    if not selected_config:
+        raise ValueError(
+            f"{game_key}: selected_config is missing."
+        )
+
+    return save_optimizer_experience(
+        game_name=game_key,
+        config_name=selected_config,
+        config={
+            "w": selected_weights,
+            "f": selected_filters,
+        },
+        evaluation=best_evaluation,
+        prediction_weights=build_experience_prediction_weights(
+            selected_weights
+        ),
+        learning_strength=load_learning_strength(game_key),
+    )
+
+
 def run_numbers_game(
     df,
     game_config: dict,
@@ -597,6 +696,12 @@ def main() -> None:
                 final_candidates=game_config[
                     "final_candidates"
                 ],
+            )
+            optimizer_results[game_key][
+                "experience_save"
+            ] = save_lotto_optimizer_experience(
+                game_key,
+                optimizer_results[game_key],
             )
 
     game_output = {}
