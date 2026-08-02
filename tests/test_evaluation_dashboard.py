@@ -196,6 +196,89 @@ class EvaluationDashboardTest(unittest.TestCase):
         self.assertIn("## Numbers4", markdown)
         self.assertIn("事後評価が0回です。", markdown)
 
+    def test_numbers_rates_are_read_and_rendered_as_percent(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_dir = Path(temp_dir)
+            self.write_json(
+                output_dir,
+                "optimizer_result.json",
+                {
+                    "numbers3": {
+                        "selected_config": "experience_numbers3_1",
+                        "ranked_configs": [
+                            {
+                                "config": "experience_numbers3_1",
+                                "search_origin": "experience",
+                                "selection_score": 1.5,
+                            }
+                        ],
+                        "numbers_backtest": {
+                            "average_best_position_matches": 1.25,
+                            "average_position_matches_per_ticket": 0.31,
+                            "average_best_unordered_matches": 1.88,
+                            "straight_hit_rate": 0.016667,
+                            "box_hit_rate": 0.061111,
+                        },
+                    }
+                },
+            )
+
+            dashboard = build_evaluation_dashboard(output_dir)
+            markdown = render_evaluation_dashboard_markdown(dashboard)
+
+        numbers = dashboard["games"]["numbers3"]["optimizer_backtest"]["numbers"]
+        self.assertEqual(numbers["straight_hit_rate"], 0.016667)
+        self.assertEqual(numbers["box_hit_rate"], 0.061111)
+        self.assertIn("Straight率: 1.67%", markdown)
+        self.assertIn("Box率: 6.11%", markdown)
+
+    def test_markdown_uses_unevaluated_instead_of_none(self):
+        dashboard = {
+            "schema_version": "1.0",
+            "generated_at": "2026-08-02T00:00:00+00:00",
+            "overall": {
+                "full_run_status": "ok",
+                "best_observed_game": None,
+                "least_evaluated_games": ["numbers3"],
+            },
+            "games": {
+                key: {
+                    "current": {
+                        "next_draw_no": 1,
+                        "selected_config": None,
+                        "selected_search_source": None,
+                        "prediction": [],
+                    },
+                    "observed_evaluation": {
+                        "status": "未評価",
+                        "evaluated_draws": 0,
+                        "all_time": {
+                            "avg_best_match_count": None,
+                            "avg_all_pattern_matches": None,
+                            "max_best_match_count": None,
+                        },
+                    },
+                    "optimizer_backtest": {},
+                    "experience": {"history_count": 0},
+                    "warnings": [],
+                }
+                for key in (
+                    "loto6",
+                    "loto7",
+                    "miniloto",
+                    "numbers3",
+                    "numbers4",
+                )
+            },
+        }
+
+        markdown = render_evaluation_dashboard_markdown(dashboard)
+
+        self.assertIn("平均最高一致: 未評価", markdown)
+        self.assertIn("平均1口一致: 未評価", markdown)
+        self.assertIn("最大一致: 未評価", markdown)
+        self.assertNotIn("平均最高一致: None", markdown)
+
     def test_write_dashboard_creates_json_and_markdown(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             output_dir = Path(temp_dir)
