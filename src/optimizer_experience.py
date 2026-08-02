@@ -6,6 +6,8 @@ import math
 from pathlib import Path
 from typing import Mapping, Sequence
 
+from optimizer_experience_store import load_experience_store
+
 
 OUTPUT_DIR = Path("output")
 EXPERIENCE_PATH = (
@@ -34,48 +36,13 @@ def _load_store() -> dict[str, object]:
     """
     Optimizer Experienceの保存データを読み込む。
 
-    ファイルが存在しない場合や内容が壊れている場合は、
-    空の保存領域を返す。
+    外側のJSON読込・破損時フォールバック・schema更新は
+    optimizer_experience_storeへ委譲する。
     """
-    if not EXPERIENCE_PATH.exists():
-        return {
-            "schema_version": SCHEMA_VERSION,
-            "games": {},
-        }
-
-    try:
-        loaded = json.loads(
-            EXPERIENCE_PATH.read_text(
-                encoding="utf-8",
-            )
-        )
-    except (
-        OSError,
-        json.JSONDecodeError,
-    ):
-        return {
-            "schema_version": SCHEMA_VERSION,
-            "games": {},
-        }
-
-    if not isinstance(loaded, dict):
-        return {
-            "schema_version": SCHEMA_VERSION,
-            "games": {},
-        }
-
-    games = loaded.get("games")
-
-    if not isinstance(games, dict):
-        games = {}
-
-    return {
-        "schema_version": SCHEMA_VERSION,
-        "updated_at": loaded.get(
-            "updated_at"
-        ),
-        "games": games,
-    }
+    return load_experience_store(
+        EXPERIENCE_PATH,
+        SCHEMA_VERSION,
+    )
 
 
 def _normalize_json_value(
