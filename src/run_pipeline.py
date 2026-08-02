@@ -14,6 +14,7 @@ from optimizer_learning import load_learning_strength, print_learning_weights
 from numbers_optimizer import optimize_numbers
 from optimizer_experience import save_optimizer_experience
 from common import now_iso
+from storage import save_json
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,14 +28,6 @@ def load_json(path: Path, default):
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return default
-
-
-def save_json(path: Path, data) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps(data, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
 
 
 def game_family(config: dict) -> str:
