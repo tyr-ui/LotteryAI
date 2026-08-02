@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from itertools import product
+from math import log
 from typing import Iterable, Mapping, Sequence
 
 from numbers_features import (
@@ -98,23 +99,6 @@ class NumbersPredictionResult:
         )
 
 
-@dataclass(frozen=True, slots=True)
-class NumbersNormalizationProfile:
-    position_frequency_max: tuple[float, ...]
-    recent_position_frequency_max: Mapping[
-        int,
-        tuple[float, ...],
-    ]
-    position_delay_max: tuple[float, ...]
-    overall_frequency_max: float
-    ordered_pair_max: Mapping[
-        tuple[int, int],
-        float,
-    ]
-    ordered_triplet_max: Mapping[int, float]
-    duplicate_pattern_max: float
-
-
 def format_number(
     candidate: Sequence[int],
 ) -> str:
@@ -141,99 +125,19 @@ def generate_all_candidates(
     )
 
 
-def _maximum_mapping_value(
-    values: Mapping[object, int | float],
+def _safe_log_probability(
+    value: float,
 ) -> float:
-    return max(
-        (float(value) for value in values.values()),
-        default=0.0,
-    )
+    safe = max(float(value), 1e-12)
 
-
-def _relative_to_max(
-    value: int | float,
-    maximum: int | float,
-) -> float:
-    resolved_maximum = float(maximum)
-
-    if resolved_maximum <= 0.0:
-        return 0.0
-
-    return min(
-        1.0,
-        max(
-            0.0,
-            float(value) / resolved_maximum,
-        ),
-    )
-
-
-def build_numbers_normalization_profile(
-    context: NumbersModelContext,
-) -> NumbersNormalizationProfile:
-    pair_max: dict[tuple[int, int], float] = {}
-
-    for key, value in (
-        context.ordered_pair_frequency.items()
-    ):
-        left_position, right_position, _, _ = key
-        position_key = (
-            int(left_position),
-            int(right_position),
-        )
-        pair_max[position_key] = max(
-            pair_max.get(position_key, 0.0),
-            float(value),
-        )
-
-    triplet_max: dict[int, float] = {}
-
-    for key, value in (
-        context.ordered_triplet_frequency.items()
-    ):
-        start = int(key[0])
-        triplet_max[start] = max(
-            triplet_max.get(start, 0.0),
-            float(value),
-        )
-
-    return NumbersNormalizationProfile(
-        position_frequency_max=tuple(
-            _maximum_mapping_value(position_map)
-            for position_map in context.position_frequency
-        ),
-        recent_position_frequency_max={
-            int(window): tuple(
-                _maximum_mapping_value(position_map)
-                for position_map in position_maps
-            )
-            for window, position_maps in (
-                context.recent_position_frequency.items()
-            )
-        },
-        position_delay_max=tuple(
-            _maximum_mapping_value(position_map)
-            for position_map in context.position_delay
-        ),
-        overall_frequency_max=(
-            _maximum_mapping_value(
-                context.overall_frequency
-            )
-        ),
-        ordered_pair_max=pair_max,
-        ordered_triplet_max=triplet_max,
-        duplicate_pattern_max=(
-            _maximum_mapping_value(
-                context.duplicate_pattern_frequency
-            )
-        ),
+    return 1.0 / (
+        1.0 + abs(log(safe))
     )
 
 
 def _average_recent_position_score(
     candidate: Sequence[int],
     context: NumbersModelContext,
-    normalization: NumbersNormalizationProfile,
 ) -> float:
     if not context.recent_windows:
         return 0.0
@@ -247,26 +151,13 @@ def _average_recent_position_score(
                 window
             ]
         )
-        position_maximums = (
-            normalization
-            .recent_position_frequency_max
-            .get(
-                window,
-                (),
-            )
-        )
 
         score = sum(
-            _relative_to_max(
+            float(
                 position_maps[position].get(
                     int(digit),
                     0.0,
-                ),
-                (
-                    position_maximums[position]
-                    if position < len(position_maximums)
-                    else 0.0
-                ),
+                )
             )
             for position, digit
             in enumerate(candidate)
@@ -283,19 +174,15 @@ def _average_recent_position_score(
 def _position_frequency_score(
     candidate: Sequence[int],
     context: NumbersModelContext,
-    normalization: NumbersNormalizationProfile,
 ) -> float:
     return sum(
-        _relative_to_max(
+        float(
             context.position_frequency[
                 position
             ].get(
                 int(digit),
                 0.0,
-            ),
-            normalization.position_frequency_max[
-                position
-            ],
+            )
         )
         for position, digit
         in enumerate(candidate)
@@ -305,39 +192,44 @@ def _position_frequency_score(
 def _position_delay_score(
     candidate: Sequence[int],
     context: NumbersModelContext,
-    normalization: NumbersNormalizationProfile,
 ) -> float:
-    scores = [
-        _relative_to_max(
-            context.position_delay[
-                position
-            ].get(
-                int(digit),
-                0,
-            ),
-            normalization.position_delay_max[
-                position
-            ],
+    maximum_delay = max(
+        1,
+        context.history_size,
+    )
+
+    normalized_scores = [
+        min(
+            float(
+                context.position_delay[
+                    position
+                ].get(
+                    int(digit),
+                    maximum_delay,
+                )
+            )
+            / maximum_delay,
+            1.0,
         )
         for position, digit
         in enumerate(candidate)
     ]
 
-    return sum(scores) / len(scores)
+    return sum(
+        normalized_scores
+    ) / len(normalized_scores)
 
 
 def _overall_frequency_score(
     candidate: Sequence[int],
     context: NumbersModelContext,
-    normalization: NumbersNormalizationProfile,
 ) -> float:
     return sum(
-        _relative_to_max(
+        float(
             context.overall_frequency.get(
                 int(digit),
                 0.0,
-            ),
-            normalization.overall_frequency_max,
+            )
         )
         for digit in candidate
     ) / len(candidate)
@@ -346,7 +238,6 @@ def _overall_frequency_score(
 def _ordered_pair_score(
     candidate: Sequence[int],
     context: NumbersModelContext,
-    normalization: NumbersNormalizationProfile,
 ) -> float:
     values: list[float] = []
 
@@ -357,34 +248,27 @@ def _ordered_pair_score(
             left_position + 1,
             len(candidate),
         ):
-            value = (
-                context
-                .ordered_pair_frequency
-                .get(
-                    (
-                        left_position,
-                        right_position,
-                        int(candidate[left_position]),
-                        int(candidate[right_position]),
-                    ),
-                    0.0,
-                )
-            )
-            maximum = (
-                normalization
-                .ordered_pair_max
-                .get(
-                    (
-                        left_position,
-                        right_position,
-                    ),
-                    0.0,
-                )
-            )
             values.append(
-                _relative_to_max(
-                    value,
-                    maximum,
+                float(
+                    context
+                    .ordered_pair_frequency
+                    .get(
+                        (
+                            left_position,
+                             right_position,
+                            int(
+                                candidate[
+                                    left_position
+                                ]
+                            ),
+                            int(
+                                candidate[
+                                    right_position
+                                ]
+                            ),
+                        ),
+                        0.0,
+                    )
                 )
             )
 
@@ -398,7 +282,6 @@ def _ordered_pair_score(
 def _ordered_triplet_score(
     candidate: Sequence[int],
     context: NumbersModelContext,
-    normalization: NumbersNormalizationProfile,
 ) -> float:
     values: list[float] = []
 
@@ -408,31 +291,19 @@ def _ordered_triplet_score(
             len(candidate) - 2,
         )
     ):
-        value = (
-            context
-            .ordered_triplet_frequency
-            .get(
-                (
-                    start,
-                    int(candidate[start]),
-                    int(candidate[start + 1]),
-                    int(candidate[start + 2]),
-                ),
-                0.0,
-            )
-        )
-        maximum = (
-            normalization
-            .ordered_triplet_max
-            .get(
-                start,
-                0.0,
-            )
-        )
         values.append(
-            _relative_to_max(
-                value,
-                maximum,
+            float(
+                context
+                .ordered_triplet_frequency
+                .get(
+                    (
+                        start,
+                        int(candidate[start]),
+                        int(candidate[start + 1]),
+                        int(candidate[start + 2]),
+                    ),
+                    0.0,
+                )
             )
         )
 
@@ -443,7 +314,6 @@ def _ordered_triplet_score(
     )
 
 
-
 def score_candidate(
     candidate: Sequence[int],
     context: NumbersModelContext,
@@ -451,10 +321,6 @@ def score_candidate(
     weights: (
         NumbersPredictionWeights
         | Mapping[str, object]
-        | None
-    ) = None,
-    normalization: (
-        NumbersNormalizationProfile
         | None
     ) = None,
 ) -> NumbersCandidateScore:
@@ -479,13 +345,6 @@ def score_candidate(
             weights
         )
     )
-    resolved_normalization = (
-        normalization
-        if normalization is not None
-        else build_numbers_normalization_profile(
-            context
-        )
-    )
 
     shape = build_numbers_shape_features(
         normalized,
@@ -497,54 +356,46 @@ def score_candidate(
         _position_frequency_score(
             normalized,
             context,
-            resolved_normalization,
         )
     )
     recent_position_frequency = (
         _average_recent_position_score(
             normalized,
             context,
-            resolved_normalization,
         )
     )
     position_delay = (
         _position_delay_score(
             normalized,
             context,
-            resolved_normalization,
         )
     )
     overall_frequency = (
         _overall_frequency_score(
             normalized,
             context,
-            resolved_normalization,
         )
     )
     ordered_pair = (
         _ordered_pair_score(
             normalized,
             context,
-            resolved_normalization,
         )
     )
     ordered_triplet = (
         _ordered_triplet_score(
             normalized,
             context,
-            resolved_normalization,
         )
     )
 
-    duplicate_pattern = _relative_to_max(
+    duplicate_pattern = float(
         context
         .duplicate_pattern_frequency
         .get(
             shape.duplicate_pattern,
             0.0,
-        ),
-        resolved_normalization
-        .duplicate_pattern_max,
+        )
     )
 
     sum_shape = gaussian_shape_score(
@@ -634,7 +485,9 @@ def score_candidate(
         + resolved_weights.ordered_triplet
         * ordered_triplet
         + resolved_weights.duplicate_pattern
-        * duplicate_pattern
+        * _safe_log_probability(
+            duplicate_pattern
+        )
         + resolved_weights.sum_shape
         * sum_shape
         + resolved_weights.odd_shape
@@ -667,7 +520,6 @@ def score_candidate(
     )
 
 
-
 def rank_candidates(
     candidates: Iterable[
         Sequence[int]
@@ -679,28 +531,15 @@ def rank_candidates(
         | Mapping[str, object]
         | None
     ) = None,
-    normalization: (
-        NumbersNormalizationProfile
-        | None
-    ) = None,
 ) -> tuple[
     NumbersCandidateScore,
-    ...
+    ...,
 ]:
-    resolved_normalization = (
-        normalization
-        if normalization is not None
-        else build_numbers_normalization_profile(
-            context
-        )
-    )
-
     scored = [
         score_candidate(
             candidate,
             context,
             weights=weights,
-            normalization=resolved_normalization,
         )
         for candidate in candidates
     ]
@@ -714,7 +553,6 @@ def rank_candidates(
     )
 
     return tuple(scored)
-
 
 
 def candidate_distance(
@@ -853,11 +691,6 @@ def predict_numbers(
             weights
         )
     )
-    normalization = (
-        build_numbers_normalization_profile(
-            context
-        )
-    )
 
     candidates = generate_all_candidates(
         context
@@ -866,7 +699,6 @@ def predict_numbers(
         candidates,
         context,
         weights=resolved_weights,
-        normalization=normalization,
     )
     selected = select_diverse(
         ranked,
@@ -885,14 +717,11 @@ def predict_numbers(
     )
 
 
-
 __all__ = [
     "NumberRow",
     "NumbersCandidateScore",
-    "NumbersNormalizationProfile",
     "NumbersPredictionResult",
     "NumbersPredictionWeights",
-    "build_numbers_normalization_profile",
     "candidate_distance",
     "format_number",
     "generate_all_candidates",
