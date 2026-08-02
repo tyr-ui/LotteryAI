@@ -39,6 +39,76 @@ def _normalize_float(
     return normalized
 
 
+def _normalize_json_value(
+    value: object,
+) -> object:
+    """Convert nested Config values into JSON-safe values."""
+    if value is None:
+        return None
+
+    if isinstance(value, bool):
+        return value
+
+    if isinstance(value, int):
+        return value
+
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            return None
+        return value
+
+    if isinstance(value, str):
+        return value
+
+    if isinstance(value, Mapping):
+        return {
+            str(key): _normalize_json_value(item)
+            for key, item in value.items()
+        }
+
+    if isinstance(value, Sequence):
+        if isinstance(value, (str, bytes, bytearray)):
+            return str(value)
+        return [_normalize_json_value(item) for item in value]
+
+    return str(value)
+
+
+def _normalize_config(
+    config: Mapping[str, object],
+) -> dict[str, object]:
+    """Normalize an Optimizer Config for stable statistics and signatures."""
+    weights = config.get("w")
+    filters = config.get("f", {})
+
+    if not isinstance(weights, Mapping):
+        raise ValueError(
+            "Optimizer config must contain a mapping named 'w'."
+        )
+
+    if not isinstance(filters, Mapping):
+        filters = {}
+
+    normalized_weights = {
+        str(key): _normalize_json_value(value)
+        for key, value in weights.items()
+    }
+    if not normalized_weights:
+        raise ValueError(
+            "Optimizer config weights must not be empty."
+        )
+
+    normalized_filters = {
+        str(key): _normalize_json_value(value)
+        for key, value in filters.items()
+    }
+
+    return {
+        "w": normalized_weights,
+        "f": normalized_filters,
+    }
+
+
 def _config_signature(
     config: Mapping[str, object],
 ) -> str:
