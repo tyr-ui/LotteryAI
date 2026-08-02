@@ -11,7 +11,6 @@ from optimizer_experience_stats import (
     _build_config_statistics,
     _build_search_source_statistics,
     _entry_sort_key,
-    _resolve_search_source,
 )
 from optimizer_adaptation import (
     build_evolution_adaptation,
@@ -27,20 +26,6 @@ EXPERIENCE_PATH = (
 SCHEMA_VERSION = "1.3"
 DEFAULT_HISTORY_LIMIT = 20
 DEFAULT_EXPERIENCE_LIMIT = 3
-
-DEFAULT_SEARCH_ALLOCATION = {
-    "experience": 3,
-    "random": 4,
-    "local": 6,
-    "evolution": 4,
-}
-MIN_SEARCH_ALLOCATION_SAMPLES = 5
-
-DEFAULT_EVOLUTION_COUNT = 4
-DEFAULT_MUTATION_RATE = 0.25
-DEFAULT_MUTATION_SCALE = 0.08
-MIN_ADAPTATION_SAMPLES = 5
-
 
 def _load_store() -> dict[str, object]:
     """
