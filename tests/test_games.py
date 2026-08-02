@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import pytest
+import unittest
 
 from games import LOTTO_GAMES
 
@@ -49,81 +49,79 @@ NUMBERS_EXPECTATIONS = {
 }
 
 
-def test_exactly_five_supported_games_are_registered() -> None:
-    assert set(LOTTO_GAMES) == EXPECTED_GAME_KEYS
+class GameDefinitionTest(unittest.TestCase):
+    def test_exactly_five_supported_games_are_registered(self) -> None:
+        self.assertEqual(EXPECTED_GAME_KEYS, set(LOTTO_GAMES))
+
+    def test_combination_game_definitions(self) -> None:
+        for game_key, expected in COMBINATION_EXPECTATIONS.items():
+            with self.subTest(game_key=game_key):
+                config = LOTTO_GAMES[game_key]
+
+                self.assertEqual(expected["display_name"], config["display_name"])
+                self.assertEqual(game_key, config["kind"])
+                self.assertNotEqual(
+                    "numbers",
+                    str(config.get("family", "lotto")).lower(),
+                )
+
+                self.assertEqual(expected["pick_count"], config["pick_count"])
+                self.assertEqual(expected["min_num"], config["min_num"])
+                self.assertEqual(expected["max_num"], config["max_num"])
+                self.assertLess(config["min_num"], config["max_num"])
+
+                self.assertEqual(config["pick_count"], len(config["main_cols"]))
+                self.assertEqual(
+                    config["pick_count"],
+                    len(set(config["main_cols"])),
+                )
+                self.assertEqual(expected["bonus_count"], len(config["bonus_cols"]))
+
+                self.assertEqual(["draw_no", "date"], config["all_columns"][:2])
+                self.assertEqual(
+                    config["main_cols"] + config["bonus_cols"],
+                    config["all_columns"][2:],
+                )
+                self.assertEqual(
+                    f"prediction_optimizer_{game_key}.json",
+                    config["prediction_filename"],
+                )
+
+    def test_numbers_game_definitions(self) -> None:
+        for game_key, expected in NUMBERS_EXPECTATIONS.items():
+            with self.subTest(game_key=game_key):
+                config = LOTTO_GAMES[game_key]
+
+                self.assertEqual(expected["display_name"], config["display_name"])
+                self.assertEqual(game_key, config["kind"])
+                self.assertEqual("numbers", config["family"])
+
+                self.assertEqual(expected["digit_count"], config["digit_count"])
+                self.assertEqual(0, config["digit_min"])
+                self.assertEqual(9, config["digit_max"])
+
+                expected_main_cols = [
+                    f"digit{position}"
+                    for position in range(1, config["digit_count"] + 1)
+                ]
+                self.assertEqual(expected_main_cols, config["main_cols"])
+                self.assertEqual([], config["bonus_cols"])
+                self.assertEqual(
+                    ["draw_no", "date", *config["main_cols"]],
+                    config["all_columns"],
+                )
+                self.assertEqual(
+                    f"prediction_optimizer_{game_key}.json",
+                    config["prediction_filename"],
+                )
+
+    def test_prediction_filenames_are_unique(self) -> None:
+        filenames = [
+            str(config["prediction_filename"])
+            for config in LOTTO_GAMES.values()
+        ]
+        self.assertEqual(len(filenames), len(set(filenames)))
 
 
-@pytest.mark.parametrize(
-    ("game_key", "expected"),
-    COMBINATION_EXPECTATIONS.items(),
-)
-def test_combination_game_definitions(
-    game_key: str,
-    expected: dict[str, int | str],
-) -> None:
-    config = LOTTO_GAMES[game_key]
-
-    assert config["display_name"] == expected["display_name"]
-    assert config["kind"] == game_key
-    assert str(config.get("family", "lotto")).lower() != "numbers"
-
-    assert config["pick_count"] == expected["pick_count"]
-    assert config["min_num"] == expected["min_num"]
-    assert config["max_num"] == expected["max_num"]
-    assert config["min_num"] < config["max_num"]
-
-    assert len(config["main_cols"]) == config["pick_count"]
-    assert len(set(config["main_cols"])) == config["pick_count"]
-    assert len(config["bonus_cols"]) == expected["bonus_count"]
-
-    assert config["all_columns"][:2] == ["draw_no", "date"]
-    assert config["all_columns"][2:] == (
-        config["main_cols"] + config["bonus_cols"]
-    )
-
-    assert config["prediction_filename"] == (
-        f"prediction_optimizer_{game_key}.json"
-    )
-
-
-@pytest.mark.parametrize(
-    ("game_key", "expected"),
-    NUMBERS_EXPECTATIONS.items(),
-)
-def test_numbers_game_definitions(
-    game_key: str,
-    expected: dict[str, int | str],
-) -> None:
-    config = LOTTO_GAMES[game_key]
-
-    assert config["display_name"] == expected["display_name"]
-    assert config["kind"] == game_key
-    assert config["family"] == "numbers"
-
-    assert config["digit_count"] == expected["digit_count"]
-    assert config["digit_min"] == 0
-    assert config["digit_max"] == 9
-
-    assert config["main_cols"] == [
-        f"digit{position}"
-        for position in range(1, config["digit_count"] + 1)
-    ]
-    assert config["bonus_cols"] == []
-    assert config["all_columns"] == [
-        "draw_no",
-        "date",
-        *config["main_cols"],
-    ]
-
-    assert config["prediction_filename"] == (
-        f"prediction_optimizer_{game_key}.json"
-    )
-
-
-def test_prediction_filenames_are_unique() -> None:
-    filenames = [
-        str(config["prediction_filename"])
-        for config in LOTTO_GAMES.values()
-    ]
-
-    assert len(filenames) == len(set(filenames))
+if __name__ == "__main__":
+    unittest.main()
