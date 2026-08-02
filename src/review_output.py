@@ -1,16 +1,13 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 import json
 
+from common import now_iso
+
 
 DEFAULT_TOP_CONFIGS = 5
-
-
-def now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
 
 
 def save_json(path: Path, data: Any) -> None:
