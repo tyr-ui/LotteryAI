@@ -10,6 +10,12 @@ from data_loader import dataframe_to_history
 from features import build_model_context, build_shape_features
 from games import LOTTO_GAMES
 from predictor import PredictionResult, PredictionWeights, predict
+from optimizer_evolution import generate_evolution_candidates
+from optimizer_experience import (
+    load_evolution_adaptation,
+    load_experience_configs,
+    load_search_allocation,
+)
 
 
 SEED = 2025
@@ -770,17 +776,77 @@ def optimize(
 
     rng = Random(SEED + int(max_num) * 100 + int(pick_count))
 
+    game_name = str(
+        game_config.get("kind")
+        or game_config.get("key")
+        or game_config.get("display_name")
+        or "unknown"
+    ).lower()
+    search_allocation = load_search_allocation(game_name)
+    allocation_counts = search_allocation.get("counts", {})
+    if not isinstance(allocation_counts, Mapping):
+        allocation_counts = {}
+
+    experience_count = max(
+        0,
+        int(allocation_counts.get("experience", 3)),
+    )
+    random_count = max(
+        0,
+        int(allocation_counts.get("random", RANDOM_SEARCH_COUNT)),
+    )
+    local_count = max(
+        0,
+        int(allocation_counts.get("local", LOCAL_SEARCH_COUNT)),
+    )
+    evolution_count = max(
+        0,
+        int(allocation_counts.get("evolution", 4)),
+    )
+
+    evolution_adaptation = load_evolution_adaptation(game_name)
+    mutation_rate = float(
+        evolution_adaptation.get("mutation_rate", 0.25)
+    )
+    mutation_scale = float(
+        evolution_adaptation.get("mutation_scale", 0.08)
+    )
+
     base_candidates = _build_base_candidates()
     inherited_filters = dict(base_candidates[0].get("f", {}))
 
+    raw_experience_candidates = load_experience_configs(
+        game_name,
+        limit=experience_count,
+    )
+    experience_candidates = [
+        _copy_search_config(
+            config,
+            name=str(config["name"]),
+            origin="experience",
+        )
+        for config in raw_experience_candidates
+    ]
+    experience_shortfall = max(
+        0,
+        experience_count - len(experience_candidates),
+    )
+    effective_random_count = (
+        random_count + experience_shortfall
+    )
+
     random_candidates = _generate_random_candidates(
-        count=RANDOM_SEARCH_COUNT,
+        count=effective_random_count,
         rng=rng,
         inherited_filters=inherited_filters,
     )
 
     stage_one_configs = _deduplicate_configs(
-        [*base_candidates, *random_candidates]
+        [
+            *base_candidates,
+            *experience_candidates,
+            *random_candidates,
+        ]
     )
 
     stage_one_results = [
@@ -812,12 +878,32 @@ def optimize(
 
     local_candidates = _generate_local_candidates(
         parent_configs,
-        count=LOCAL_SEARCH_COUNT,
+        count=local_count,
         rng=rng,
     )
 
+    raw_evolution_candidates = generate_evolution_candidates(
+        parent_configs,
+        count=evolution_count,
+        rng=rng,
+        mutation_rate=mutation_rate,
+        mutation_scale=mutation_scale,
+    )
+    evolution_candidates = [
+        _copy_search_config(
+            config,
+            name=str(config["name"]),
+            origin="evolution",
+        )
+        for config in raw_evolution_candidates
+    ]
+
     all_configs = _deduplicate_configs(
-        [*stage_one_configs, *local_candidates]
+        [
+            *stage_one_configs,
+            *local_candidates,
+            *evolution_candidates,
+        ]
     )
     evaluated_names = {
         str(result["config"])
@@ -922,11 +1008,29 @@ def optimize(
         "selected_weights": dict(best_config["w"]),
         "selected_filters": dict(best_config.get("f", {})),
         "search_metadata": {
-            "algorithm": "fixed_random_local_robust",
+            "algorithm": "adaptive_multi_source_robust",
+            "game_name": game_name,
             "base_config_count": len(base_candidates),
+            "experience_config_count": len(experience_candidates),
             "random_config_count": len(random_candidates),
             "local_config_count": len(local_candidates),
+            "evolution_config_count": len(evolution_candidates),
             "total_unique_config_count": len(all_configs),
+            "requested_search_allocation": {
+                "experience": experience_count,
+                "random": random_count,
+                "local": local_count,
+                "evolution": evolution_count,
+            },
+            "effective_search_allocation": {
+                "experience": len(experience_candidates),
+                "random": len(random_candidates),
+                "local": len(local_candidates),
+                "evolution": len(evolution_candidates),
+            },
+            "experience_shortfall_to_random": experience_shortfall,
+            "search_allocation": search_allocation,
+            "evolution_adaptation": evolution_adaptation,
             "parent_count": PARENT_COUNT,
             "robust_finalist_count": ROBUST_FINALIST_COUNT,
             "robust_seeds": list(ROBUST_SEEDS),
