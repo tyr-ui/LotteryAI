@@ -16,7 +16,11 @@ from numbers_predictor import (
     NumbersPredictionWeights,
     predict_numbers,
 )
-from optimizer_experience import load_experience_configs
+from optimizer_experience import (
+    load_evolution_adaptation,
+    load_experience_configs,
+    load_search_allocation,
+)
 
 
 WEIGHT_FIELDS = tuple(
@@ -314,6 +318,42 @@ def evaluate_numbers_weights(
     )
 
 
+def _random_weights(rng: Random) -> NumbersPredictionWeights:
+    values = _weights_to_dict(NumbersPredictionWeights())
+    for field_name in WEIGHT_FIELDS:
+        values[field_name] = _clamp_weight(rng.uniform(0.15, 2.25))
+    values["diversity"] = _clamp_weight(rng.uniform(0.15, 0.80))
+    return NumbersPredictionWeights(**values)
+
+
+def _crossover_weights(
+    first: NumbersPredictionWeights,
+    second: NumbersPredictionWeights,
+    *,
+    rng: Random,
+    mutation_rate: float,
+    mutation_scale: float,
+) -> NumbersPredictionWeights:
+    first_values = _weights_to_dict(first)
+    second_values = _weights_to_dict(second)
+    values: dict[str, float] = {}
+
+    for field_name in first_values:
+        value = (
+            first_values[field_name]
+            if rng.random() < 0.5
+            else second_values[field_name]
+        )
+        if rng.random() < mutation_rate:
+            value *= rng.uniform(
+                1.0 - mutation_scale,
+                1.0 + mutation_scale,
+            )
+        values[field_name] = _clamp_weight(value)
+
+    return NumbersPredictionWeights(**values)
+
+
 def optimize_numbers(
     history: Iterable[Sequence[int]],
     config: Mapping[str, object] | object,
@@ -323,43 +363,21 @@ def optimize_numbers(
     normalized_history = _normalize_history(history)
 
     if not normalized_history:
-        raise ValueError(
-            "history must contain at least one draw."
-        )
+        raise ValueError("history must contain at least one draw.")
 
     digit_count = len(normalized_history[0])
-    train_window = int(
-        _config_value(config, "train_window", 500)
-    )
-    full_tested_periods = int(
-        _config_value(config, "tested_periods", 90)
-    )
-    top_k = int(
-        _config_value(config, "top_k", 10)
-    )
+    train_window = int(_config_value(config, "train_window", 500))
+    full_tested_periods = int(_config_value(config, "tested_periods", 90))
+    top_k = int(_config_value(config, "top_k", 10))
     configured_search_periods = int(
-        _config_value(
-            config,
-            "numbers_optimizer_periods",
-            0,
-        )
-        or 0
-    )
-    local_config_count = int(
-        _config_value(
-            config,
-            "numbers_optimizer_local_configs",
-            2,
-        )
-        or 0
+        _config_value(config, "numbers_optimizer_periods", 0) or 0
     )
     mutation_scale = float(
-        _config_value(
-            config,
-            "numbers_optimizer_mutation_scale",
-            0.20,
-        )
+        _config_value(config, "numbers_optimizer_mutation_scale", 0.20)
         or 0.20
+    )
+    game_key = str(
+        _config_value(config, "key", f"numbers{digit_count}")
     )
 
     search_periods = _evaluation_periods(
@@ -369,61 +387,35 @@ def optimize_numbers(
         train_window=train_window,
     )
 
+    allocation = load_search_allocation(game_key)
+    allocation_counts = allocation.get("counts", {})
+    if not isinstance(allocation_counts, Mapping):
+        allocation_counts = {}
+
+    requested_experience = max(0, int(allocation_counts.get("experience", 3)))
+    requested_random = max(0, int(allocation_counts.get("random", 4)))
+    requested_local = max(0, int(allocation_counts.get("local", 6)))
+    requested_evolution = max(0, int(allocation_counts.get("evolution", 4)))
+
+    evolution_adaptation = load_evolution_adaptation(game_key)
+    evolution_mutation_rate = float(
+        evolution_adaptation.get("mutation_rate", 0.25) or 0.25
+    )
+    evolution_mutation_scale = float(
+        evolution_adaptation.get("mutation_scale", 0.08) or 0.08
+    )
+
     ranked: list[dict[str, object]] = []
     seen_weight_signatures: set[tuple[tuple[str, float], ...]] = set()
 
-    for config_name, weights in BASE_WEIGHT_CONFIGS:
-        seen_weight_signatures.add(_weights_signature(weights))
-        summary = evaluate_numbers_weights(
-            normalized_history,
-            config,
-            weights=weights,
-            tested_periods=search_periods,
-            top_k=top_k,
-        )
-        ranked.append({
-            "config": config_name,
-            "source": "base",
-            "weights": _weights_to_dict(weights),
-            **summary.to_dict(),
-            "_weights_object": weights,
-            "_summary_object": summary,
-        })
-
-    game_key = str(
-        _config_value(
-            config,
-            "key",
-            f"numbers{digit_count}",
-        )
-    )
-    experience_limit = max(
-        0,
-        int(
-            _config_value(
-                config,
-                "numbers_optimizer_experience_configs",
-                3,
-            )
-            or 0
-        ),
-    )
-    loaded_experience = load_experience_configs(
-        game_key,
-        limit=experience_limit,
-    )
-    restored_experience_count = 0
-
-    for item in loaded_experience:
-        raw_weights = item.get("w", {})
-        if not isinstance(raw_weights, Mapping):
-            continue
-        weights = _weights_from_mapping(raw_weights)
-        if weights is None:
-            continue
+    def evaluate_candidate(
+        config_name: str,
+        source: str,
+        weights: NumbersPredictionWeights,
+    ) -> bool:
         signature = _weights_signature(weights)
         if signature in seen_weight_signatures:
-            continue
+            return False
         seen_weight_signatures.add(signature)
         summary = evaluate_numbers_weights(
             normalized_history,
@@ -433,51 +425,104 @@ def optimize_numbers(
             top_k=top_k,
         )
         ranked.append({
-            "config": str(item.get("name", "experience")),
-            "source": "experience",
+            "config": config_name,
+            "source": source,
             "weights": _weights_to_dict(weights),
             **summary.to_dict(),
             "_weights_object": weights,
             "_summary_object": summary,
         })
-        restored_experience_count += 1
+        return True
+
+    for config_name, weights in BASE_WEIGHT_CONFIGS:
+        evaluate_candidate(config_name, "base", weights)
+
+    loaded_experience = load_experience_configs(
+        game_key,
+        limit=requested_experience,
+    )
+    restored_experience_count = 0
+    for item in loaded_experience:
+        raw_weights = item.get("w", {})
+        if not isinstance(raw_weights, Mapping):
+            continue
+        weights = _weights_from_mapping(raw_weights)
+        if weights is None:
+            continue
+        if evaluate_candidate(
+            str(item.get("name", "experience")),
+            "experience",
+            weights,
+        ):
+            restored_experience_count += 1
+
+    rng = Random(seed)
+    experience_shortfall = max(
+        0,
+        requested_experience - restored_experience_count,
+    )
+    effective_random_target = requested_random + experience_shortfall
+    generated_random_count = 0
+    random_attempts = 0
+    while generated_random_count < effective_random_target and random_attempts < effective_random_target * 20 + 20:
+        random_attempts += 1
+        if evaluate_candidate(
+            f"random_{generated_random_count + 1:02d}",
+            "random",
+            _random_weights(rng),
+        ):
+            generated_random_count += 1
 
     ranked.sort(
-        key=lambda item: _summary_sort_key(
-            item["_summary_object"]
-        ),
+        key=lambda item: _summary_sort_key(item["_summary_object"]),
         reverse=True,
     )
 
-    rng = Random(seed)
-    parent_weights = ranked[0]["_weights_object"]
-
-    for index in range(max(0, local_config_count)):
+    parent_pool = [item["_weights_object"] for item in ranked[: max(2, min(5, len(ranked)))]]
+    generated_local_count = 0
+    local_attempts = 0
+    while generated_local_count < requested_local and local_attempts < requested_local * 20 + 20:
+        local_attempts += 1
+        parent = parent_pool[generated_local_count % len(parent_pool)]
         weights = _mutate_weights(
-            parent_weights,
+            parent,
             rng=rng,
             mutation_scale=mutation_scale,
         )
-        summary = evaluate_numbers_weights(
-            normalized_history,
-            config,
-            weights=weights,
-            tested_periods=search_periods,
-            top_k=top_k,
-        )
-        ranked.append({
-            "config": f"local_{index + 1}",
-            "source": "local",
-            "weights": _weights_to_dict(weights),
-            **summary.to_dict(),
-            "_weights_object": weights,
-            "_summary_object": summary,
-        })
+        if evaluate_candidate(
+            f"local_{generated_local_count + 1:02d}",
+            "local",
+            weights,
+        ):
+            generated_local_count += 1
 
     ranked.sort(
-        key=lambda item: _summary_sort_key(
-            item["_summary_object"]
-        ),
+        key=lambda item: _summary_sort_key(item["_summary_object"]),
+        reverse=True,
+    )
+    evolution_parents = [item["_weights_object"] for item in ranked[: max(2, min(6, len(ranked)))]]
+    generated_evolution_count = 0
+    evolution_attempts = 0
+    while generated_evolution_count < requested_evolution and evolution_attempts < requested_evolution * 30 + 30:
+        evolution_attempts += 1
+        first = evolution_parents[rng.randrange(len(evolution_parents))]
+        second = evolution_parents[rng.randrange(len(evolution_parents))]
+        weights = _crossover_weights(
+            first,
+            second,
+            rng=rng,
+            mutation_rate=evolution_mutation_rate,
+            mutation_scale=evolution_mutation_scale,
+        )
+        if evaluate_candidate(
+            f"evolution_{generated_evolution_count + 1:02d}",
+            "evolution",
+            weights,
+        ):
+            generated_evolution_count += 1
+
+    ranked.sort(
+        key=lambda item: _summary_sort_key(item["_summary_object"]),
         reverse=True,
     )
 
@@ -493,10 +538,7 @@ def optimize_numbers(
         weights=selected_weights,
     )
 
-    context = build_numbers_model_context(
-        normalized_history,
-        config,
-    )
+    context = build_numbers_model_context(normalized_history, config)
     prediction_result = predict_numbers(
         context,
         top_k=top_k,
@@ -515,10 +557,7 @@ def optimize_numbers(
             "exact_repeat_count": item.exact_repeat_count,
             "unordered_repeat_count": item.unordered_repeat_count,
         }
-        for index, item in enumerate(
-            prediction_result.selected,
-            start=1,
-        )
+        for index, item in enumerate(prediction_result.selected, start=1)
     ]
 
     box_prediction = _build_box_prediction(
@@ -528,29 +567,22 @@ def optimize_numbers(
     )
 
     public_ranked = [
-        {
-            key: value
-            for key, value in item.items()
-            if not key.startswith("_")
-        }
+        {key: value for key, value in item.items() if not key.startswith("_")}
         for item in ranked
     ]
-
     default_result = next(
-        (
-            item
-            for item in public_ranked
-            if item["config"] == "default"
-        ),
+        (item for item in public_ranked if item["config"] == "default"),
         None,
     )
+    default_weights = _weights_to_dict(NumbersPredictionWeights())
+    applied_weights = _weights_to_dict(selected_weights)
 
-    default_weights = _weights_to_dict(
-        NumbersPredictionWeights()
-    )
-    applied_weights = _weights_to_dict(
-        selected_weights
-    )
+    effective_counts = {
+        "experience": restored_experience_count,
+        "random": generated_random_count,
+        "local": generated_local_count,
+        "evolution": generated_evolution_count,
+    }
 
     return {
         "random_baseline": default_result or {},
@@ -567,40 +599,36 @@ def optimize_numbers(
             "base_prediction_weights": default_weights,
             "applied_prediction_weights": applied_weights,
             "weight_diff": {
-                key: round(
-                    applied_weights[key]
-                    - default_weights[key],
-                    6,
-                )
+                key: round(applied_weights[key] - default_weights[key], 6)
                 for key in applied_weights
             },
         },
         "search_metadata": {
-            "algorithm": (
-                "numbers_base_experience_local_search"
-            ),
+            "algorithm": "numbers_adaptive_multi_source_search",
             "optimizer_connected": True,
-            "candidate_space_size": (
-                prediction_result.generated_count
-            ),
+            "candidate_space_size": prediction_result.generated_count,
             "box_prediction_enabled": True,
             "box_prediction_version": 1,
-            "box_prediction_count": len(
-                box_prediction
-            ),
+            "box_prediction_count": len(box_prediction),
             "base_config_count": len(BASE_WEIGHT_CONFIGS),
-            "experience_requested_count": experience_limit,
+            "requested_allocation": {
+                "experience": requested_experience,
+                "random": requested_random,
+                "local": requested_local,
+                "evolution": requested_evolution,
+            },
+            "effective_allocation": effective_counts,
+            "experience_shortfall_to_random": experience_shortfall,
+            "allocation_reason": allocation.get("reason"),
+            "allocation_receiver": allocation.get("receiver"),
+            "allocation_donor": allocation.get("donor"),
+            "allocation_sample_count": allocation.get("sample_count", 0),
+            "evolution_adaptation": evolution_adaptation,
             "experience_loaded_count": len(loaded_experience),
             "experience_restored_count": restored_experience_count,
-            "local_config_count": max(
-                0,
-                local_config_count,
-            ),
             "evaluated_config_count": len(public_ranked),
             "search_tested_periods": search_periods,
-            "full_tested_periods": (
-                full_backtest.tested_periods
-            ),
+            "full_tested_periods": full_backtest.tested_periods,
             "seed": seed,
         },
         "feature_ablation": [],
@@ -608,9 +636,8 @@ def optimize_numbers(
             "game_key": game_key,
             "loaded_count": len(loaded_experience),
             "restored_count": restored_experience_count,
-            "selected_from_experience": (
-                str(selected.get("source", "")) == "experience"
-            ),
+            "selected_from_experience": str(selected.get("source", "")) == "experience",
+            "selected_source": str(selected.get("source", "")),
         },
         "numbers_backtest": full_backtest.to_dict(),
         "prediction": prediction,
