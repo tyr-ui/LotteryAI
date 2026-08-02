@@ -2,7 +2,6 @@ from pathlib import Path
 import json
 import os
 from collections import Counter
-from datetime import datetime, timezone
 
 import numpy as np
 
@@ -14,14 +13,11 @@ from feature_memory_analyzer import save_feature_memory_analysis
 from optimizer_learning import load_learning_strength, print_learning_weights
 from numbers_optimizer import optimize_numbers
 from optimizer_experience import save_optimizer_experience
+from common import now_iso
 
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "output"
-
-
-def now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
 
 
 def load_json(path: Path, default):
