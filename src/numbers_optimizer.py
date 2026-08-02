@@ -16,6 +16,7 @@ from numbers_predictor import (
     NumbersPredictionWeights,
     predict_numbers,
 )
+from optimizer_experience import load_experience_configs
 
 
 WEIGHT_FIELDS = tuple(
@@ -244,6 +245,31 @@ def _mutate_weights(
     return NumbersPredictionWeights(**values)
 
 
+
+def _weights_from_mapping(
+    values: Mapping[str, object],
+) -> NumbersPredictionWeights | None:
+    """Experienceの重み辞書をNumbers用重みへ安全に復元する。"""
+    defaults = _weights_to_dict(NumbersPredictionWeights())
+    normalized: dict[str, float] = {}
+
+    for field_name, default_value in defaults.items():
+        raw_value = values.get(field_name, default_value)
+        try:
+            numeric = float(raw_value)
+        except (TypeError, ValueError):
+            return None
+        normalized[field_name] = _clamp_weight(numeric)
+
+    return NumbersPredictionWeights(**normalized)
+
+
+def _weights_signature(
+    weights: NumbersPredictionWeights,
+) -> tuple[tuple[str, float], ...]:
+    return tuple(sorted(_weights_to_dict(weights).items()))
+
+
 def _evaluation_periods(
     *,
     digit_count: int,
@@ -344,8 +370,10 @@ def optimize_numbers(
     )
 
     ranked: list[dict[str, object]] = []
+    seen_weight_signatures: set[tuple[tuple[str, float], ...]] = set()
 
     for config_name, weights in BASE_WEIGHT_CONFIGS:
+        seen_weight_signatures.add(_weights_signature(weights))
         summary = evaluate_numbers_weights(
             normalized_history,
             config,
@@ -361,6 +389,58 @@ def optimize_numbers(
             "_weights_object": weights,
             "_summary_object": summary,
         })
+
+    game_key = str(
+        _config_value(
+            config,
+            "key",
+            f"numbers{digit_count}",
+        )
+    )
+    experience_limit = max(
+        0,
+        int(
+            _config_value(
+                config,
+                "numbers_optimizer_experience_configs",
+                3,
+            )
+            or 0
+        ),
+    )
+    loaded_experience = load_experience_configs(
+        game_key,
+        limit=experience_limit,
+    )
+    restored_experience_count = 0
+
+    for item in loaded_experience:
+        raw_weights = item.get("w", {})
+        if not isinstance(raw_weights, Mapping):
+            continue
+        weights = _weights_from_mapping(raw_weights)
+        if weights is None:
+            continue
+        signature = _weights_signature(weights)
+        if signature in seen_weight_signatures:
+            continue
+        seen_weight_signatures.add(signature)
+        summary = evaluate_numbers_weights(
+            normalized_history,
+            config,
+            weights=weights,
+            tested_periods=search_periods,
+            top_k=top_k,
+        )
+        ranked.append({
+            "config": str(item.get("name", "experience")),
+            "source": "experience",
+            "weights": _weights_to_dict(weights),
+            **summary.to_dict(),
+            "_weights_object": weights,
+            "_summary_object": summary,
+        })
+        restored_experience_count += 1
 
     ranked.sort(
         key=lambda item: _summary_sort_key(
@@ -497,7 +577,7 @@ def optimize_numbers(
         },
         "search_metadata": {
             "algorithm": (
-                "numbers_base_plus_local_search"
+                "numbers_base_experience_local_search"
             ),
             "optimizer_connected": True,
             "candidate_space_size": (
@@ -509,6 +589,9 @@ def optimize_numbers(
                 box_prediction
             ),
             "base_config_count": len(BASE_WEIGHT_CONFIGS),
+            "experience_requested_count": experience_limit,
+            "experience_loaded_count": len(loaded_experience),
+            "experience_restored_count": restored_experience_count,
             "local_config_count": max(
                 0,
                 local_config_count,
@@ -521,7 +604,14 @@ def optimize_numbers(
             "seed": seed,
         },
         "feature_ablation": [],
-        "optimizer_experience": {},
+        "optimizer_experience": {
+            "game_key": game_key,
+            "loaded_count": len(loaded_experience),
+            "restored_count": restored_experience_count,
+            "selected_from_experience": (
+                str(selected.get("source", "")) == "experience"
+            ),
+        },
         "numbers_backtest": full_backtest.to_dict(),
         "prediction": prediction,
         "box_prediction": box_prediction,
