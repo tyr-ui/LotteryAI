@@ -1,0 +1,131 @@
+# LotteryAI Evaluation Dashboard
+
+- 生成日時: `2026-08-02T13:14:01.665908+00:00`
+- Full Run: **ok**
+- Dashboard schema: `1.0`
+
+## 全体
+
+- 事後評価の平均最高一致が最も高いゲーム: **LOTO7**
+- 事後評価が最も少ないゲーム: Numbers3, Numbers4
+
+## LOTO6
+
+- 次回抽せん回: **2125**
+- 採用Config: `experience_loto6_1`
+- 採用元: `experience`
+- 事後評価: **参考値** (8回)
+- 平均最高一致: 1.625
+- 平均1口一致: 0.975
+- 最大一致: 3
+- Optimizer selection_score: 1.221135
+- Optimizer Random uplift: 0.2667
+- Experience履歴: 14件
+
+### 次回予想
+
+1. 2・6・19・26・27・38<br>2. 5・10・16・24・37・42<br>3. 8・21・22・30・35・36<br>4. 14・18・20・23・25・43<br>5. 4・11・13・15・31・34
+
+### 注意
+
+- 事後評価が8回のため、成績は参考値です。
+
+## LOTO7
+
+- 次回抽せん回: **689**
+- 採用Config: `experience_loto7_1`
+- 採用元: `experience`
+- 事後評価: **データ不足** (4回)
+- 平均最高一致: 2.25
+- 平均1口一致: 1.25
+- 最大一致: 3
+- Optimizer selection_score: 1.71825
+- Optimizer Random uplift: 0.1222
+- Experience履歴: 14件
+
+### 次回予想
+
+1. 9・12・15・22・29・34・35<br>2. 1・4・13・17・26・31・36<br>3. 7・11・18・19・24・30・33<br>4. 1・8・10・14・21・27・32<br>5. 3・6・7・16・25・28・34
+
+### 注意
+
+- 事後評価が4回のため、長期成績は判断できません。
+
+## ミニロト
+
+- 次回抽せん回: **1398**
+- 採用Config: `experience_miniloto_1`
+- 採用元: `experience`
+- 事後評価: **データ不足** (1回)
+- 平均最高一致: 2.0
+- 平均1口一致: 0.8
+- 最大一致: 2
+- Optimizer selection_score: 1.127073
+- Optimizer Random uplift: 0.1519
+- Experience履歴: 14件
+
+### 次回予想
+
+1. 4・11・21・28・31<br>2. 3・12・16・27・29<br>3. 1・10・19・20・30<br>4. 7・13・18・22・25<br>5. 6・9・14・23・24
+
+### 注意
+
+- 事後評価が1回のため、長期成績は判断できません。
+
+## Numbers3
+
+- 次回抽せん回: **7040**
+- 採用Config: `experience_numbers3_1`
+- 採用元: `experience`
+- 事後評価: **未評価** (0回)
+- 平均最高一致: None
+- 平均1口一致: None
+- 最大一致: None
+- Optimizer selection_score: 2.616669
+- Optimizer Random uplift: None
+- Experience履歴: 5件
+
+### 次回予想
+
+1. 473<br>2. 374<br>3. 923<br>4. 329<br>5. 362<br>6. 263<br>7. 485<br>8. 158<br>9. 087<br>10. 841
+
+### Numbersバックテスト
+
+- 平均最高位置一致: 1.272222
+- 1口平均位置一致: 0.326111
+- 平均最高順不同一致: 1.811111
+- Straight: None (None)
+- Box: None (None)
+
+### 注意
+
+- 事後評価が0回のため、長期成績は判断できません。
+
+## Numbers4
+
+- 次回抽せん回: **7040**
+- 採用Config: `experience_numbers4_1`
+- 採用元: `experience`
+- 事後評価: **未評価** (0回)
+- 平均最高一致: None
+- 平均1口一致: None
+- 最大一致: None
+- Optimizer selection_score: 2.358332
+- Optimizer Random uplift: None
+- Experience履歴: 5件
+
+### 次回予想
+
+1. 8514<br>2. 2572<br>3. 6934<br>4. 2673<br>5. 1485<br>6. 4158<br>7. 4396<br>8. 0279<br>9. 0499<br>10. 9801
+
+### Numbersバックテスト
+
+- 平均最高位置一致: 1.544444
+- 1口平均位置一致: 0.415556
+- 平均最高順不同一致: 2.327778
+- Straight: None (None)
+- Box: None (None)
+
+### 注意
+
+- 事後評価が0回のため、長期成績は判断できません。
