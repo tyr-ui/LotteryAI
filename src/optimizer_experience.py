@@ -6,7 +6,7 @@ import math
 from pathlib import Path
 from typing import Mapping, Sequence
 
-from optimizer_experience_store import load_experience_store
+from optimizer_experience_store import load_experience_store, save_experience_store
 
 
 OUTPUT_DIR = Path("output")
@@ -1657,29 +1657,9 @@ def save_optimizer_experience(
         "games": games,
     }
 
-    OUTPUT_DIR.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    temporary_path = (
-        EXPERIENCE_PATH.with_suffix(
-            ".json.tmp"
-        )
-    )
-
-    temporary_path.write_text(
-        json.dumps(
-            output,
-            ensure_ascii=False,
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
-    )
-
-    temporary_path.replace(
-        EXPERIENCE_PATH
+    save_experience_store(
+        EXPERIENCE_PATH,
+        output,
     )
 
     return {
