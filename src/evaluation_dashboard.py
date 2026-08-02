@@ -69,7 +69,7 @@ def _game(game:str, run:Mapping[str,Any], hist:Sequence[Any], summary:Mapping[st
     back={"selection_score":_round(sr.get("selection_score")),"avg_matches":_round(sr.get("avg_matches")),"average_matches_per_ticket":_round(sr.get("average_matches_per_ticket")),"random_uplift":_round(sr.get("random_uplift")),"tested_periods":sr.get("tested_periods"),"algorithm":meta.get("algorithm"),"requested_allocation":dict(_map(meta.get("requested_allocation"))),"effective_allocation":dict(_map(meta.get("effective_allocation")))}
     if game not in COMBINATION:
         nb=_map(og.get("numbers_backtest")) or sr
-        back["numbers"]={"average_best_position_matches":_round(nb.get("average_best_position_matches") or nb.get("avg_matches")),"average_position_matches_per_ticket":_round(nb.get("average_position_matches_per_ticket") or nb.get("average_matches_per_ticket")),"average_best_unordered_matches":_round(nb.get("average_best_unordered_matches")),"average_unordered_matches_per_ticket":_round(nb.get("average_unordered_matches_per_ticket")),"straight_hits":nb.get("straight_hits"),"box_hits":nb.get("box_hits"),"straight_rate":_round(nb.get("straight_rate")),"box_rate":_round(nb.get("box_rate"))}
+        back["numbers"]={"average_best_position_matches":_round(nb.get("average_best_position_matches") or nb.get("avg_matches")),"average_position_matches_per_ticket":_round(nb.get("average_position_matches_per_ticket") or nb.get("average_matches_per_ticket")),"average_best_unordered_matches":_round(nb.get("average_best_unordered_matches")),"average_unordered_matches_per_ticket":_round(nb.get("average_unordered_matches_per_ticket")),"straight_hit_rate":_round(nb.get("straight_hit_rate")),"box_hit_rate":_round(nb.get("box_hit_rate"))}
     warning=f"事後評価が{count}回のため、"+("長期成績は判断できません。" if count<5 else "成績は参考値です。") if count<20 else None
     return {"display_name":GAME_NAMES[game],"current":{"latest_draw_no":rg.get("latest_draw_no"),"next_draw_no":rg.get("next_draw_no"),"selected_config":selected,"selected_search_source":_source(selected,ranked),"prediction":[dict(_map(x)) for x in _list(rg.get("prediction")) if _map(x)],"previous_evaluation":dict(_map(rg.get("previous_evaluation")))},"observed_evaluation":observed,"optimizer_backtest":back,"experience":_experience(eg),"warnings":[warning] if warning else []}
 
@@ -81,6 +81,14 @@ def build_evaluation_dashboard(output_dir:Path)->dict[str,object]:
         if metric is not None:candidates.append((g,metric))
     minimum=min(counts.values(),default=0)
     return {"schema_version":SCHEMA_VERSION,"generated_at":run.get("generated_at") or opt.get("generated_at") or exp.get("updated_at"),"status":run.get("status","unknown"),"overall":{"full_run_status":run.get("status","unknown"),"best_observed_game":max(candidates,key=lambda x:x[1])[0] if candidates else None,"least_evaluated_games":[g for g,n in counts.items() if n==minimum],"experience_schema_version":exp.get("schema_version"),"warnings":[f"{GAME_NAMES[g]}の事後評価は{n}回です。" for g,n in counts.items() if n<5],"previous_dashboard_comparison":{"status":"unavailable","reason":"初回実装では過去Dashboardとの差分を保存していません。"}},"games":games}
+
+
+def _display_value(value: Any) -> str:
+    return "未評価" if value is None else str(value)
+
+def _display_percent(value: Any) -> str:
+    number=_num(value)
+    return "未評価" if number is None else f"{float(number)*100:.2f}%"
 
 def _prediction(game:str, rows:Sequence[Any])->str:
     out=[]
@@ -98,9 +106,9 @@ def render_evaluation_dashboard_markdown(dashboard:Mapping[str,object])->str:
     lines=["# LotteryAI Evaluation Dashboard","",f"- 生成日時: `{dashboard.get('generated_at')}`",f"- Full Run: **{overall.get('full_run_status')}**",f"- Dashboard schema: `{dashboard.get('schema_version')}`","","## 全体","",f"- 事後評価の平均最高一致が最も高いゲーム: **{GAME_NAMES.get(str(best),str(best)) if best else '判定不能'}**",f"- 事後評価が最も少ないゲーム: {', '.join(least) if least else '不明'}",""]
     for g in GAME_KEYS:
         game=_map(games.get(g)); cur=_map(game.get("current")); obs=_map(game.get("observed_evaluation")); alltime=_map(obs.get("all_time")); bt=_map(game.get("optimizer_backtest")); ex=_map(game.get("experience"))
-        lines += [f"## {GAME_NAMES[g]}","",f"- 次回抽せん回: **{cur.get('next_draw_no')}**",f"- 採用Config: `{cur.get('selected_config')}`",f"- 採用元: `{cur.get('selected_search_source')}`",f"- 事後評価: **{obs.get('status')}** ({obs.get('evaluated_draws')}回)",f"- 平均最高一致: {alltime.get('avg_best_match_count')}",f"- 平均1口一致: {alltime.get('avg_all_pattern_matches')}",f"- 最大一致: {alltime.get('max_best_match_count')}",f"- Optimizer selection_score: {bt.get('selection_score')}",f"- Optimizer Random uplift: {bt.get('random_uplift')}",f"- Experience履歴: {ex.get('history_count')}件","","### 次回予想","",_prediction(g,_list(cur.get("prediction"))),""]
+        lines += [f"## {GAME_NAMES[g]}","",f"- 次回抽せん回: **{cur.get('next_draw_no')}**",f"- 採用Config: `{cur.get('selected_config')}`",f"- 採用元: `{cur.get('selected_search_source')}`",f"- 事後評価: **{obs.get('status')}** ({obs.get('evaluated_draws')}回)",f"- 平均最高一致: {_display_value(alltime.get('avg_best_match_count'))}",f"- 平均1口一致: {_display_value(alltime.get('avg_all_pattern_matches'))}",f"- 最大一致: {_display_value(alltime.get('max_best_match_count'))}",f"- Optimizer selection_score: {_display_value(bt.get('selection_score'))}",f"- Optimizer Random uplift: {_display_value(bt.get('random_uplift'))}",f"- Experience履歴: {ex.get('history_count')}件","","### 次回予想","",_prediction(g,_list(cur.get("prediction"))),""]
         nums=_map(bt.get("numbers"))
-        if nums:lines += ["### Numbersバックテスト","",f"- 平均最高位置一致: {nums.get('average_best_position_matches')}",f"- 1口平均位置一致: {nums.get('average_position_matches_per_ticket')}",f"- 平均最高順不同一致: {nums.get('average_best_unordered_matches')}",f"- Straight: {nums.get('straight_hits')} ({nums.get('straight_rate')})",f"- Box: {nums.get('box_hits')} ({nums.get('box_rate')})",""]
+        if nums:lines += ["### Numbersバックテスト","",f"- 平均最高位置一致: {_display_value(nums.get('average_best_position_matches'))}",f"- 1口平均位置一致: {_display_value(nums.get('average_position_matches_per_ticket'))}",f"- 平均最高順不同一致: {_display_value(nums.get('average_best_unordered_matches'))}",f"- Straight率: {_display_percent(nums.get('straight_hit_rate'))}",f"- Box率: {_display_percent(nums.get('box_hit_rate'))}",""]
         warnings=_list(game.get("warnings"))
         if warnings:lines += ["### 注意","",*[f"- {w}" for w in warnings],""]
     return "\n".join(lines).rstrip()+"\n"
