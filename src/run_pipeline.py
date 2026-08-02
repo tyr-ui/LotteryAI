@@ -15,6 +15,7 @@ from numbers_optimizer import optimize_numbers
 from optimizer_experience import save_optimizer_experience
 from common import now_iso
 from storage import save_json, load_json
+from evaluation_dashboard import write_evaluation_dashboard
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -819,11 +820,31 @@ def main() -> None:
         )
     )
 
+    write_evaluation_dashboard(
+        OUTPUT_DIR,
+    )
+    dashboard_json_path = (
+        OUTPUT_DIR
+        / "evaluation_dashboard.json"
+    )
+    dashboard_markdown_path = (
+        OUTPUT_DIR
+        / "evaluation_dashboard.md"
+    )
+
     save_feature_memory_analysis()
 
     print("\n=== REVIEW OUTPUTS ===")
     print(f"run_summary: {run_summary_path}")
     print(f"review_bundle: {review_bundle_path}")
+    print(
+        "evaluation_dashboard_json: "
+        f"{dashboard_json_path}"
+    )
+    print(
+        "evaluation_dashboard_markdown: "
+        f"{dashboard_markdown_path}"
+    )
 
     for game_key, game_config in LOTTO_GAMES.items():
         result = optimizer_results[game_key]
