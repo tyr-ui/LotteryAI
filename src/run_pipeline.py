@@ -576,6 +576,87 @@ def save_lotto_optimizer_experience(
     )
 
 
+def save_numbers_optimizer_experience(
+    game_key: str,
+    optimizer_result: dict[str, object],
+) -> dict[str, object]:
+    """Numbers Optimizerの今回の勝者をExperienceへ保存する。"""
+    ranked_configs = optimizer_result.get("ranked_configs", [])
+    if not isinstance(ranked_configs, list) or not ranked_configs:
+        raise ValueError(
+            f"{game_key}: ranked_configs is empty; "
+            "numbers optimizer experience cannot be saved."
+        )
+
+    best_evaluation = ranked_configs[0]
+    if not isinstance(best_evaluation, dict):
+        raise TypeError(
+            f"{game_key}: best Numbers evaluation must be a mapping."
+        )
+
+    selected_weights = optimizer_result.get("selected_weights", {})
+    if not isinstance(selected_weights, dict) or not selected_weights:
+        raise TypeError(
+            f"{game_key}: selected_weights must be a non-empty mapping."
+        )
+
+    selected_config = str(optimizer_result.get("selected_config", ""))
+    if not selected_config:
+        raise ValueError(
+            f"{game_key}: selected_config is missing."
+        )
+
+    default_result = optimizer_result.get("random_baseline", {})
+    default_selection_score = (
+        float(default_result.get("selection_score", 0.0) or 0.0)
+        if isinstance(default_result, dict)
+        else 0.0
+    )
+    selected_selection_score = float(
+        best_evaluation.get("selection_score", 0.0) or 0.0
+    )
+
+    experience_evaluation = {
+        "selection_score": selected_selection_score,
+        "avg_matches": best_evaluation.get(
+            "average_best_position_matches",
+            0.0,
+        ),
+        "average_matches_per_ticket": best_evaluation.get(
+            "average_position_matches_per_ticket",
+            0.0,
+        ),
+        "hit_rate_2match": best_evaluation.get(
+            "hit_rate_2_position",
+            0.0,
+        ),
+        "hit_rate_3match": best_evaluation.get(
+            "hit_rate_3_position",
+            0.0,
+        ),
+        "hit_rate_4match": best_evaluation.get(
+            "hit_rate_4_position",
+            0.0,
+        ),
+        "avg_matches_std": 0.0,
+        "random_uplift": (
+            selected_selection_score - default_selection_score
+        ),
+    }
+
+    return save_optimizer_experience(
+        game_name=game_key,
+        config_name=selected_config,
+        config={
+            "w": selected_weights,
+            "f": {},
+        },
+        evaluation=experience_evaluation,
+        prediction_weights=selected_weights,
+        learning_strength=1.0,
+    )
+
+
 def run_numbers_game(
     df,
     game_config: dict,
@@ -680,6 +761,12 @@ def main() -> None:
             optimizer_results[game_key] = run_numbers_game(
                 datasets[game_key],
                 game_config,
+            )
+            optimizer_results[game_key][
+                "experience_save"
+            ] = save_numbers_optimizer_experience(
+                game_key,
+                optimizer_results[game_key],
             )
         else:
             optimizer_results[game_key] = optimize(
