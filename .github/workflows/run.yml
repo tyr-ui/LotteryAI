@@ -94,16 +94,16 @@ jobs:
         run: |
           python src/run_pipeline.py
 
-      - name: Detect output changes
+      - name: Detect generated-data changes
         id: output_changes
         run: |
-          git add output/
+          git add output/ data/raw/
 
           if git diff --cached --quiet; then
-            echo "No output changes detected."
+            echo "No output or raw-data changes detected."
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
-            echo "Output changes detected."
+            echo "Output or raw-data changes detected."
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
@@ -126,13 +126,13 @@ jobs:
         run: |
           python src/notifier.py output/notification_payload.json
 
-      - name: Commit output files
+      - name: Commit output and raw-data cache
         if: steps.output_changes.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git commit -m "Update LotteryAI output [skip ci]"
+          git commit -m "Update LotteryAI output and data cache [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main
 
