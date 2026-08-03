@@ -3,7 +3,12 @@ from __future__ import annotations
 from statistics import mean, pstdev
 from typing import Mapping, Sequence
 
-from backtester import BacktestSummary, run_backtest
+from backtester import (
+    BacktestSummary,
+    run_backtest,
+    run_filtered_random_backtest,
+    run_uniform_random_backtest,
+)
 from optimizer_search import normalized_weight_dict
 from predictor import PredictionWeights
 
@@ -236,8 +241,11 @@ def evaluate_config(
     candidate_count: int,
     seeds: Sequence[int],
     random_baselines: Mapping[int, Mapping[str, object]],
+    filtered_random_baselines: (
+        Mapping[int, Mapping[str, object]] | None
+    ) = None,
     weights_override: PredictionWeights | None = None,
-    ) -> dict[str, object]:
+) -> dict[str, object]:
     """1つのoptimizer設定を指定seed群で評価する。"""
     merged_game_config = merge_config(
         game_config,
@@ -271,29 +279,45 @@ def evaluate_config(
         config_name=name,
     )
 
-    random_results = [
+    uniform_results = [
         random_baselines[seed]
         for seed in seeds
     ]
-    random_aggregate = aggregate_seed_results(
-        random_results,
-        config_name="random",
+    resolved_filtered = (
+        filtered_random_baselines
+        if filtered_random_baselines is not None
+        else random_baselines
     )
-    random_avg = float(
-        random_aggregate.get("avg_matches") or 0.0
+    filtered_results = [
+        resolved_filtered[seed]
+        for seed in seeds
+    ]
+    uniform_aggregate = aggregate_seed_results(
+        uniform_results,
+        config_name="uniform_random",
+    )
+    filtered_aggregate = aggregate_seed_results(
+        filtered_results,
+        config_name="filtered_random",
+    )
+    uniform_avg = float(
+        uniform_aggregate.get("avg_matches") or 0.0
+    )
+    filtered_avg = float(
+        filtered_aggregate.get("avg_matches") or 0.0
     )
 
     result["selection_score"] = selection_score(
         result,
-        random_avg,
+        uniform_avg,
     )
-    result["random_unfiltered_avg"] = random_avg
-    result["random_filtered_avg"] = random_avg
+    result["random_unfiltered_avg"] = uniform_avg
+    result["random_filtered_avg"] = filtered_avg
     result["random_uplift"] = round(
-        float(result.get("avg_matches") or 0.0) - random_avg,
+        float(result.get("avg_matches") or 0.0) - uniform_avg,
         6,
     )
-    result["random_filtered_baseline"] = random_aggregate
+    result["random_filtered_baseline"] = filtered_aggregate
 
     raw_weights = optimizer_config.get("w", {})
     result["weights"] = (
@@ -317,6 +341,17 @@ def evaluate_config(
     return result
 
 
+def _random_summary_to_result(
+    summary: BacktestSummary,
+    *,
+    config_name: str,
+) -> dict[str, object]:
+    return summary_to_result(
+        summary,
+        config_name=config_name,
+    )
+
+
 def build_random_baselines(
     history: Sequence[Sequence[int]],
     game_config: Mapping[str, object],
@@ -326,19 +361,45 @@ def build_random_baselines(
     candidate_count: int,
     seeds: Sequence[int],
 ) -> dict[int, dict[str, object]]:
-    """指定seedごとのランダム比較結果を作成する。"""
-    weights = random_weights()
-
+    """全組合せから一様抽出する無フィルタ基準を作成する。"""
     return {
-        seed: run_backtest_result(
-            history,
-            game_config,
-            config_name="random",
-            train_window=train_window,
-            tested_periods=tested_periods,
-            candidate_count=candidate_count,
-            weights=weights,
-            seed=seed,
+        seed: _random_summary_to_result(
+            run_uniform_random_backtest(
+                history,
+                game_config,
+                train_window=train_window,
+                tested_periods=tested_periods,
+                top_k=1,
+                seed=seed,
+            ),
+            config_name="uniform_random",
+        )
+        for seed in seeds
+    }
+
+
+def build_filtered_random_baselines(
+    history: Sequence[Sequence[int]],
+    game_config: Mapping[str, object],
+    *,
+    train_window: int,
+    tested_periods: int,
+    candidate_count: int,
+    seeds: Sequence[int],
+) -> dict[int, dict[str, object]]:
+    """形状フィルタ通過候補から一様抽出する基準を作成する。"""
+    return {
+        seed: _random_summary_to_result(
+            run_filtered_random_backtest(
+                history,
+                game_config,
+                train_window=train_window,
+                tested_periods=tested_periods,
+                candidate_count=candidate_count,
+                top_k=1,
+                seed=seed,
+            ),
+            config_name="filtered_random",
         )
         for seed in seeds
     }
