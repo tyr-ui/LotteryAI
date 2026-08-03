@@ -724,6 +724,24 @@ def _evaluate_config(
     return result
 
 
+def _rank_robust_finalists(
+    robust_results_by_name: Mapping[str, Mapping[str, object]],
+) -> list[dict[str, object]]:
+    """Return robust finalist results ordered by selection score."""
+    ranked = sorted(
+        (dict(result) for result in robust_results_by_name.values()),
+        key=lambda item: float(item["selection_score"]),
+        reverse=True,
+    )
+
+    if not ranked:
+        raise RuntimeError(
+            "No robust optimizer finalists were evaluated."
+        )
+
+    return ranked
+
+
 def optimize(
     df,
     main_cols,
@@ -957,22 +975,11 @@ def optimize(
             random_baselines=random_baselines,
         )
 
-    ranked_results: list[dict[str, object]] = []
-    for result in preliminary_results:
-        name = str(result["config"])
-        ranked_results.append(
-            robust_results_by_name.get(name, result)
-        )
-
-    ranked_results.sort(
-        key=lambda item: float(item["selection_score"]),
-        reverse=True,
+    robust_ranked_results = _rank_robust_finalists(
+        robust_results_by_name
     )
 
-    if not ranked_results:
-        raise RuntimeError("No optimizer configurations were evaluated.")
-
-    best_result = ranked_results[0]
+    best_result = robust_ranked_results[0]
     best_name = str(best_result["config"])
     best_config = all_config_by_name[best_name]
 
@@ -1003,7 +1010,7 @@ def optimize(
             config_name="random",
         ),
         "selected_random_filtered_baseline": selected_random_baseline,
-        "ranked_configs": ranked_results,
+        "ranked_configs": robust_ranked_results,
         "selected_config": best_name,
         "selected_weights": dict(best_config["w"]),
         "selected_filters": dict(best_config.get("f", {})),
