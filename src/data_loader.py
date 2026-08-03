@@ -20,6 +20,42 @@ class LoadedGameData:
     source: str
 
 
+class DataNormalizationError(ValueError):
+    """Raised when required numeric cells cannot be normalized safely."""
+
+    def __init__(
+        self,
+        *,
+        raw_rows: int,
+        parse_error_rows: Sequence[object],
+        parse_error_columns: Mapping[str, Sequence[object]],
+    ) -> None:
+        self.raw_rows = int(raw_rows)
+        self.normalized_rows = int(
+            raw_rows - len(parse_error_rows)
+        )
+        self.dropped_rows = int(
+            len(parse_error_rows)
+        )
+        self.parse_error_rows = tuple(
+            parse_error_rows
+        )
+        self.parse_error_columns = {
+            str(column): tuple(rows)
+            for column, rows
+            in parse_error_columns.items()
+        }
+
+        super().__init__(
+            "Required numeric data could not be parsed. "
+            f"raw_rows={self.raw_rows}, "
+            f"normalized_rows={self.normalized_rows}, "
+            f"dropped_rows={self.dropped_rows}, "
+            f"parse_error_rows={list(self.parse_error_rows)}, "
+            f"parse_error_columns={self.parse_error_columns}"
+        )
+
+
 def _config_value(
     config: Mapping[str, object] | object,
     *names: str,
@@ -258,15 +294,40 @@ def clean_numeric(
     df: pd.DataFrame,
     columns: Sequence[str],
 ) -> pd.DataFrame:
+    """Normalize required numeric columns without silently dropping rows.
+
+    Any missing or unparsable required numeric cell is treated as a data
+    integrity error. This is intentionally fail-closed: otherwise a broken
+    latest draw could disappear and an older draw could be mistaken for the
+    newest valid record.
+    """
     result = df.copy()
+    raw_rows = int(len(result))
+    original_draw_values = (
+        result["draw_no"].copy()
+        if "draw_no" in result.columns
+        else pd.Series(
+            result.index,
+            index=result.index,
+        )
+    )
 
-    for column in columns:
-        if column == "date":
-            continue
+    required = [
+        column
+        for column in columns
+        if column != "date"
+    ]
+    invalid_by_column: dict[
+        str,
+        list[object],
+    ] = {}
+    invalid_row_indexes: set[object] = set()
 
-        result[column] = (
-            result[column]
-            .astype(str)
+    for column in required:
+        source = result[column]
+        extracted = (
+            source
+            .astype("string")
             .str.replace(
                 ",",
                 "",
@@ -277,20 +338,59 @@ def clean_numeric(
                 expand=False,
             )
         )
-        result[column] = pd.to_numeric(
-            result[column],
+        numeric = pd.to_numeric(
+            extracted,
             errors="coerce",
         )
+        invalid_mask = numeric.isna()
 
-    required = [
-        column
-        for column in columns
-        if column != "date"
-    ]
+        if bool(invalid_mask.any()):
+            row_labels: list[object] = []
+            for index in result.index[
+                invalid_mask
+            ]:
+                draw_value = (
+                    original_draw_values.loc[index]
+                )
+                if pd.isna(draw_value):
+                    label: object = int(index)
+                else:
+                    label = str(draw_value)
+                row_labels.append(label)
+                invalid_row_indexes.add(index)
 
-    result = result.dropna(
-        subset=required
-    )
+            invalid_by_column[column] = (
+                row_labels
+            )
+
+        result[column] = numeric
+
+    if invalid_row_indexes:
+        parse_error_rows: list[object] = []
+        for index in result.index:
+            if index not in invalid_row_indexes:
+                continue
+            draw_value = (
+                original_draw_values.loc[index]
+            )
+            if pd.isna(draw_value):
+                parse_error_rows.append(
+                    int(index)
+                )
+            else:
+                parse_error_rows.append(
+                    str(draw_value)
+                )
+
+        raise DataNormalizationError(
+            raw_rows=raw_rows,
+            parse_error_rows=(
+                parse_error_rows
+            ),
+            parse_error_columns=(
+                invalid_by_column
+            ),
+        )
 
     for column in required:
         result[column] = (
