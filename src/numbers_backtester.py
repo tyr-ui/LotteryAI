@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import asdict, dataclass
 from statistics import mean
+from random import Random
 from typing import Iterable, Mapping, Sequence
 
 from numbers_features import (
@@ -241,6 +242,181 @@ def _empty_summary(
     )
 
 
+def _summarize_numbers_records(
+    records: Sequence[NumbersBacktestRecord],
+    *,
+    digit_count: int,
+    include_records: bool,
+) -> NumbersBacktestSummary:
+    tested = len(records)
+    if tested == 0:
+        return _empty_summary(digit_count)
+
+    best_position_values = [
+        record.best_exact_position_matches
+        for record in records
+    ]
+    average_position_values = [
+        record.average_exact_position_matches
+        for record in records
+    ]
+    best_unordered_values = [
+        record.best_unordered_digit_matches
+        for record in records
+    ]
+    average_unordered_values = [
+        record.average_unordered_digit_matches
+        for record in records
+    ]
+
+    def position_hit_rate(threshold: int) -> float:
+        if threshold > digit_count:
+            return 0.0
+        return round(
+            sum(value >= threshold for value in best_position_values)
+            / tested,
+            6,
+        )
+
+    straight_hit_rate = round(
+        sum(record.straight_hit for record in records) / tested,
+        6,
+    )
+    box_hit_rate = round(
+        sum(record.box_hit for record in records) / tested,
+        6,
+    )
+    average_best_position_matches = round(
+        float(mean(best_position_values)), 6
+    )
+    average_position_matches_per_ticket = round(
+        float(mean(average_position_values)), 6
+    )
+    average_best_unordered_matches = round(
+        float(mean(best_unordered_values)), 6
+    )
+    average_unordered_matches_per_ticket = round(
+        float(mean(average_unordered_values)), 6
+    )
+
+    hit_rate_1 = position_hit_rate(1)
+    hit_rate_2 = position_hit_rate(2)
+    hit_rate_3 = position_hit_rate(3)
+    hit_rate_4 = position_hit_rate(4)
+    selection_score = numbers_selection_score(
+        digit_count=digit_count,
+        average_best_position_matches=average_best_position_matches,
+        average_best_unordered_matches=average_best_unordered_matches,
+        straight_hit_rate=straight_hit_rate,
+        box_hit_rate=box_hit_rate,
+        hit_rate_2_position=hit_rate_2,
+        hit_rate_3_position=hit_rate_3,
+        hit_rate_4_position=hit_rate_4,
+    )
+
+    return NumbersBacktestSummary(
+        tested_periods=tested,
+        digit_count=digit_count,
+        average_best_position_matches=average_best_position_matches,
+        average_position_matches_per_ticket=average_position_matches_per_ticket,
+        average_best_unordered_matches=average_best_unordered_matches,
+        average_unordered_matches_per_ticket=average_unordered_matches_per_ticket,
+        straight_hit_rate=straight_hit_rate,
+        box_hit_rate=box_hit_rate,
+        hit_rate_1_position=hit_rate_1,
+        hit_rate_2_position=hit_rate_2,
+        hit_rate_3_position=hit_rate_3,
+        hit_rate_4_position=hit_rate_4,
+        selection_score=selection_score,
+        records=tuple(records) if include_records else (),
+    )
+
+
+def _integer_to_digits(value: int, digit_count: int) -> NumberRow:
+    return tuple(int(character) for character in f"{value:0{digit_count}d}")
+
+
+def run_numbers_uniform_random_backtest(
+    history: Iterable[Sequence[int]],
+    config: Mapping[str, object] | object,
+    *,
+    train_window: int | None = None,
+    tested_periods: int | None = None,
+    top_k: int | None = None,
+    seed: int = 2025,
+    include_records: bool = False,
+) -> NumbersBacktestSummary:
+    """000..999/9999の全候補空間から一様に抽出する比較基準。"""
+    configured_digit_count = int(
+        _config_value(config, "digit_count", default=0) or 0
+    )
+    normalized_history = _normalize_history(
+        history,
+        digit_count=configured_digit_count or None,
+        digit_min=0,
+        digit_max=9,
+    )
+    digit_count = len(normalized_history[0])
+    total_draws = len(normalized_history)
+    resolved_train_window = int(
+        train_window if train_window is not None
+        else _config_value(config, "train_window", default=500)
+    )
+    resolved_tested_periods = int(
+        tested_periods if tested_periods is not None
+        else _config_value(config, "tested_periods", default=90)
+    )
+    resolved_top_k = int(
+        top_k if top_k is not None
+        else _config_value(config, "top_k", default=10)
+    )
+    if min(resolved_train_window, resolved_tested_periods, resolved_top_k) <= 0:
+        raise ValueError("backtest parameters must be positive.")
+
+    candidate_space_size = 10 ** digit_count
+    if resolved_top_k > candidate_space_size:
+        raise ValueError("top_k exceeds the Numbers candidate space.")
+
+    start_index = max(
+        resolved_train_window,
+        total_draws - resolved_tested_periods,
+    )
+    records: list[NumbersBacktestRecord] = []
+    for test_index in range(start_index, total_draws):
+        rng = Random(seed + test_index)
+        predicted = tuple(
+            _integer_to_digits(value, digit_count)
+            for value in rng.sample(
+                range(candidate_space_size),
+                resolved_top_k,
+            )
+        )
+        actual = normalized_history[test_index]
+        position_matches = [
+            exact_position_matches(candidate, actual)
+            for candidate in predicted
+        ]
+        unordered_matches = [
+            unordered_digit_matches(candidate, actual)
+            for candidate in predicted
+        ]
+        records.append(NumbersBacktestRecord(
+            draw_index=test_index,
+            actual=actual,
+            predicted=predicted,
+            best_exact_position_matches=max(position_matches),
+            average_exact_position_matches=float(mean(position_matches)),
+            best_unordered_digit_matches=max(unordered_matches),
+            average_unordered_digit_matches=float(mean(unordered_matches)),
+            straight_hit=any(is_straight_hit(candidate, actual) for candidate in predicted),
+            box_hit=any(is_box_hit(candidate, actual) for candidate in predicted),
+        ))
+
+    return _summarize_numbers_records(
+        records, digit_count=digit_count, include_records=include_records
+    )
+
+
 def run_numbers_backtest(
     history: Iterable[Sequence[int]],
     config: Mapping[str, object] | object,
@@ -476,167 +652,10 @@ def run_numbers_backtest(
             )
         )
 
-    tested = len(records)
-
-    if tested == 0:
-        return _empty_summary(
-            digit_count
-        )
-
-    best_position_values = [
-        record.best_exact_position_matches
-        for record in records
-    ]
-    average_position_values = [
-        record.average_exact_position_matches
-        for record in records
-    ]
-    best_unordered_values = [
-        record.best_unordered_digit_matches
-        for record in records
-    ]
-    average_unordered_values = [
-        record.average_unordered_digit_matches
-        for record in records
-    ]
-
-    def position_hit_rate(
-        threshold: int,
-    ) -> float:
-        if threshold > digit_count:
-            return 0.0
-
-        return round(
-            sum(
-                value >= threshold
-                for value
-                in best_position_values
-            )
-            / tested,
-            6,
-        )
-
-    straight_hit_rate = round(
-        sum(
-            record.straight_hit
-            for record in records
-        )
-        / tested,
-        6,
-    )
-    box_hit_rate = round(
-        sum(
-            record.box_hit
-            for record in records
-        )
-        / tested,
-        6,
-    )
-
-    average_best_position_matches = round(
-        float(
-            mean(
-                best_position_values
-            )
-        ),
-        6,
-    )
-    average_position_matches_per_ticket = round(
-        float(
-            mean(
-                average_position_values
-            )
-        ),
-        6,
-    )
-    average_best_unordered_matches = round(
-        float(
-            mean(
-                best_unordered_values
-            )
-        ),
-        6,
-    )
-    average_unordered_matches_per_ticket = round(
-        float(
-            mean(
-                average_unordered_values
-            )
-        ),
-        6,
-    )
-
-    hit_rate_1 = position_hit_rate(1)
-    hit_rate_2 = position_hit_rate(2)
-    hit_rate_3 = position_hit_rate(3)
-    hit_rate_4 = position_hit_rate(4)
-
-    selection_score = numbers_selection_score(
+    return _summarize_numbers_records(
+        records,
         digit_count=digit_count,
-        average_best_position_matches=(
-            average_best_position_matches
-        ),
-        average_best_unordered_matches=(
-            average_best_unordered_matches
-        ),
-        straight_hit_rate=(
-            straight_hit_rate
-        ),
-        box_hit_rate=(
-            box_hit_rate
-        ),
-        hit_rate_2_position=(
-            hit_rate_2
-        ),
-        hit_rate_3_position=(
-            hit_rate_3
-        ),
-        hit_rate_4_position=(
-            hit_rate_4
-        ),
-    )
-
-    return NumbersBacktestSummary(
-        tested_periods=tested,
-        digit_count=digit_count,
-        average_best_position_matches=(
-            average_best_position_matches
-        ),
-        average_position_matches_per_ticket=(
-            average_position_matches_per_ticket
-        ),
-        average_best_unordered_matches=(
-            average_best_unordered_matches
-        ),
-        average_unordered_matches_per_ticket=(
-            average_unordered_matches_per_ticket
-        ),
-        straight_hit_rate=(
-            straight_hit_rate
-        ),
-        box_hit_rate=(
-            box_hit_rate
-        ),
-        hit_rate_1_position=(
-            hit_rate_1
-        ),
-        hit_rate_2_position=(
-            hit_rate_2
-        ),
-        hit_rate_3_position=(
-            hit_rate_3
-        ),
-        hit_rate_4_position=(
-            hit_rate_4
-        ),
-        selection_score=(
-            selection_score
-        ),
-        records=(
-            tuple(records)
-            if include_records
-            else ()
-        ),
+        include_records=include_records,
     )
 
 
@@ -647,4 +666,5 @@ __all__ = [
     "is_straight_hit",
     "numbers_selection_score",
     "run_numbers_backtest",
+    "run_numbers_uniform_random_backtest",
 ]
