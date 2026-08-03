@@ -1,17 +1,15 @@
+"""Build human-readable and Discord-ready LotteryAI notifications."""
+
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from storage import save_json
 
-GAME_ORDER = (
-    "loto6",
-    "loto7",
-    "miniloto",
-    "numbers3",
-    "numbers4",
-)
 
+GAME_ORDER = ("loto6", "loto7", "miniloto", "numbers3", "numbers4")
 GAME_NAMES = {
     "loto6": "LOTO6",
     "loto7": "LOTO7",
@@ -19,12 +17,13 @@ GAME_NAMES = {
     "numbers3": "Numbers3",
     "numbers4": "Numbers4",
 }
+LOTO_GAMES = {"loto6", "loto7", "miniloto"}
+CARRYOVER_GAMES = {"loto6", "loto7"}
 
-LOTO_GAMES = {
-    "loto6",
-    "loto7",
-    "miniloto",
-}
+COLOR_NORMAL = 0x2F6FED
+COLOR_CARRYOVER = 0xC89B24
+COLOR_MUTED = 0x667085
+DISCORD_EMBED_TOTAL_LIMIT = 5_800
 
 
 def _mapping(value: Any) -> Mapping[str, Any]:
@@ -55,16 +54,11 @@ def _format_decimal(
     number = _number(value)
     if number is None:
         return "未評価"
-
     prefix = "+" if signed and float(number) > 0.0 else ""
     return f"{prefix}{float(number):.{digits}f}"
 
 
-def _format_numbers(
-    values: Any,
-    *,
-    ordered: bool,
-) -> str:
+def _format_numbers(values: Any, *, ordered: bool) -> str:
     numbers = [
         int(value)
         for value in _list(values)
@@ -72,258 +66,190 @@ def _format_numbers(
     ]
     if not numbers:
         return "未取得"
-
     if ordered:
         return "".join(str(value) for value in numbers)
-
     return " ".join(f"{value:02d}" for value in numbers)
 
 
-def _current_prediction_lines(
+def _prediction_lines(
     game_key: str,
     section: Mapping[str, Any],
 ) -> list[str]:
-    lines: list[str] = []
     ordered = game_key not in LOTO_GAMES
-
-    for index, item in enumerate(
-        _list(section.get("prediction")),
-        start=1,
-    ):
-        prediction = _mapping(item)
-        label = prediction.get("number")
-
+    lines: list[str] = []
+    for index, item in enumerate(_list(section.get("prediction")), start=1):
+        row = _mapping(item)
+        label = str(row.get("number") or "")
         if not label:
             label = _format_numbers(
-                prediction.get(
-                    "numbers",
-                    prediction.get("digits"),
-                ),
+                row.get("numbers", row.get("digits")),
                 ordered=ordered,
             )
-
         lines.append(f"{index}. {label}")
-
     return lines or ["予想なし"]
 
 
-def _previous_result_lines(
+def _previous_summary(
     game_key: str,
     previous: Mapping[str, Any],
-) -> list[str]:
+) -> str:
     status = str(previous.get("status", "unknown"))
-
     if status == "pending":
-        return [
-            "前回予想の対象回は、まだ結果未反映です。",
-            str(previous.get("message", "")),
-        ]
-
+        return "結果未反映"
     if status != "evaluated":
-        message = previous.get("message")
-        return [
-            str(message)
-            if message
-            else "前回予想の評価データはありません。"
-        ]
+        return str(previous.get("message") or "評価データなし")
 
     ordered = game_key not in LOTO_GAMES
-    actual = _format_numbers(
-        previous.get("actual_numbers"),
-        ordered=ordered,
-    )
-
+    actual = _format_numbers(previous.get("actual_numbers"), ordered=ordered)
+    best_label = "最高位置一致" if ordered else "5口中最高一致"
+    average_label = "1口平均位置一致" if ordered else "1口平均一致"
     lines = [
-        f"対象回: 第{previous.get('draw_no')}回",
-        f"当選番号: {actual}",
-        (
-            "最高位置一致: "
-            if ordered
-            else "5口中最高一致: "
-        )
-        + str(previous.get("best_match_count", 0)),
-        (
-            "1口平均位置一致: "
-            if ordered
-            else "1口平均一致: "
-        )
-        + _format_decimal(
-            previous.get("avg_match_count"),
-            digits=2,
-        ),
+        f"第{previous.get('draw_no')}回 / 当選番号 {actual}",
+        f"{best_label} {previous.get('best_match_count', 0)}",
+        f"{average_label} {_format_decimal(previous.get('avg_match_count'), digits=2)}",
     ]
-
     if ordered:
-        lines.extend(
-            [
-                (
-                    "最高順不同一致: "
-                    + str(
-                        previous.get(
-                            "best_unordered_match_count",
-                            0,
-                        )
-                    )
-                ),
-                (
-                    "ストレート: "
-                    + (
-                        "的中"
-                        if previous.get("straight_hit")
-                        else "なし"
-                    )
-                ),
-                (
-                    "BOX: "
-                    + (
-                        "的中"
-                        if previous.get("box_hit")
-                        else "なし"
-                    )
-                ),
-            ]
+        lines.append(
+            "Straight "
+            + ("的中" if previous.get("straight_hit") else "なし")
+            + " / Box "
+            + ("的中" if previous.get("box_hit") else "なし")
         )
+    return "\n".join(lines)
 
-    return lines
 
-
-def _holdout_summary(
-    section: Mapping[str, Any],
-) -> tuple[str, float | None]:
-    holdout = _mapping(section.get("holdout_evaluation"))
-    if not holdout:
-        return "独立ホールドアウト: 未評価", None
-
-    uplift = _number(holdout.get("random_uplift"))
-    periods = holdout.get("holdout_periods")
-    average = holdout.get("avg_matches")
-
-    return (
-        "独立ホールドアウト: "
-        f"{periods}回、平均最高一致 "
-        f"{_format_decimal(average, digits=3)}、"
-        "一様ランダム比 "
-        f"{_format_decimal(uplift, digits=3, signed=True)}",
-        float(uplift) if uplift is not None else None,
+def _carryover_row(output: Mapping[str, Any], game_key: str) -> Mapping[str, Any]:
+    return _mapping(
+        _mapping(_mapping(output.get("carryover")).get("games")).get(game_key)
     )
 
 
-def _feature_summary(
-    section: Mapping[str, Any],
-) -> str:
+def _carryover_text(output: Mapping[str, Any], game_key: str) -> str:
+    if game_key not in CARRYOVER_GAMES:
+        return "対象外"
+    row = _carryover_row(output, game_key)
+    if row.get("status") != "ok":
+        return "未取得"
+    return str(row.get("display_amount") or "未取得")
+
+
+def _has_carryover(output: Mapping[str, Any], game_key: str) -> bool:
+    row = _carryover_row(output, game_key)
+    return bool(row.get("status") == "ok" and row.get("has_carryover"))
+
+
+def _feature_top3(section: Mapping[str, Any]) -> str:
     rows = [
         _mapping(item)
         for item in _list(section.get("feature_ablation"))
         if _mapping(item).get("active", True)
     ]
-
     if not rows:
-        return "特徴量分析: 未評価"
-
+        return "未評価"
     rows.sort(
-        key=lambda row: float(
-            row.get("selection_score_drop", 0.0)
-            or 0.0
-        ),
+        key=lambda row: float(row.get("selection_score_drop", 0.0) or 0.0),
         reverse=True,
     )
+    return " / ".join(
+        f"{row.get('feature', 'unknown')} "
+        f"({_format_decimal(row.get('selection_score_drop'), signed=True)})"
+        for row in rows[:3]
+    )
 
-    labels = []
-    for row in rows[:3]:
-        feature = row.get("feature", "unknown")
-        drop = _format_decimal(
-            row.get("selection_score_drop"),
-            digits=3,
-            signed=True,
+
+def _lotto_evaluation(section: Mapping[str, Any]) -> str:
+    holdout = _mapping(section.get("holdout_evaluation"))
+    ranked = _mapping((_list(section.get("ranked_configs")) or [{}])[0])
+    holdout_text = "未評価"
+    if holdout:
+        holdout_text = (
+            f"{holdout.get('tested_periods', holdout.get('holdout_periods', '不明'))}回 / "
+            f"平均最高一致 {_format_decimal(holdout.get('avg_matches'))} / "
+            f"一様Random比 {_format_decimal(holdout.get('random_uplift'), signed=True)}"
         )
-        labels.append(f"{feature} ({drop})")
+    model_uplift = _format_decimal(ranked.get("random_uplift"), signed=True)
+    return f"Holdout: {holdout_text}\n探索期間の一様Random比: {model_uplift}"
 
-    return "寄与上位: " + " / ".join(labels)
+
+def _numbers_evaluation(section: Mapping[str, Any]) -> str:
+    ranked = _mapping((_list(section.get("ranked_configs")) or [{}])[0])
+    random_baseline = _mapping(section.get("random_baseline"))
+    straight = _format_decimal(ranked.get("straight_hit_rate"), digits=4)
+    box = _format_decimal(ranked.get("box_hit_rate"), digits=4)
+    random_straight = _format_decimal(
+        random_baseline.get("straight_hit_rate"),
+        digits=4,
+    )
+    return (
+        f"Straight率 {straight} / Box率 {box}\n"
+        f"一様Random Straight率 {random_straight}（探索期間内の参考値）"
+    )
 
 
-def _build_ai_summary(
-    output: Mapping[str, Any],
-) -> list[str]:
-    game_metrics: list[tuple[str, float]] = []
-
-    for game_key in GAME_ORDER:
-        section = _mapping(output.get(game_key))
-        holdout = _mapping(section.get("holdout_evaluation"))
-        uplift = _number(holdout.get("random_uplift"))
-
-        if uplift is not None:
-            game_metrics.append((game_key, float(uplift)))
-
+def _ai_summary_lines(output: Mapping[str, Any]) -> list[str]:
     lines: list[str] = []
+    holdouts: list[tuple[str, float]] = []
+    for game_key in ("loto6", "loto7", "miniloto"):
+        holdout = _mapping(_mapping(output.get(game_key)).get("holdout_evaluation"))
+        uplift = _number(holdout.get("random_uplift"))
+        if uplift is not None:
+            holdouts.append((game_key, float(uplift)))
 
-    if game_metrics:
-        best_key, best_uplift = max(
-            game_metrics,
-            key=lambda item: item[1],
-        )
+    if holdouts:
+        best_key, best_value = max(holdouts, key=lambda item: item[1])
         lines.append(
-            f"・独立ホールドアウトでは"
-            f"{GAME_NAMES[best_key]}が最も高く、"
-            f"一様ランダム比は{best_uplift:+.3f}です。"
+            f"独立ホールドアウトでは{GAME_NAMES[best_key]}が最も高く、"
+            f"一様ランダム比は{best_value:+.3f}です。"
         )
-
-        negative = [
-            GAME_NAMES[key]
-            for key, uplift in game_metrics
-            if uplift < 0.0
-        ]
-        if negative:
+        below = [GAME_NAMES[key] for key, value in holdouts if value < 0.0]
+        if below:
             lines.append(
-                "・"
-                + "、".join(negative)
-                + "は独立ホールドアウトで"
-                "一様ランダムを下回っています。"
+                "独立ホールドアウトで一様ランダムを下回ったゲーム: "
+                + "、".join(below)
+                + "。"
             )
         else:
             lines.append(
-                "・評価可能な全ゲームで、"
-                "独立ホールドアウトは"
+                "評価可能なLOTO系3ゲームは、独立ホールドアウトで"
                 "一様ランダム以上でした。"
             )
     else:
+        lines.append("独立ホールドアウトはまだ評価できていません。")
+
+    carryovers = [
+        f"{GAME_NAMES[key]} {_carryover_text(output, key)}"
+        for key in ("loto6", "loto7")
+        if _has_carryover(output, key)
+    ]
+    if carryovers:
+        lines.append("キャリーオーバー発生中: " + " / ".join(carryovers) + "。")
+    else:
+        unavailable = [
+            key
+            for key in ("loto6", "loto7")
+            if _carryover_row(output, key).get("status") != "ok"
+        ]
         lines.append(
-            "・独立ホールドアウトの評価値は"
-            "まだ取得できていません。"
+            "キャリーオーバー情報は取得できませんでした。"
+            if unavailable
+            else "LOTO6・LOTO7のキャリーオーバーはありません。"
         )
 
-    evaluated = _mapping(
-        output.get("previous_evaluation")
-    )
-    completed = [
+    previous = _mapping(output.get("previous_evaluation"))
+    evaluated = [
         GAME_NAMES[key]
         for key in GAME_ORDER
-        if _mapping(evaluated.get(key)).get("status")
-        == "evaluated"
+        if _mapping(previous.get(key)).get("status") == "evaluated"
     ]
-
-    if completed:
-        lines.append(
-            "・前回結果を確認できたゲーム: "
-            + "、".join(completed)
-            + "。"
-        )
+    if evaluated:
+        lines.append("前回結果を反映済み: " + "、".join(evaluated) + "。")
     else:
-        lines.append(
-            "・今回は前回予想の結果が"
-            "まだデータへ反映されていません。"
-        )
-
-    lines.append(
-        "・キャリーオーバー金額は"
-        "取得機能の接続前のため、現在は未取得です。"
-    )
+        lines.append("今回は前回予想の結果がまだ反映されていません。")
 
     return lines
 
 
-def build_notification_summary(
-    output: Mapping[str, Any],
-) -> str:
+def build_notification_summary(output: Mapping[str, Any]) -> str:
     lines = [
         "# LotteryAI 予想・振り返り",
         "",
@@ -331,94 +257,162 @@ def build_notification_summary(
         "",
         "## AI総評",
         "",
-        *_build_ai_summary(output),
-        "",
-        "---",
+        *[f"- {line}" for line in _ai_summary_lines(output)],
         "",
     ]
 
-    previous_by_game = _mapping(
-        output.get("previous_evaluation")
-    )
-
+    previous = _mapping(output.get("previous_evaluation"))
     for game_key in GAME_ORDER:
         section = _mapping(output.get(game_key))
-        previous = _mapping(
-            previous_by_game.get(game_key)
-        )
-
-        lines.extend(
-            [
-                f"## {GAME_NAMES[game_key]}",
-                "",
-                f"次回: 第{section.get('next_draw_no', '不明')}回",
-                (
-                    "キャリーオーバー: 未取得"
-                    if game_key in {"loto6", "loto7"}
-                    else "キャリーオーバー: 対象外"
-                ),
-                f"採用モデル: {section.get('selected_config', '不明')}",
-                "",
-                "### 次回予想",
-                "",
-                *_current_prediction_lines(
-                    game_key,
-                    section,
-                ),
-                "",
-                "### 前回結果",
-                "",
-                *_previous_result_lines(
-                    game_key,
-                    previous,
-                ),
-                "",
-            ]
-        )
-
-        if game_key in LOTO_GAMES:
-            holdout_text, _ = _holdout_summary(section)
-            lines.extend(
-                [
-                    "### 評価メモ",
-                    "",
-                    holdout_text,
-                    _feature_summary(section),
-                    "",
-                ]
-            )
-
-        lines.extend(
-            [
-                "---",
-                "",
-            ]
-        )
-
-    lines.extend(
-        [
-            "※ 数値は過去データに基づく評価であり、"
-            "当選を保証するものではありません。",
+        lines.extend([
+            "---",
             "",
-        ]
-    )
+            f"## {GAME_NAMES[game_key]}",
+            "",
+            f"次回: 第{section.get('next_draw_no', '不明')}回",
+            f"キャリーオーバー: {_carryover_text(output, game_key)}",
+            f"採用モデル: {section.get('selected_config', '不明')}",
+            "",
+            "### 次回予想",
+            "",
+            *_prediction_lines(game_key, section),
+            "",
+            "### 前回結果",
+            "",
+            _previous_summary(game_key, _mapping(previous.get(game_key))),
+            "",
+            "### 評価",
+            "",
+            (
+                _lotto_evaluation(section)
+                if game_key in LOTO_GAMES
+                else _numbers_evaluation(section)
+            ),
+        ])
+        if game_key in LOTO_GAMES:
+            lines.extend(["", f"主要特徴: {_feature_top3(section)}"])
 
+    lines.extend([
+        "",
+        "---",
+        "",
+        "Pipeline: 正常完了",
+        "",
+        "※ 過去データに基づく評価であり、当選を保証するものではありません。",
+        "",
+    ])
     return "\n".join(lines)
 
 
-def write_notification_summary(
-    output_dir: Path,
-    output: dict,
-) -> Path:
-    path = output_dir / "notification_summary.md"
-    path.write_text(
-        build_notification_summary(output),
-        encoding="utf-8",
+def _embed_char_count(embed: Mapping[str, Any]) -> int:
+    count = len(str(embed.get("title", ""))) + len(str(embed.get("description", "")))
+    footer = _mapping(embed.get("footer"))
+    count += len(str(footer.get("text", "")))
+    for field in _list(embed.get("fields")):
+        row = _mapping(field)
+        count += len(str(row.get("name", ""))) + len(str(row.get("value", "")))
+    return count
+
+
+def _game_embed(
+    output: Mapping[str, Any],
+    game_key: str,
+) -> dict[str, object]:
+    section = _mapping(output.get(game_key))
+    previous = _mapping(_mapping(output.get("previous_evaluation")).get(game_key))
+    carryover = _carryover_text(output, game_key)
+    fields: list[dict[str, object]] = [
+        {
+            "name": "次回予想",
+            "value": "```\n" + "\n".join(_prediction_lines(game_key, section)) + "\n```",
+            "inline": False,
+        },
+        {
+            "name": "前回結果",
+            "value": _previous_summary(game_key, previous),
+            "inline": False,
+        },
+        {
+            "name": "評価",
+            "value": (
+                _lotto_evaluation(section)
+                if game_key in LOTO_GAMES
+                else _numbers_evaluation(section)
+            ),
+            "inline": False,
+        },
+    ]
+    if game_key in LOTO_GAMES:
+        fields.append({"name": "主要特徴", "value": _feature_top3(section), "inline": False})
+
+    return {
+        "title": f"{GAME_NAMES[game_key]}｜第{section.get('next_draw_no', '不明')}回",
+        "description": (
+            f"キャリーオーバー: {carryover}\n"
+            f"採用モデル: {section.get('selected_config', '不明')}"
+        ),
+        "color": COLOR_CARRYOVER if _has_carryover(output, game_key) else COLOR_NORMAL,
+        "fields": fields,
+    }
+
+
+def build_discord_payload(output: Mapping[str, Any]) -> dict[str, object]:
+    any_carryover = any(_has_carryover(output, key) for key in CARRYOVER_GAMES)
+    overview = {
+        "title": "LotteryAI 予想・振り返り",
+        "description": "\n".join(f"• {line}" for line in _ai_summary_lines(output)),
+        "color": COLOR_CARRYOVER if any_carryover else COLOR_NORMAL,
+        "footer": {
+            "text": (
+                "Pipeline: 正常完了 / "
+                "過去データに基づく評価であり、当選を保証しません。"
+            )
+        },
+    }
+    embeds = [overview, *[_game_embed(output, key) for key in GAME_ORDER]]
+
+    messages: list[dict[str, object]] = []
+    current: list[dict[str, object]] = []
+    current_chars = 0
+    for embed in embeds:
+        size = _embed_char_count(embed)
+        if current and (len(current) >= 10 or current_chars + size > DISCORD_EMBED_TOTAL_LIMIT):
+            messages.append({
+                "username": "LotteryAI",
+                "allowed_mentions": {"parse": []},
+                "embeds": current,
+            })
+            current = []
+            current_chars = 0
+        current.append(embed)
+        current_chars += size
+    if current:
+        messages.append({
+            "username": "LotteryAI",
+            "allowed_mentions": {"parse": []},
+            "embeds": current,
+        })
+
+    return {
+        "schema_version": "2.0",
+        "generated_at": output.get("generated_at"),
+        "has_carryover": any_carryover,
+        "messages": messages,
+    }
+
+
+def write_notification_summary(output_dir: Path, output: dict) -> Path:
+    markdown_path = output_dir / "notification_summary.md"
+    markdown_path.write_text(build_notification_summary(output), encoding="utf-8")
+    save_json(
+        output_dir / "notification_payload.json",
+        build_discord_payload(output),
     )
-    return path
+    return markdown_path
 
 
 __all__ = [
+    "build_discord_payload",
     "build_notification_summary",
     "write_notification_summary",
 ]
