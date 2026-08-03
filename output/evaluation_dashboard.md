@@ -1,6 +1,6 @@
 # LotteryAI Evaluation Dashboard
 
-- 生成日時: `2026-08-03T07:11:39.434129+00:00`
+- 生成日時: `2026-08-03T08:54:51.938500+00:00`
 - Full Run: **ok**
 - Dashboard schema: `1.0`
 
@@ -12,15 +12,15 @@
 ## LOTO6
 
 - 次回抽せん回: **2125**
-- 採用Config: `local_06_experience_loto6_4`
-- 採用元: `local`
+- 採用Config: `experience_loto6_2`
+- 採用元: `experience`
 - 事後評価: **参考値** (8回)
 - 平均最高一致: 1.625
 - 平均1口一致: 0.975
 - 最大一致: 3
 - Optimizer selection_score: 2.299926
 - Optimizer Random uplift: 0.1852
-- Experience履歴: 19件
+- Experience履歴: 20件
 
 ### 次回予想
 
@@ -41,7 +41,7 @@
 - 最大一致: 3
 - Optimizer selection_score: 3.59081
 - Optimizer Random uplift: 0.2889
-- Experience履歴: 19件
+- Experience履歴: 20件
 
 ### 次回予想
 
@@ -54,15 +54,15 @@
 ## ミニロト
 
 - 次回抽せん回: **1398**
-- 採用Config: `local_03_random_01`
+- 採用Config: `local_01_experience_miniloto_1`
 - 採用元: `local`
 - 事後評価: **データ不足** (1回)
 - 平均最高一致: 2.0
 - 平均1口一致: 0.8
 - 最大一致: 2
-- Optimizer selection_score: 2.30872
-- Optimizer Random uplift: 0.207433
-- Experience履歴: 19件
+- Optimizer selection_score: 2.332336
+- Optimizer Random uplift: 0.214833
+- Experience履歴: 20件
 
 ### 次回予想
 
@@ -83,7 +83,7 @@
 - 最大一致: 未評価
 - Optimizer selection_score: 2.616669
 - Optimizer Random uplift: 未評価
-- Experience履歴: 10件
+- Experience履歴: 11件
 
 ### 次回予想
 
@@ -112,7 +112,7 @@
 - 最大一致: 未評価
 - Optimizer selection_score: 2.358332
 - Optimizer Random uplift: 未評価
-- Experience履歴: 10件
+- Experience履歴: 11件
 
 ### 次回予想
 
