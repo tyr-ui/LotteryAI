@@ -1,0 +1,27 @@
+name: Test Discord Card Notification
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-discord-card:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Send existing Discord card payload
+        env:
+          PYTHONPATH: src
+          LOTTERY_DISCORD_WEBHOOK: ${{ secrets.LOTTERY_DISCORD_WEBHOOK }}
+        run: |
+          python src/notifier.py output/notification_payload.json
