@@ -16,7 +16,7 @@ from optimizer_experience import save_optimizer_experience
 from common import now_iso
 from storage import save_json, load_json
 from evaluation_dashboard import write_evaluation_dashboard
-
+from carryover import fetch_carryover_snapshot
 from notification_summary import write_notification_summary
 
 
@@ -787,6 +787,11 @@ def main() -> None:
             **optimizer_results[game_key],
         }
 
+    carryover_snapshot = fetch_carryover_snapshot({
+        game_key: game_output[game_key]["latest_draw_no"]
+        for game_key in ("loto6", "loto7")
+    })
+
     output = {
         "status": "ok",
         "note": (
@@ -797,12 +802,17 @@ def main() -> None:
         "generated_at": now_iso(),
         "previous_evaluation": previous_evaluations,
         "evaluation_summary": evaluation_summary,
+        "carryover": carryover_snapshot,
         **game_output,
     }
 
     save_json(
         OUTPUT_DIR / "optimizer_result.json",
         output,
+    )
+    save_json(
+        OUTPUT_DIR / "carryover.json",
+        carryover_snapshot,
     )
 
     save_prediction_outputs(
