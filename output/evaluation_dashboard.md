@@ -1,6 +1,6 @@
 # LotteryAI Evaluation Dashboard
 
-- 生成日時: `2026-08-03T05:18:39.668072+00:00`
+- 生成日時: `2026-08-03T06:24:02.140882+00:00`
 - Full Run: **ok**
 - Dashboard schema: `1.0`
 
@@ -12,19 +12,19 @@
 ## LOTO6
 
 - 次回抽せん回: **2125**
-- 採用Config: `experience_loto6_1`
-- 採用元: `experience`
+- 採用Config: `local_04_experience_loto6_3`
+- 採用元: `local`
 - 事後評価: **参考値** (8回)
 - 平均最高一致: 1.625
 - 平均1口一致: 0.975
 - 最大一致: 3
-- Optimizer selection_score: 1.062255
-- Optimizer Random uplift: 0.118533
-- Experience履歴: 17件
+- Optimizer selection_score: 2.389118
+- Optimizer Random uplift: 0.240733
+- Experience履歴: 18件
 
 ### 次回予想
 
-1. 2・6・19・26・27・38<br>2. 5・10・16・24・37・42<br>3. 8・21・22・30・35・36<br>4. 14・18・20・23・25・43<br>5. 4・11・13・15・31・34
+1. 6・10・21・26・37・42<br>2. 2・5・19・36・38・43<br>3. 1・20・24・27・28・35<br>4. 11・15・18・30・32・39<br>5. 4・8・13・25・33・41
 
 ### 注意
 
@@ -33,19 +33,19 @@
 ## LOTO7
 
 - 次回抽せん回: **689**
-- 採用Config: `experience_loto7_2`
-- 採用元: `experience`
+- 採用Config: `local_03_dist_heavy_strict`
+- 採用元: `local`
 - 事後評価: **データ不足** (4回)
 - 平均最高一致: 2.25
 - 平均1口一致: 1.25
 - 最大一致: 3
-- Optimizer selection_score: 1.693407
-- Optimizer Random uplift: 0.166634
-- Experience履歴: 17件
+- Optimizer selection_score: 3.520769
+- Optimizer Random uplift: 0.288867
+- Experience履歴: 18件
 
 ### 次回予想
 
-1. 4・9・12・13・22・29・34<br>2. 8・11・14・15・26・31・35<br>3. 1・6・17・19・30・32・36<br>4. 2・16・18・21・25・27・37<br>5. 7・9・10・12・20・23・33
+1. 8・9・13・15・22・34・35<br>2. 1・4・17・18・26・29・36<br>3. 7・10・12・14・27・30・31<br>4. 2・6・11・20・21・24・33<br>5. 5・9・16・19・26・32・37
 
 ### 注意
 
@@ -54,19 +54,19 @@
 ## ミニロト
 
 - 次回抽せん回: **1398**
-- 採用Config: `experience_miniloto_1`
-- 採用元: `experience`
+- 採用Config: `evolution_01_delay_light_strict_freq_pair_strict`
+- 採用元: `evolution`
 - 事後評価: **データ不足** (1回)
 - 平均最高一致: 2.0
 - 平均1口一致: 0.8
 - 最大一致: 2
-- Optimizer selection_score: 1.125766
-- Optimizer Random uplift: 0.148167
-- Experience履歴: 17件
+- Optimizer selection_score: 2.274392
+- Optimizer Random uplift: 0.1889
+- Experience履歴: 18件
 
 ### 次回予想
 
-1. 4・11・21・28・31<br>2. 3・12・16・27・29<br>3. 1・10・19・20・30<br>4. 7・13・18・22・25<br>5. 6・9・14・23・24
+1. 3・11・20・22・31<br>2. 4・14・21・27・29<br>3. 2・10・19・23・28<br>4. 1・16・24・25・30<br>5. 7・9・12・17・18
 
 ### 注意
 
@@ -83,7 +83,7 @@
 - 最大一致: 未評価
 - Optimizer selection_score: 2.616669
 - Optimizer Random uplift: 未評価
-- Experience履歴: 8件
+- Experience履歴: 9件
 
 ### 次回予想
 
@@ -112,7 +112,7 @@
 - 最大一致: 未評価
 - Optimizer selection_score: 2.358332
 - Optimizer Random uplift: 未評価
-- Experience履歴: 8件
+- Experience履歴: 9件
 
 ### 次回予想
 
