@@ -13,6 +13,9 @@ from optimizer_search import normalized_weight_dict
 from predictor import PredictionWeights
 
 
+OPTIMIZATION_TOP_K = 5
+
+
 def merge_config(
     game_config: Mapping[str, object],
     optimizer_config: Mapping[str, object] | None = None,
@@ -121,7 +124,7 @@ def run_backtest_result(
         train_window=train_window,
         tested_periods=tested_periods,
         candidate_count=candidate_count,
-        top_k=1,
+        top_k=OPTIMIZATION_TOP_K,
         weights=weights,
         seed=seed,
         include_records=False,
