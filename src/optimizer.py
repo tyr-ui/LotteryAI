@@ -35,6 +35,7 @@ LOCAL_SEARCH_COUNT = 6
 PARENT_COUNT = 3
 ROBUST_FINALIST_COUNT = 4
 ROBUST_SEEDS = (SEED, SEED + 1, SEED + 2)
+OPTIMIZATION_TOP_K = 5
 
 WEIGHT_KEYS = (
     "freq",
@@ -554,7 +555,7 @@ def _run_backtest_result(
         train_window=train_window,
         tested_periods=tested_periods,
         candidate_count=candidate_count,
-        top_k=1,
+        top_k=OPTIMIZATION_TOP_K,
         weights=weights,
         seed=seed,
         include_records=False,
@@ -580,7 +581,7 @@ def _run_random_backtest_result(
             train_window=train_window,
             tested_periods=tested_periods,
             candidate_count=candidate_count,
-            top_k=1,
+            top_k=OPTIMIZATION_TOP_K,
             seed=seed,
             include_records=False,
         )
@@ -590,7 +591,7 @@ def _run_random_backtest_result(
             game_config,
             train_window=train_window,
             tested_periods=tested_periods,
-            top_k=1,
+            top_k=OPTIMIZATION_TOP_K,
             seed=seed,
             include_records=False,
         )
@@ -1108,6 +1109,7 @@ def optimize(
             "parent_count": PARENT_COUNT,
             "robust_finalist_count": ROBUST_FINALIST_COUNT,
             "robust_seeds": list(ROBUST_SEEDS),
+            "optimization_top_k": OPTIMIZATION_TOP_K,
             "note": (
                 "Optimizer-specific max_block/max_first/max_con/max_common "
                 "are retained for output compatibility, but predictor.py "
