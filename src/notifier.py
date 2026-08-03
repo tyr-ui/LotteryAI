@@ -1,23 +1,35 @@
-"""Send the generated LotteryAI notification summary by email."""
+"""Send LotteryAI Discord Embed payloads through a webhook."""
 
 from __future__ import annotations
 
 import argparse
+import json
 import os
-import smtplib
-import ssl
-from datetime import datetime
-from email.message import EmailMessage
 from pathlib import Path
-from typing import Mapping
-
-
-DEFAULT_SMTP_HOST = "smtp.gmail.com"
-DEFAULT_SMTP_PORT = 465
+from typing import Any, Mapping, Sequence
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 
 class NotificationConfigurationError(RuntimeError):
-    """Raised when required mail configuration is missing."""
+    """Raised when required notification configuration is missing."""
+
+
+class NotificationDeliveryError(RuntimeError):
+    """Raised when Discord rejects or cannot receive a notification."""
+
+
+def _mapping(value: Any) -> Mapping[str, Any]:
+    return value if isinstance(value, Mapping) else {}
+
+
+def _list(value: Any) -> list[Any]:
+    if isinstance(value, Sequence) and not isinstance(
+        value,
+        (str, bytes, bytearray),
+    ):
+        return list(value)
+    return []
 
 
 def _required_env(
@@ -33,114 +45,105 @@ def _required_env(
     return value
 
 
-def build_email_subject(
-    summary_text: str,
+def load_discord_payload(path: Path) -> list[dict[str, object]]:
+    if not path.is_file():
+        raise FileNotFoundError(f"Discord notification payload was not found: {path}")
+
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    messages = _list(_mapping(raw).get("messages"))
+    if not messages:
+        raise ValueError("Discord notification payload contains no messages.")
+
+    validated: list[dict[str, object]] = []
+    for index, item in enumerate(messages, start=1):
+        message = dict(_mapping(item))
+        embeds = _list(message.get("embeds"))
+        content = str(message.get("content", "")).strip()
+        if not embeds and not content:
+            raise ValueError(f"Discord message {index} has neither embeds nor content.")
+        if len(embeds) > 10:
+            raise ValueError(f"Discord message {index} exceeds the 10-embed limit.")
+        message.setdefault("username", "LotteryAI")
+        message.setdefault("allowed_mentions", {"parse": []})
+        validated.append(message)
+
+    return validated
+
+
+def _post_discord_payload(
+    webhook_url: str,
+    payload: Mapping[str, object],
     *,
-    generated_at: datetime | None = None,
-) -> str:
-    """Build a concise subject without claiming unavailable carryover data."""
-    timestamp = generated_at or datetime.now()
-    date_text = timestamp.strftime("%Y/%m/%d")
-
-    pending = "まだ結果未反映" in summary_text
-    suffix = "（一部結果待ち）" if pending else ""
-    return f"【LotteryAI】{date_text} 次回予想・前回結果{suffix}"
-
-
-def build_email_message(
-    *,
-    sender: str,
-    recipient: str,
-    subject: str,
-    body: str,
-) -> EmailMessage:
-    message = EmailMessage()
-    message["From"] = sender
-    message["To"] = recipient
-    message["Subject"] = subject
-    message.set_content(body, subtype="plain", charset="utf-8")
-    return message
-
-
-def send_notification_email(
-    summary_path: Path,
-    *,
-    sender: str,
-    app_password: str,
-    recipient: str,
-    smtp_host: str = DEFAULT_SMTP_HOST,
-    smtp_port: int = DEFAULT_SMTP_PORT,
-) -> str:
-    """Send a Markdown summary as a UTF-8 plain-text email."""
-    if not summary_path.is_file():
-        raise FileNotFoundError(
-            f"Notification summary was not found: {summary_path}"
-        )
-
-    body = summary_path.read_text(encoding="utf-8").strip()
-    if not body:
-        raise ValueError("Notification summary is empty.")
-
-    subject = build_email_subject(body)
-    message = build_email_message(
-        sender=sender,
-        recipient=recipient,
-        subject=subject,
-        body=body,
+    timeout: float = 20.0,
+) -> None:
+    body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    request = Request(
+        webhook_url,
+        data=body,
+        headers={
+            "Content-Type": "application/json; charset=utf-8",
+            "User-Agent": "LotteryAI-Notifier/2.0",
+        },
+        method="POST",
     )
 
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(
-        smtp_host,
-        int(smtp_port),
-        context=context,
-    ) as smtp:
-        smtp.login(sender, app_password)
-        smtp.send_message(message)
+    try:
+        with urlopen(request, timeout=timeout) as response:
+            status = int(getattr(response, "status", 204))
+            if status not in {200, 204}:
+                raise NotificationDeliveryError(
+                    f"Discord webhook returned HTTP {status}."
+                )
+    except HTTPError as exc:
+        detail = ""
+        try:
+            detail = exc.read().decode("utf-8", errors="replace")
+        except Exception:
+            detail = ""
+        suffix = f" Response: {detail[:500]}" if detail else ""
+        raise NotificationDeliveryError(
+            f"Discord webhook returned HTTP {exc.code}.{suffix}"
+        ) from exc
+    except URLError as exc:
+        raise NotificationDeliveryError(
+            f"Discord webhook request failed: {exc.reason}"
+        ) from exc
 
-    return subject
+
+def send_notification_discord(
+    payload_path: Path,
+    *,
+    webhook_url: str,
+) -> int:
+    messages = load_discord_payload(payload_path)
+    for message in messages:
+        _post_discord_payload(webhook_url, message)
+    return len(messages)
 
 
 def send_from_environment(
-    summary_path: Path,
+    payload_path: Path,
     *,
     environ: Mapping[str, str] | None = None,
-) -> str:
+) -> int:
     source = os.environ if environ is None else environ
-    sender = _required_env("LOTTERY_MAIL_USERNAME", source)
-    app_password = _required_env("LOTTERY_MAIL_APP_PASSWORD", source)
-    recipient = _required_env("LOTTERY_MAIL_TO", source)
-
-    smtp_host = str(
-        source.get("LOTTERY_MAIL_SMTP_HOST", DEFAULT_SMTP_HOST)
-    ).strip() or DEFAULT_SMTP_HOST
-    smtp_port = int(
-        str(source.get("LOTTERY_MAIL_SMTP_PORT", DEFAULT_SMTP_PORT))
-    )
-
-    return send_notification_email(
-        summary_path,
-        sender=sender,
-        app_password=app_password,
-        recipient=recipient,
-        smtp_host=smtp_host,
-        smtp_port=smtp_port,
-    )
+    webhook_url = _required_env("LOTTERY_DISCORD_WEBHOOK", source)
+    return send_notification_discord(payload_path, webhook_url=webhook_url)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Send the LotteryAI notification summary by email."
+        description="Send the LotteryAI Discord Embed notification."
     )
     parser.add_argument(
-        "summary_path",
+        "payload_path",
         nargs="?",
-        default="output/notification_summary.md",
+        default="output/notification_payload.json",
     )
     args = parser.parse_args()
 
-    subject = send_from_environment(Path(args.summary_path))
-    print(f"Notification email sent: {subject}")
+    count = send_from_environment(Path(args.payload_path))
+    print(f"Discord notification sent: {count} message(s)")
 
 
 if __name__ == "__main__":
