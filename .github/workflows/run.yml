@@ -2,6 +2,12 @@ name: Run LotteryAI
 
 on:
   workflow_dispatch:
+    inputs:
+      send_notification:
+        description: "Send email notification after a successful run"
+        required: false
+        default: false
+        type: boolean
 
   push:
     branches:
@@ -83,6 +89,7 @@ jobs:
           python src/run_pipeline.py
 
       - name: Commit output files
+        id: output_changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -91,10 +98,30 @@ jobs:
 
           if git diff --cached --quiet; then
             echo "No output changes to commit."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             git commit -m "Update LotteryAI output [skip ci]"
             git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Send notification email
+        if: >-
+          steps.output_changes.outputs.changed == 'true' &&
+          (
+            github.event_name == 'schedule' ||
+            (
+              github.event_name == 'workflow_dispatch' &&
+              inputs.send_notification == true
+            )
+          )
+        env:
+          PYTHONPATH: src
+          LOTTERY_MAIL_USERNAME: ${{ secrets.LOTTERY_MAIL_USERNAME }}
+          LOTTERY_MAIL_APP_PASSWORD: ${{ secrets.LOTTERY_MAIL_APP_PASSWORD }}
+          LOTTERY_MAIL_TO: ${{ secrets.LOTTERY_MAIL_TO }}
+        run: |
+          python src/notifier.py output/notification_summary.md
 
       - name: Upload review files
         uses: actions/upload-artifact@v4
