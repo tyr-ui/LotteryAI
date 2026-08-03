@@ -1,23 +1,26 @@
-"""Send the generated LotteryAI notification summary by email."""
+"""Send the generated LotteryAI notification summary to Discord."""
 
 from __future__ import annotations
 
 import argparse
+import json
 import os
-import smtplib
-import ssl
-from datetime import datetime
-from email.message import EmailMessage
 from pathlib import Path
 from typing import Mapping
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 
-DEFAULT_SMTP_HOST = "smtp.gmail.com"
-DEFAULT_SMTP_PORT = 465
+DISCORD_CONTENT_LIMIT = 2000
+DEFAULT_CHUNK_LIMIT = 1900
 
 
 class NotificationConfigurationError(RuntimeError):
-    """Raised when required mail configuration is missing."""
+    """Raised when required notification configuration is missing."""
+
+
+class NotificationDeliveryError(RuntimeError):
+    """Raised when Discord rejects or cannot receive a notification."""
 
 
 def _required_env(
@@ -33,104 +36,148 @@ def _required_env(
     return value
 
 
-def build_email_subject(
-    summary_text: str,
+def split_discord_messages(
+    text: str,
     *,
-    generated_at: datetime | None = None,
-) -> str:
-    """Build a concise subject without claiming unavailable carryover data."""
-    timestamp = generated_at or datetime.now()
-    date_text = timestamp.strftime("%Y/%m/%d")
+    limit: int = DEFAULT_CHUNK_LIMIT,
+) -> list[str]:
+    """Split Markdown into Discord-safe messages while preserving lines."""
+    if limit <= 0 or limit > DISCORD_CONTENT_LIMIT:
+        raise ValueError(
+            f"limit must be between 1 and {DISCORD_CONTENT_LIMIT}."
+        )
 
-    pending = "まだ結果未反映" in summary_text
-    suffix = "（一部結果待ち）" if pending else ""
-    return f"【LotteryAI】{date_text} 次回予想・前回結果{suffix}"
+    normalized = text.strip()
+    if not normalized:
+        raise ValueError("Notification summary is empty.")
+
+    chunks: list[str] = []
+    current = ""
+
+    for line in normalized.splitlines():
+        pieces = [
+            line[index:index + limit]
+            for index in range(0, len(line), limit)
+        ] or [""]
+
+        for piece in pieces:
+            separator = "\n" if current else ""
+            candidate = current + separator + piece
+
+            if len(candidate) <= limit:
+                current = candidate
+                continue
+
+            if current:
+                chunks.append(current)
+            current = piece
+
+    if current:
+        chunks.append(current)
+
+    return chunks
 
 
-def build_email_message(
+def _post_discord_message(
+    webhook_url: str,
+    content: str,
     *,
-    sender: str,
-    recipient: str,
-    subject: str,
-    body: str,
-) -> EmailMessage:
-    message = EmailMessage()
-    message["From"] = sender
-    message["To"] = recipient
-    message["Subject"] = subject
-    message.set_content(body, subtype="plain", charset="utf-8")
-    return message
+    username: str = "LotteryAI",
+    timeout: float = 20.0,
+) -> None:
+    payload = json.dumps(
+        {
+            "content": content,
+            "username": username,
+            "allowed_mentions": {"parse": []},
+        },
+        ensure_ascii=False,
+    ).encode("utf-8")
+
+    request = Request(
+        webhook_url,
+        data=payload,
+        headers={
+            "Content-Type": "application/json; charset=utf-8",
+            "User-Agent": "LotteryAI-Notifier/1.0",
+        },
+        method="POST",
+    )
+
+    try:
+        with urlopen(request, timeout=timeout) as response:
+            status = int(getattr(response, "status", 204))
+            if status not in {200, 204}:
+                raise NotificationDeliveryError(
+                    f"Discord webhook returned HTTP {status}."
+                )
+    except HTTPError as exc:
+        raise NotificationDeliveryError(
+            f"Discord webhook returned HTTP {exc.code}."
+        ) from exc
+    except URLError as exc:
+        raise NotificationDeliveryError(
+            f"Discord webhook request failed: {exc.reason}"
+        ) from exc
 
 
-def send_notification_email(
+def send_notification_discord(
     summary_path: Path,
     *,
-    sender: str,
-    app_password: str,
-    recipient: str,
-    smtp_host: str = DEFAULT_SMTP_HOST,
-    smtp_port: int = DEFAULT_SMTP_PORT,
-) -> str:
-    """Send a Markdown summary as a UTF-8 plain-text email."""
+    webhook_url: str,
+    username: str = "LotteryAI",
+    chunk_limit: int = DEFAULT_CHUNK_LIMIT,
+) -> int:
+    """Send a Markdown summary to Discord, split into safe message chunks."""
     if not summary_path.is_file():
         raise FileNotFoundError(
             f"Notification summary was not found: {summary_path}"
         )
 
-    body = summary_path.read_text(encoding="utf-8").strip()
-    if not body:
-        raise ValueError("Notification summary is empty.")
+    body = summary_path.read_text(encoding="utf-8")
+    chunks = split_discord_messages(body, limit=chunk_limit)
 
-    subject = build_email_subject(body)
-    message = build_email_message(
-        sender=sender,
-        recipient=recipient,
-        subject=subject,
-        body=body,
-    )
+    for index, chunk in enumerate(chunks, start=1):
+        if len(chunks) > 1:
+            prefix = f"**LotteryAI通知 {index}/{len(chunks)}**\n"
+            available = DISCORD_CONTENT_LIMIT - len(prefix)
+            content = prefix + chunk[:available]
+        else:
+            content = chunk
 
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(
-        smtp_host,
-        int(smtp_port),
-        context=context,
-    ) as smtp:
-        smtp.login(sender, app_password)
-        smtp.send_message(message)
+        _post_discord_message(
+            webhook_url,
+            content,
+            username=username,
+        )
 
-    return subject
+    return len(chunks)
 
 
 def send_from_environment(
     summary_path: Path,
     *,
     environ: Mapping[str, str] | None = None,
-) -> str:
+) -> int:
     source = os.environ if environ is None else environ
-    sender = _required_env("LOTTERY_MAIL_USERNAME", source)
-    app_password = _required_env("LOTTERY_MAIL_APP_PASSWORD", source)
-    recipient = _required_env("LOTTERY_MAIL_TO", source)
-
-    smtp_host = str(
-        source.get("LOTTERY_MAIL_SMTP_HOST", DEFAULT_SMTP_HOST)
-    ).strip() or DEFAULT_SMTP_HOST
-    smtp_port = int(
-        str(source.get("LOTTERY_MAIL_SMTP_PORT", DEFAULT_SMTP_PORT))
+    webhook_url = _required_env(
+        "LOTTERY_DISCORD_WEBHOOK",
+        source,
     )
+    username = str(
+        source.get("LOTTERY_DISCORD_USERNAME", "LotteryAI")
+    ).strip() or "LotteryAI"
 
-    return send_notification_email(
+    return send_notification_discord(
         summary_path,
-        sender=sender,
-        app_password=app_password,
-        recipient=recipient,
-        smtp_host=smtp_host,
-        smtp_port=smtp_port,
+        webhook_url=webhook_url,
+        username=username,
     )
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Send the LotteryAI notification summary by email."
+        description="Send the LotteryAI notification summary to Discord."
     )
     parser.add_argument(
         "summary_path",
@@ -139,8 +186,8 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    subject = send_from_environment(Path(args.summary_path))
-    print(f"Notification email sent: {subject}")
+    count = send_from_environment(Path(args.summary_path))
+    print(f"Discord notification sent: {count} message(s)")
 
 
 if __name__ == "__main__":
