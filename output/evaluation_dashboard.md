@@ -1,6 +1,6 @@
 # LotteryAI Evaluation Dashboard
 
-- 生成日時: `2026-08-03T08:54:51.938500+00:00`
+- 生成日時: `2026-08-03T11:01:59.470837+00:00`
 - Full Run: **ok**
 - Dashboard schema: `1.0`
 
@@ -54,8 +54,8 @@
 ## ミニロト
 
 - 次回抽せん回: **1398**
-- 採用Config: `local_01_experience_miniloto_1`
-- 採用元: `local`
+- 採用Config: `experience_miniloto_1`
+- 採用元: `experience`
 - 事後評価: **データ不足** (1回)
 - 平均最高一致: 2.0
 - 平均1口一致: 0.8
@@ -83,7 +83,7 @@
 - 最大一致: 未評価
 - Optimizer selection_score: 2.616669
 - Optimizer Random uplift: 未評価
-- Experience履歴: 11件
+- Experience履歴: 12件
 
 ### 次回予想
 
@@ -112,7 +112,7 @@
 - 最大一致: 未評価
 - Optimizer selection_score: 2.358332
 - Optimizer Random uplift: 未評価
-- Experience履歴: 11件
+- Experience履歴: 12件
 
 ### 次回予想
 
