@@ -1,0 +1,148 @@
+{
+  "schema_version": "2.0",
+  "generated_at": "2026-08-03T14:06:55.613318+00:00",
+  "has_carryover": false,
+  "messages": [
+    {
+      "username": "LotteryAI",
+      "allowed_mentions": {
+        "parse": []
+      },
+      "embeds": [
+        {
+          "title": "LotteryAI 予想・振り返り",
+          "description": "• 独立ホールドアウトではLOTO6が最も高く、一様ランダム比は+0.256です。\n• 評価可能なLOTO系3ゲームは、独立ホールドアウトで一様ランダム以上でした。\n• キャリーオーバー情報は取得できませんでした。\n• 前回結果を反映済み: LOTO6、Numbers3、Numbers4。",
+          "color": 3108845,
+          "footer": {
+            "text": "Pipeline: 正常完了 / 過去データに基づく評価であり、当選を保証しません。"
+          }
+        },
+        {
+          "title": "LOTO6｜第2126回",
+          "description": "キャリーオーバー: 未取得\n採用モデル: experience_loto6_2",
+          "color": 3108845,
+          "fields": [
+            {
+              "name": "次回予想",
+              "value": "```\n1. 06 10 21 26 37 42\n2. 02 18 22 27 35 38\n3. 08 16 19 23 36 43\n4. 01 05 15 28 39 40\n5. 04 11 12 24 25 32\n```",
+              "inline": false
+            },
+            {
+              "name": "前回結果",
+              "value": "第2125回 / 当選番号 03 22 25 28 30 43\n5口中最高一致 1\n1口平均一致 0.80",
+              "inline": false
+            },
+            {
+              "name": "評価",
+              "value": "Holdout: 30回 / 平均最高一致 2.000 / 一様Random比 +0.256\n探索期間の一様Random比: +0.178",
+              "inline": false
+            },
+            {
+              "name": "主要特徴",
+              "value": "repeat (+0.097) / dist (+0.039) / delay (+0.015)",
+              "inline": false
+            }
+          ]
+        },
+        {
+          "title": "LOTO7｜第689回",
+          "description": "キャリーオーバー: 未取得\n採用モデル: no_delay_strict",
+          "color": 3108845,
+          "fields": [
+            {
+              "name": "次回予想",
+              "value": "```\n1. 09 12 15 22 29 34 35\n2. 01 04 13 17 26 31 36\n3. 07 11 18 19 24 30 33\n4. 08 09 14 21 23 32 37\n5. 03 05 06 15 20 28 34\n```",
+              "inline": false
+            },
+            {
+              "name": "前回結果",
+              "value": "結果未反映",
+              "inline": false
+            },
+            {
+              "name": "評価",
+              "value": "Holdout: 30回 / 平均最高一致 2.589 / 一様Random比 +0.189\n探索期間の一様Random比: +0.289",
+              "inline": false
+            },
+            {
+              "name": "主要特徴",
+              "value": "freq (+0.201) / recent (+0.162) / dist (+0.136)",
+              "inline": false
+            }
+          ]
+        },
+        {
+          "title": "ミニロト｜第1398回",
+          "description": "キャリーオーバー: 対象外\n採用モデル: experience_miniloto_1",
+          "color": 3108845,
+          "fields": [
+            {
+              "name": "次回予想",
+              "value": "```\n1. 05 12 20 24 29\n2. 01 14 17 23 26\n3. 04 10 21 28 31\n4. 03 11 22 27 30\n5. 06 13 16 18 25\n```",
+              "inline": false
+            },
+            {
+              "name": "前回結果",
+              "value": "結果未反映",
+              "inline": false
+            },
+            {
+              "name": "評価",
+              "value": "Holdout: 30回 / 平均最高一致 1.822 / 一様Random比 +0.178\n探索期間の一様Random比: +0.215",
+              "inline": false
+            },
+            {
+              "name": "主要特徴",
+              "value": "repeat (+0.200) / dist (+0.197) / triplet (+0.125)",
+              "inline": false
+            }
+          ]
+        },
+        {
+          "title": "Numbers3｜第7041回",
+          "description": "キャリーオーバー: 対象外\n採用モデル: experience_numbers3_1",
+          "color": 3108845,
+          "fields": [
+            {
+              "name": "次回予想",
+              "value": "```\n1. 932\n2. 239\n3. 148\n4. 832\n5. 438\n6. 851\n7. 176\n8. 671\n9. 167\n10. 761\n```",
+              "inline": false
+            },
+            {
+              "name": "前回結果",
+              "value": "第7040回 / 当選番号 313\n最高位置一致 1\n1口平均位置一致 0.60\nStraight なし / Box なし",
+              "inline": false
+            },
+            {
+              "name": "評価",
+              "value": "Straight率 0.0417 / Box率 0.0833\n一様Random Straight率 0.0074（探索期間内の参考値）",
+              "inline": false
+            }
+          ]
+        },
+        {
+          "title": "Numbers4｜第7041回",
+          "description": "キャリーオーバー: 対象外\n採用モデル: experience_numbers4_2",
+          "color": 3108845,
+          "fields": [
+            {
+              "name": "次回予想",
+              "value": "```\n1. 0754\n2. 7247\n3. 0398\n4. 5841\n5. 8910\n6. 7236\n7. 6154\n8. 2763\n9. 5603\n10. 1069\n```",
+              "inline": false
+            },
+            {
+              "name": "前回結果",
+              "value": "第7040回 / 当選番号 9522\n最高位置一致 2\n1口平均位置一致 0.40\nStraight なし / Box なし",
+              "inline": false
+            },
+            {
+              "name": "評価",
+              "value": "Straight率 0.0000 / Box率 0.0833\n一様Random Straight率 0.0019（探索期間内の参考値）",
+              "inline": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
