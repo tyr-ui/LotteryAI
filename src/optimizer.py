@@ -36,6 +36,7 @@ PARENT_COUNT = 3
 ROBUST_FINALIST_COUNT = 4
 ROBUST_SEEDS = (SEED, SEED + 1, SEED + 2)
 OPTIMIZATION_TOP_K = 5
+HOLDOUT_PERIODS = 30
 
 WEIGHT_KEYS = (
     "freq",
@@ -788,6 +789,35 @@ def _rank_robust_finalists(
     return ranked
 
 
+def _split_holdout_history(
+    history: Sequence[Sequence[int]],
+    *,
+    train_window: int,
+    tested_periods: int,
+    holdout_periods: int = HOLDOUT_PERIODS,
+) -> tuple[
+    Sequence[Sequence[int]],
+    int,
+]:
+    """
+    設定探索用履歴と独立ホールドアウト回数を返す。
+
+    最後のholdout_periods回は設定探索から完全に除外する。
+    探索期間を確保できない場合はホールドアウトを無効化する。
+    """
+    required = int(train_window) + int(tested_periods)
+    available = len(history) - required
+    resolved = min(
+        max(0, int(holdout_periods)),
+        max(0, available),
+    )
+
+    if resolved <= 0:
+        return history, 0
+
+    return history[:-resolved], resolved
+
+
 def optimize(
     df,
     main_cols,
@@ -823,17 +853,22 @@ def optimize(
     })
 
     history = dataframe_to_history(df, game_config)
+    optimization_history, holdout_periods = _split_holdout_history(
+        history,
+        train_window=int(train_window),
+        tested_periods=int(tested_periods),
+    )
 
     random_baselines: dict[int, dict[str, object]] = {}
     filtered_random_baselines: dict[int, dict[str, object]] = {}
     for seed in ROBUST_SEEDS:
         random_baselines[seed] = _run_random_backtest_result(
-            history, game_config, config_name="uniform_random",
+            optimization_history, game_config, config_name="uniform_random",
             train_window=int(train_window), tested_periods=int(tested_periods),
             candidate_count=int(bt_candidates), seed=seed, filtered=False,
         )
         filtered_random_baselines[seed] = _run_random_backtest_result(
-            history, game_config, config_name="filtered_random",
+            optimization_history, game_config, config_name="filtered_random",
             train_window=int(train_window), tested_periods=int(tested_periods),
             candidate_count=int(bt_candidates), seed=seed, filtered=True,
         )
@@ -915,7 +950,7 @@ def optimize(
 
     stage_one_results = [
         _evaluate_config(
-            history,
+            optimization_history,
             game_config,
             config,
             train_window=int(train_window),
@@ -977,7 +1012,7 @@ def optimize(
 
     local_results = [
         _evaluate_config(
-            history,
+            optimization_history,
             game_config,
             config,
             train_window=int(train_window),
@@ -1013,7 +1048,7 @@ def optimize(
     robust_results_by_name: dict[str, dict[str, object]] = {}
     for name in finalist_names:
         robust_results_by_name[name] = _evaluate_config(
-            history,
+            optimization_history,
             game_config,
             all_config_by_name[name],
             train_window=int(train_window),
@@ -1033,7 +1068,7 @@ def optimize(
     best_config = all_config_by_name[best_name]
 
     feature_ablation = run_feature_ablation(
-        history,
+        optimization_history,
         game_config,
         best_config,
         best_result,
@@ -1044,6 +1079,57 @@ def optimize(
         random_baselines=random_baselines,
         filtered_random_baselines=filtered_random_baselines,
     )
+
+    holdout_evaluation: dict[str, object] | None = None
+    if holdout_periods > 0:
+        holdout_random_baselines: dict[int, dict[str, object]] = {}
+        holdout_filtered_random_baselines: dict[int, dict[str, object]] = {}
+
+        for seed in ROBUST_SEEDS:
+            holdout_random_baselines[seed] = _run_random_backtest_result(
+                history,
+                game_config,
+                config_name="uniform_random",
+                train_window=int(train_window),
+                tested_periods=holdout_periods,
+                candidate_count=int(bt_candidates),
+                seed=seed,
+                filtered=False,
+            )
+            holdout_filtered_random_baselines[seed] = (
+                _run_random_backtest_result(
+                    history,
+                    game_config,
+                    config_name="filtered_random",
+                    train_window=int(train_window),
+                    tested_periods=holdout_periods,
+                    candidate_count=int(bt_candidates),
+                    seed=seed,
+                    filtered=True,
+                )
+            )
+
+        holdout_evaluation = _evaluate_config(
+            history,
+            game_config,
+            best_config,
+            train_window=int(train_window),
+            tested_periods=holdout_periods,
+            candidate_count=int(bt_candidates),
+            seeds=ROBUST_SEEDS,
+            random_baselines=holdout_random_baselines,
+            filtered_random_baselines=(
+                holdout_filtered_random_baselines
+            ),
+        )
+        holdout_evaluation["selection_history_draws"] = len(
+            optimization_history
+        )
+        holdout_evaluation["holdout_periods"] = holdout_periods
+        holdout_evaluation["frozen_config"] = best_name
+        holdout_evaluation["evaluation_type"] = (
+            "independent_rolling_holdout"
+        )
 
     final_config = _merge_config(
         game_config,
@@ -1110,6 +1196,9 @@ def optimize(
             "robust_finalist_count": ROBUST_FINALIST_COUNT,
             "robust_seeds": list(ROBUST_SEEDS),
             "optimization_top_k": OPTIMIZATION_TOP_K,
+            "selection_history_draws": len(optimization_history),
+            "holdout_periods": holdout_periods,
+            "holdout_enabled": holdout_periods > 0,
             "note": (
                 "Optimizer-specific max_block/max_first/max_con/max_common "
                 "are retained for output compatibility, but predictor.py "
@@ -1119,4 +1208,5 @@ def optimize(
         },
         "prediction": prediction,
         "feature_ablation": feature_ablation,
+        "holdout_evaluation": holdout_evaluation,
     }
