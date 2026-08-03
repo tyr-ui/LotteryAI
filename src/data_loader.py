@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import io
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Mapping, Sequence
@@ -117,18 +118,82 @@ def get_headers() -> dict[str, str]:
     }
 
 
+def _request_with_retries(
+    url: str,
+    *,
+    headers: Mapping[str, str],
+    timeout: int = 45,
+    attempts: int = 4,
+) -> requests.Response:
+    """GET a remote data source with bounded retry/backoff.
+
+    Permanent client errors such as 403 are not retried. Timeouts,
+    connection failures, HTTP 429, and server errors are retried.
+    """
+    if attempts < 1:
+        raise ValueError(
+            "attempts must be at least 1."
+        )
+
+    last_error: requests.RequestException | None = None
+    for attempt in range(1, attempts + 1):
+        try:
+            response = requests.get(
+                url,
+                headers=dict(headers),
+                timeout=timeout,
+            )
+            response.raise_for_status()
+            return response
+        except requests.RequestException as error:
+            last_error = error
+            status_code = (
+                error.response.status_code
+                if error.response is not None
+                else None
+            )
+            retryable = (
+                isinstance(
+                    error,
+                    (
+                        requests.Timeout,
+                        requests.ConnectionError,
+                    ),
+                )
+                or status_code == 429
+                or (
+                    status_code is not None
+                    and status_code >= 500
+                )
+            )
+            if not retryable or attempt >= attempts:
+                raise
+
+            wait_seconds = min(
+                2 ** (attempt - 1),
+                8,
+            )
+            print(
+                "Data request failed; retrying. "
+                f"url={url} attempt={attempt}/{attempts} "
+                f"wait={wait_seconds}s error={error}"
+            )
+            time.sleep(wait_seconds)
+
+    assert last_error is not None
+    raise last_error
+
+
 def download_from_mkmode(kind: str) -> str:
     headers = get_headers()
     page_url = (
         f"https://www.mk-mode.com/rails/loto/{kind}"
     )
 
-    response = requests.get(
+    response = _request_with_retries(
         page_url,
         headers=headers,
-        timeout=30,
     )
-    response.raise_for_status()
 
     soup = BeautifulSoup(
         decode_content(response.content),
@@ -150,12 +215,10 @@ def download_from_mkmode(kind: str) -> str:
             page_url,
             href,
         )
-        csv_response = requests.get(
+        csv_response = _request_with_retries(
             csv_url,
             headers=headers,
-            timeout=30,
         )
-        csv_response.raise_for_status()
 
         return decode_content(
             csv_response.content
@@ -201,12 +264,11 @@ def download_game_csv(
         )
 
     try:
-        response = requests.get(
+        response = _request_with_retries(
             official_url,
             headers=get_headers(),
-            timeout=30,
+            attempts=1,
         )
-        response.raise_for_status()
     except requests.RequestException:
         if not fallback_kind:
             raise
@@ -1156,27 +1218,102 @@ def save_game_dataframe(
     )
 
 
+def _load_cached_game_data(
+    game_name: str,
+    config: Mapping[str, object] | object,
+    destination: Path | None,
+) -> LoadedGameData | None:
+    if (
+        destination is None
+        or not destination.is_file()
+    ):
+        return None
+
+    try:
+        raw = pd.read_csv(
+            destination,
+            dtype=str,
+        )
+        if raw.empty:
+            return None
+
+        dataframe = normalize_game_dataframe(
+            raw,
+            config,
+        )
+        validation = validate_lottery(
+            dataframe,
+            config,
+        )
+    except (
+        OSError,
+        ValueError,
+        pd.errors.ParserError,
+    ) as error:
+        print(
+            f"Ignoring invalid cached data for {game_name}: "
+            f"{error}"
+        )
+        return None
+
+    if validation.get("status") != "ok":
+        print(
+            f"Ignoring cached data with validation warning "
+            f"for {game_name}: {validation}"
+        )
+        return None
+
+    return LoadedGameData(
+        game_name=game_name,
+        dataframe=dataframe,
+        validation=validation,
+        source="cache",
+    )
+
+
 def load_game_data(
     game_name: str,
     config: Mapping[str, object] | object,
     *,
     destination: Path | None = None,
 ) -> LoadedGameData:
-    text, source = download_game_csv(
-        game_name,
-        config,
-    )
-    raw = read_csv_text(text)
-    dataframe = (
-        normalize_game_dataframe(
+    try:
+        text, source = download_game_csv(
+            game_name,
+            config,
+        )
+        raw = read_csv_text(text)
+        dataframe = normalize_game_dataframe(
             raw,
             config,
         )
-    )
-    validation = validate_lottery(
-        dataframe,
-        config,
-    )
+        validation = validate_lottery(
+            dataframe,
+            config,
+        )
+    except (
+        requests.RequestException,
+        RuntimeError,
+        UnicodeError,
+        ValueError,
+        pd.errors.ParserError,
+    ) as error:
+        cached = _load_cached_game_data(
+            game_name,
+            config,
+            destination,
+        )
+        if cached is None:
+            raise RuntimeError(
+                f"Could not load remote data for {game_name} "
+                "and no valid local cache is available."
+            ) from error
+
+        print(
+            f"Remote data unavailable for {game_name}; "
+            f"using cache at {destination}. error={error}"
+        )
+        return cached
 
     if destination is not None:
         save_game_dataframe(
