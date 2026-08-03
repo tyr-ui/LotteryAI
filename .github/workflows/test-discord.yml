@@ -1,0 +1,23 @@
+name: Test Discord Notification
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-discord:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send test notification
+        env:
+          LOTTERY_DISCORD_WEBHOOK: ${{ secrets.LOTTERY_DISCORD_WEBHOOK }}
+        run: |
+          if [ -z "$LOTTERY_DISCORD_WEBHOOK" ]; then
+            echo "LOTTERY_DISCORD_WEBHOOK is not configured."
+            exit 1
+          fi
+
+          curl --fail-with-body \
+            -H "Content-Type: application/json" \
+            -d '{"content":"LotteryAIのDiscord通知テストに成功しました。"}' \
+            "$LOTTERY_DISCORD_WEBHOOK"
