@@ -5,7 +5,12 @@ from random import Random
 from statistics import mean, pstdev
 from typing import Mapping, Sequence
 
-from backtester import BacktestSummary, run_backtest
+from backtester import (
+    BacktestSummary,
+    run_backtest,
+    run_filtered_random_backtest,
+    run_uniform_random_backtest,
+)
 from data_loader import dataframe_to_history
 from features import build_model_context, build_shape_features
 from games import LOTTO_GAMES
@@ -554,6 +559,41 @@ def _run_backtest_result(
     return _summary_to_result(summary, config_name=config_name)
 
 
+def _run_random_backtest_result(
+    history: Sequence[Sequence[int]],
+    game_config: Mapping[str, object],
+    *,
+    config_name: str,
+    train_window: int,
+    tested_periods: int,
+    candidate_count: int,
+    seed: int,
+    filtered: bool,
+) -> dict[str, object]:
+    if filtered:
+        summary = run_filtered_random_backtest(
+            history,
+            game_config,
+            train_window=train_window,
+            tested_periods=tested_periods,
+            candidate_count=candidate_count,
+            top_k=1,
+            seed=seed,
+            include_records=False,
+        )
+    else:
+        summary = run_uniform_random_backtest(
+            history,
+            game_config,
+            train_window=train_window,
+            tested_periods=tested_periods,
+            top_k=1,
+            seed=seed,
+            include_records=False,
+        )
+    return _summary_to_result(summary, config_name=config_name)
+
+
 def _aggregate_seed_results(
     results: Sequence[Mapping[str, object]],
     *,
@@ -677,6 +717,7 @@ def _evaluate_config(
     candidate_count: int,
     seeds: Sequence[int],
     random_baselines: Mapping[int, Mapping[str, object]],
+    filtered_random_baselines: Mapping[int, Mapping[str, object]],
 ) -> dict[str, object]:
     merged_config = _merge_config(game_config, optimizer_config)
     weights = _prediction_weights(optimizer_config)
@@ -698,24 +739,25 @@ def _evaluate_config(
 
     result = _aggregate_seed_results(per_seed, config_name=name)
 
-    random_results = [
-        random_baselines[seed]
-        for seed in seeds
-    ]
-    random_aggregate = _aggregate_seed_results(
-        random_results,
-        config_name="random",
+    uniform_results = [random_baselines[seed] for seed in seeds]
+    filtered_results = [filtered_random_baselines[seed] for seed in seeds]
+    uniform_aggregate = _aggregate_seed_results(
+        uniform_results, config_name="uniform_random"
     )
-    random_avg = float(random_aggregate.get("avg_matches") or 0.0)
+    filtered_aggregate = _aggregate_seed_results(
+        filtered_results, config_name="filtered_random"
+    )
+    uniform_avg = float(uniform_aggregate.get("avg_matches") or 0.0)
+    filtered_avg = float(filtered_aggregate.get("avg_matches") or 0.0)
 
-    result["selection_score"] = selection_score(result, random_avg)
-    result["random_unfiltered_avg"] = random_avg
-    result["random_filtered_avg"] = random_avg
+    result["selection_score"] = selection_score(result, uniform_avg)
+    result["random_unfiltered_avg"] = uniform_avg
+    result["random_filtered_avg"] = filtered_avg
     result["random_uplift"] = round(
-        float(result.get("avg_matches") or 0.0) - random_avg,
+        float(result.get("avg_matches") or 0.0) - uniform_avg,
         6,
     )
-    result["random_filtered_baseline"] = random_aggregate
+    result["random_filtered_baseline"] = filtered_aggregate
     result["weights"] = dict(optimizer_config["w"])
     result["filters"] = dict(optimizer_config.get("f", {}))
     result["search_origin"] = optimizer_config.get("search_origin")
@@ -777,19 +819,19 @@ def optimize(
     })
 
     history = dataframe_to_history(df, game_config)
-    random_weights = _random_weights()
 
     random_baselines: dict[int, dict[str, object]] = {}
+    filtered_random_baselines: dict[int, dict[str, object]] = {}
     for seed in ROBUST_SEEDS:
-        random_baselines[seed] = _run_backtest_result(
-            history,
-            game_config,
-            config_name="random",
-            train_window=int(train_window),
-            tested_periods=int(tested_periods),
-            candidate_count=int(bt_candidates),
-            weights=random_weights,
-            seed=seed,
+        random_baselines[seed] = _run_random_backtest_result(
+            history, game_config, config_name="uniform_random",
+            train_window=int(train_window), tested_periods=int(tested_periods),
+            candidate_count=int(bt_candidates), seed=seed, filtered=False,
+        )
+        filtered_random_baselines[seed] = _run_random_backtest_result(
+            history, game_config, config_name="filtered_random",
+            train_window=int(train_window), tested_periods=int(tested_periods),
+            candidate_count=int(bt_candidates), seed=seed, filtered=True,
         )
 
     rng = Random(SEED + int(max_num) * 100 + int(pick_count))
@@ -877,6 +919,7 @@ def optimize(
             candidate_count=int(bt_candidates),
             seeds=(SEED,),
             random_baselines=random_baselines,
+            filtered_random_baselines=filtered_random_baselines,
         )
         for config in stage_one_configs
     ]
@@ -938,6 +981,7 @@ def optimize(
             candidate_count=int(bt_candidates),
             seeds=(SEED,),
             random_baselines=random_baselines,
+            filtered_random_baselines=filtered_random_baselines,
         )
         for config in all_configs
         if str(config["name"]) not in evaluated_names
@@ -973,6 +1017,7 @@ def optimize(
             candidate_count=int(bt_candidates),
             seeds=ROBUST_SEEDS,
             random_baselines=random_baselines,
+            filtered_random_baselines=filtered_random_baselines,
         )
 
     robust_ranked_results = _rank_robust_finalists(
@@ -1007,7 +1052,7 @@ def optimize(
     return {
         "random_baseline": _aggregate_seed_results(
             [random_baselines[seed] for seed in ROBUST_SEEDS],
-            config_name="random",
+            config_name="uniform_random",
         ),
         "selected_random_filtered_baseline": selected_random_baseline,
         "ranked_configs": robust_ranked_results,
