@@ -69,10 +69,15 @@ jobs:
   full-run:
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
     runs-on: ubuntu-latest
+    concurrency:
+      group: lotteryai-full-run
+      cancel-in-progress: false
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -85,34 +90,34 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run LotteryAI pipeline
+        id: pipeline
         run: |
           python src/run_pipeline.py
 
-      - name: Commit output files
+      - name: Detect output changes
         id: output_changes
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
           git add output/
 
           if git diff --cached --quiet; then
-            echo "No output changes to commit."
+            echo "No output changes detected."
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
-            git commit -m "Update LotteryAI output [skip ci]"
-            git push
+            echo "Output changes detected."
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Send Discord notification
         if: >-
-          steps.output_changes.outputs.changed == 'true' &&
+          steps.pipeline.outcome == 'success' &&
           (
-            github.event_name == 'schedule' ||
             (
               github.event_name == 'workflow_dispatch' &&
               inputs.send_notification == true
+            ) ||
+            (
+              github.event_name == 'schedule' &&
+              steps.output_changes.outputs.changed == 'true'
             )
           )
         env:
@@ -121,7 +126,18 @@ jobs:
         run: |
           python src/notifier.py output/notification_payload.json
 
+      - name: Commit output files
+        if: steps.output_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git commit -m "Update LotteryAI output [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
       - name: Upload review files
+        if: always() && steps.pipeline.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: lotteryai-review
@@ -132,6 +148,7 @@ jobs:
           retention-days: 30
 
       - name: Upload all output files
+        if: always() && steps.pipeline.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: lotteryai-output
