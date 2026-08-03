@@ -7,6 +7,7 @@ from typing import Iterable, Mapping, Sequence
 from numbers_backtester import (
     NumbersBacktestSummary,
     run_numbers_backtest,
+    run_numbers_uniform_random_backtest,
 )
 from numbers_features import (
     NumberRow,
@@ -354,6 +355,45 @@ def _crossover_weights(
     return NumbersPredictionWeights(**values)
 
 
+def _aggregate_uniform_random_summaries(
+    summaries: Sequence[NumbersBacktestSummary],
+) -> dict[str, object]:
+    if not summaries:
+        raise ValueError("summaries must not be empty.")
+
+    metric_names = (
+        "average_best_position_matches",
+        "average_position_matches_per_ticket",
+        "average_best_unordered_matches",
+        "average_unordered_matches_per_ticket",
+        "straight_hit_rate",
+        "box_hit_rate",
+        "hit_rate_1_position",
+        "hit_rate_2_position",
+        "hit_rate_3_position",
+        "hit_rate_4_position",
+        "selection_score",
+    )
+    result: dict[str, object] = {
+        "config": "uniform_random",
+        "source": "uniform_random",
+        "tested_periods": summaries[0].tested_periods,
+        "digit_count": summaries[0].digit_count,
+        "evaluated_seeds": len(summaries),
+    }
+    for name in metric_names:
+        values = [
+            float(value)
+            for summary in summaries
+            if (value := getattr(summary, name)) is not None
+        ]
+        result[name] = (
+            round(sum(values) / len(values), 6)
+            if values else None
+        )
+    return result
+
+
 def optimize_numbers(
     history: Iterable[Sequence[int]],
     config: Mapping[str, object] | object,
@@ -537,6 +577,17 @@ def optimize_numbers(
         top_k=top_k,
         weights=selected_weights,
     )
+    uniform_random_baseline = _aggregate_uniform_random_summaries([
+        run_numbers_uniform_random_backtest(
+            normalized_history,
+            config,
+            train_window=train_window,
+            tested_periods=full_tested_periods,
+            top_k=top_k,
+            seed=baseline_seed,
+        )
+        for baseline_seed in (seed, seed + 1, seed + 2)
+    ])
 
     context = build_numbers_model_context(normalized_history, config)
     prediction_result = predict_numbers(
@@ -585,7 +636,8 @@ def optimize_numbers(
     }
 
     return {
-        "random_baseline": default_result or {},
+        "random_baseline": uniform_random_baseline,
+        "default_model_baseline": default_result or {},
         "selected_random_filtered_baseline": {},
         "ranked_configs": public_ranked,
         "selected_config": selected["config"],
