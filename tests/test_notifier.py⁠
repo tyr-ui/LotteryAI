@@ -6,9 +6,9 @@ from unittest.mock import MagicMock, patch
 
 from notifier import (
     NotificationConfigurationError,
+    load_discord_payload,
     send_from_environment,
     send_notification_discord,
-    split_discord_messages,
 )
 
 
@@ -16,49 +16,49 @@ class NotifierTest(unittest.TestCase):
 
     def test_missing_environment_is_rejected(self):
         with self.assertRaises(NotificationConfigurationError):
-            send_from_environment(
-                Path("missing.md"),
-                environ={},
-            )
+            send_from_environment(Path("missing.json"), environ={})
 
-    def test_short_summary_is_one_message(self):
-        self.assertEqual(
-            split_discord_messages("# LotteryAI\n\n通知本文"),
-            ["# LotteryAI\n\n通知本文"],
-        )
-
-    def test_long_summary_is_split_under_limit(self):
-        chunks = split_discord_messages(
-            "\n".join(["x" * 500] * 10),
-            limit=900,
-        )
-        self.assertGreater(len(chunks), 1)
-        self.assertTrue(all(len(chunk) <= 900 for chunk in chunks))
+    def test_invalid_empty_payload_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "payload.json"
+            path.write_text('{"messages": []}', encoding="utf-8")
+            with self.assertRaises(ValueError):
+                load_discord_payload(path)
 
     @patch("notifier.urlopen")
-    def test_send_posts_json_without_real_webhook(self, mock_urlopen):
+    def test_send_posts_embed_json_without_real_webhook(self, mock_urlopen):
         response = MagicMock()
         response.status = 204
         mock_urlopen.return_value.__enter__.return_value = response
 
+        payload = {
+            "messages": [
+                {
+                    "username": "LotteryAI",
+                    "allowed_mentions": {"parse": []},
+                    "embeds": [
+                        {
+                            "title": "LotteryAI",
+                            "description": "通知テスト",
+                            "color": 12345,
+                        }
+                    ],
+                }
+            ]
+        }
         with tempfile.TemporaryDirectory() as directory:
-            summary = Path(directory) / "notification_summary.md"
-            summary.write_text(
-                "# LotteryAI\n\n通知本文",
-                encoding="utf-8",
-            )
-
+            path = Path(directory) / "notification_payload.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
             count = send_notification_discord(
-                summary,
+                path,
                 webhook_url="https://discord.com/api/webhooks/test/token",
             )
 
         self.assertEqual(count, 1)
-        mock_urlopen.assert_called_once()
         request = mock_urlopen.call_args.args[0]
-        payload = json.loads(request.data.decode("utf-8"))
-        self.assertIn("LotteryAI", payload["content"])
-        self.assertEqual(payload["allowed_mentions"], {"parse": []})
+        sent = json.loads(request.data.decode("utf-8"))
+        self.assertEqual(sent["embeds"][0]["title"], "LotteryAI")
+        self.assertEqual(sent["allowed_mentions"], {"parse": []})
 
 
 if __name__ == "__main__":
