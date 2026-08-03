@@ -122,6 +122,9 @@ def run_feature_ablation(
         int,
         Mapping[str, object],
     ],
+    filtered_random_baselines: (
+        Mapping[int, Mapping[str, object]] | None
+    ) = None,
 ) -> list[dict[str, object]]:
     """
     選択済み設定について、特徴量を1つずつ無効化して
@@ -146,6 +149,7 @@ def run_feature_ablation(
         candidate_count=candidate_count,
         seeds=seeds,
         random_baselines=random_baselines,
+        filtered_random_baselines=filtered_random_baselines,
     )
 
     baseline_avg = float(
@@ -202,6 +206,7 @@ def run_feature_ablation(
                 candidate_count=candidate_count,
                 seeds=seeds,
                 random_baselines=random_baselines,
+                filtered_random_baselines=filtered_random_baselines,
             )
 
         ablated_avg = float(
