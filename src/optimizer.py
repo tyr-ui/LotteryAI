@@ -1045,8 +1045,14 @@ def optimize(
     )
 
     final_config = _merge_config(
+        game_config,
+        best_config,
+    )
     final_weights = _prediction_weights(best_config)
-    final_context = build_model_context(history, final_config)
+    final_context = build_model_context(
+        history,
+        final_config,
+    )
 
     final_prediction = predict(
         final_context,
