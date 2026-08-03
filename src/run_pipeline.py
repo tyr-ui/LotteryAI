@@ -17,6 +17,8 @@ from common import now_iso
 from storage import save_json, load_json
 from evaluation_dashboard import write_evaluation_dashboard
 
+from notification_summary import write_notification_summary
+
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "output"
@@ -834,9 +836,17 @@ def main() -> None:
 
     save_feature_memory_analysis()
 
+    notification_summary_path = write_notification_summary(
+        OUTPUT_DIR,
+        output,
+    )
+
     print("\n=== REVIEW OUTPUTS ===")
     print(f"run_summary: {run_summary_path}")
     print(f"review_bundle: {review_bundle_path}")
+    print(
+        f"notification_summary: {notification_summary_path}"
+    )
     print(
         "evaluation_dashboard_json: "
         f"{dashboard_json_path}"
