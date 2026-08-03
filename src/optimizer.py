@@ -16,6 +16,9 @@ from features import build_model_context, build_shape_features
 from games import LOTTO_GAMES
 from predictor import PredictionResult, PredictionWeights, predict
 from optimizer_evolution import generate_evolution_candidates
+from optimizer_ablation import (
+    run_feature_ablation,
+)
 from optimizer_experience import (
     load_evolution_adaptation,
     load_experience_configs,
@@ -1028,7 +1031,20 @@ def optimize(
     best_name = str(best_result["config"])
     best_config = all_config_by_name[best_name]
 
-    final_config = _merge_config(game_config, best_config)
+    feature_ablation = run_feature_ablation(
+        history,
+        game_config,
+        best_config,
+        best_result,
+        train_window=int(train_window),
+        tested_periods=int(tested_periods),
+        candidate_count=int(bt_candidates),
+        seeds=ROBUST_SEEDS,
+        random_baselines=random_baselines,
+        filtered_random_baselines=filtered_random_baselines,
+    )
+
+    final_config = _merge_config(
     final_weights = _prediction_weights(best_config)
     final_context = build_model_context(history, final_config)
 
@@ -1094,4 +1110,5 @@ def optimize(
             ),
         },
         "prediction": prediction,
+        "feature_ablation": feature_ablation,
     }
