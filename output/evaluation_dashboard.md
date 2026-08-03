@@ -1,6 +1,6 @@
 # LotteryAI Evaluation Dashboard
 
-- 生成日時: `2026-08-02T13:14:01.665908+00:00`
+- 生成日時: `2026-08-03T02:17:56.397494+00:00`
 - Full Run: **ok**
 - Dashboard schema: `1.0`
 
@@ -12,19 +12,19 @@
 ## LOTO6
 
 - 次回抽せん回: **2125**
-- 採用Config: `experience_loto6_1`
-- 採用元: `experience`
+- 採用Config: `random_05`
+- 採用元: `random`
 - 事後評価: **参考値** (8回)
 - 平均最高一致: 1.625
 - 平均1口一致: 0.975
 - 最大一致: 3
-- Optimizer selection_score: 1.221135
-- Optimizer Random uplift: 0.2667
-- Experience履歴: 14件
+- Optimizer selection_score: 1.10766
+- Optimizer Random uplift: 0.251866
+- Experience履歴: 15件
 
 ### 次回予想
 
-1. 2・6・19・26・27・38<br>2. 5・10・16・24・37・42<br>3. 8・21・22・30・35・36<br>4. 14・18・20・23・25・43<br>5. 4・11・13・15・31・34
+1. 6・10・21・26・27・42<br>2. 2・5・19・36・38・43<br>3. 15・18・22・32・35・37<br>4. 3・12・16・24・34・39<br>5. 4・8・20・23・28・41
 
 ### 注意
 
@@ -33,19 +33,19 @@
 ## LOTO7
 
 - 次回抽せん回: **689**
-- 採用Config: `experience_loto7_1`
+- 採用Config: `experience_loto7_2`
 - 採用元: `experience`
 - 事後評価: **データ不足** (4回)
 - 平均最高一致: 2.25
 - 平均1口一致: 1.25
 - 最大一致: 3
-- Optimizer selection_score: 1.71825
-- Optimizer Random uplift: 0.1222
-- Experience履歴: 14件
+- Optimizer selection_score: 1.666188
+- Optimizer Random uplift: 0.088867
+- Experience履歴: 15件
 
 ### 次回予想
 
-1. 9・12・15・22・29・34・35<br>2. 1・4・13・17・26・31・36<br>3. 7・11・18・19・24・30・33<br>4. 1・8・10・14・21・27・32<br>5. 3・6・7・16・25・28・34
+1. 4・9・12・13・22・29・34<br>2. 8・11・14・15・26・31・35<br>3. 1・6・17・19・30・32・36<br>4. 2・16・18・21・25・27・37<br>5. 7・9・10・12・20・23・33
 
 ### 注意
 
@@ -62,7 +62,7 @@
 - 最大一致: 2
 - Optimizer selection_score: 1.127073
 - Optimizer Random uplift: 0.1519
-- Experience履歴: 14件
+- Experience履歴: 15件
 
 ### 次回予想
 
@@ -78,12 +78,12 @@
 - 採用Config: `experience_numbers3_1`
 - 採用元: `experience`
 - 事後評価: **未評価** (0回)
-- 平均最高一致: None
-- 平均1口一致: None
-- 最大一致: None
+- 平均最高一致: 未評価
+- 平均1口一致: 未評価
+- 最大一致: 未評価
 - Optimizer selection_score: 2.616669
-- Optimizer Random uplift: None
-- Experience履歴: 5件
+- Optimizer Random uplift: 未評価
+- Experience履歴: 6件
 
 ### 次回予想
 
@@ -94,8 +94,8 @@
 - 平均最高位置一致: 1.272222
 - 1口平均位置一致: 0.326111
 - 平均最高順不同一致: 1.811111
-- Straight: None (None)
-- Box: None (None)
+- Straight率: 1.67%
+- Box率: 6.11%
 
 ### 注意
 
@@ -107,12 +107,12 @@
 - 採用Config: `experience_numbers4_1`
 - 採用元: `experience`
 - 事後評価: **未評価** (0回)
-- 平均最高一致: None
-- 平均1口一致: None
-- 最大一致: None
+- 平均最高一致: 未評価
+- 平均1口一致: 未評価
+- 最大一致: 未評価
 - Optimizer selection_score: 2.358332
-- Optimizer Random uplift: None
-- Experience履歴: 5件
+- Optimizer Random uplift: 未評価
+- Experience履歴: 6件
 
 ### 次回予想
 
@@ -123,8 +123,8 @@
 - 平均最高位置一致: 1.544444
 - 1口平均位置一致: 0.415556
 - 平均最高順不同一致: 2.327778
-- Straight: None (None)
-- Box: None (None)
+- Straight率: 0.00%
+- Box率: 1.11%
 
 ### 注意
 
