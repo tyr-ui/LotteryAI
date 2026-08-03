@@ -119,7 +119,7 @@ jobs:
           PYTHONPATH: src
           LOTTERY_DISCORD_WEBHOOK: ${{ secrets.LOTTERY_DISCORD_WEBHOOK }}
         run: |
-          python src/notifier.py output/notification_summary.md
+          python src/notifier.py output/notification_payload.json
 
       - name: Upload review files
         uses: actions/upload-artifact@v4
