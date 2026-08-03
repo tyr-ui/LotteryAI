@@ -1,4 +1,4 @@
-"""Send the generated LotteryAI notification summary to Discord."""
+"""Send LotteryAI Discord Embed payloads through a webhook."""
 
 from __future__ import annotations
 
@@ -6,13 +6,9 @@ import argparse
 import json
 import os
 from pathlib import Path
-from typing import Mapping
+from typing import Any, Mapping, Sequence
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
-
-
-DISCORD_CONTENT_LIMIT = 2000
-DEFAULT_CHUNK_LIMIT = 1900
 
 
 class NotificationConfigurationError(RuntimeError):
@@ -21,6 +17,19 @@ class NotificationConfigurationError(RuntimeError):
 
 class NotificationDeliveryError(RuntimeError):
     """Raised when Discord rejects or cannot receive a notification."""
+
+
+def _mapping(value: Any) -> Mapping[str, Any]:
+    return value if isinstance(value, Mapping) else {}
+
+
+def _list(value: Any) -> list[Any]:
+    if isinstance(value, Sequence) and not isinstance(
+        value,
+        (str, bytes, bytearray),
+    ):
+        return list(value)
+    return []
 
 
 def _required_env(
@@ -36,70 +45,44 @@ def _required_env(
     return value
 
 
-def split_discord_messages(
-    text: str,
-    *,
-    limit: int = DEFAULT_CHUNK_LIMIT,
-) -> list[str]:
-    """Split Markdown into Discord-safe messages while preserving lines."""
-    if limit <= 0 or limit > DISCORD_CONTENT_LIMIT:
-        raise ValueError(
-            f"limit must be between 1 and {DISCORD_CONTENT_LIMIT}."
-        )
+def load_discord_payload(path: Path) -> list[dict[str, object]]:
+    if not path.is_file():
+        raise FileNotFoundError(f"Discord notification payload was not found: {path}")
 
-    normalized = text.strip()
-    if not normalized:
-        raise ValueError("Notification summary is empty.")
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    messages = _list(_mapping(raw).get("messages"))
+    if not messages:
+        raise ValueError("Discord notification payload contains no messages.")
 
-    chunks: list[str] = []
-    current = ""
+    validated: list[dict[str, object]] = []
+    for index, item in enumerate(messages, start=1):
+        message = dict(_mapping(item))
+        embeds = _list(message.get("embeds"))
+        content = str(message.get("content", "")).strip()
+        if not embeds and not content:
+            raise ValueError(f"Discord message {index} has neither embeds nor content.")
+        if len(embeds) > 10:
+            raise ValueError(f"Discord message {index} exceeds the 10-embed limit.")
+        message.setdefault("username", "LotteryAI")
+        message.setdefault("allowed_mentions", {"parse": []})
+        validated.append(message)
 
-    for line in normalized.splitlines():
-        pieces = [
-            line[index:index + limit]
-            for index in range(0, len(line), limit)
-        ] or [""]
-
-        for piece in pieces:
-            separator = "\n" if current else ""
-            candidate = current + separator + piece
-
-            if len(candidate) <= limit:
-                current = candidate
-                continue
-
-            if current:
-                chunks.append(current)
-            current = piece
-
-    if current:
-        chunks.append(current)
-
-    return chunks
+    return validated
 
 
-def _post_discord_message(
+def _post_discord_payload(
     webhook_url: str,
-    content: str,
+    payload: Mapping[str, object],
     *,
-    username: str = "LotteryAI",
     timeout: float = 20.0,
 ) -> None:
-    payload = json.dumps(
-        {
-            "content": content,
-            "username": username,
-            "allowed_mentions": {"parse": []},
-        },
-        ensure_ascii=False,
-    ).encode("utf-8")
-
+    body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
     request = Request(
         webhook_url,
-        data=payload,
+        data=body,
         headers={
             "Content-Type": "application/json; charset=utf-8",
-            "User-Agent": "LotteryAI-Notifier/1.0",
+            "User-Agent": "LotteryAI-Notifier/2.0",
         },
         method="POST",
     )
@@ -112,8 +95,14 @@ def _post_discord_message(
                     f"Discord webhook returned HTTP {status}."
                 )
     except HTTPError as exc:
+        detail = ""
+        try:
+            detail = exc.read().decode("utf-8", errors="replace")
+        except Exception:
+            detail = ""
+        suffix = f" Response: {detail[:500]}" if detail else ""
         raise NotificationDeliveryError(
-            f"Discord webhook returned HTTP {exc.code}."
+            f"Discord webhook returned HTTP {exc.code}.{suffix}"
         ) from exc
     except URLError as exc:
         raise NotificationDeliveryError(
@@ -122,71 +111,38 @@ def _post_discord_message(
 
 
 def send_notification_discord(
-    summary_path: Path,
+    payload_path: Path,
     *,
     webhook_url: str,
-    username: str = "LotteryAI",
-    chunk_limit: int = DEFAULT_CHUNK_LIMIT,
 ) -> int:
-    """Send a Markdown summary to Discord, split into safe message chunks."""
-    if not summary_path.is_file():
-        raise FileNotFoundError(
-            f"Notification summary was not found: {summary_path}"
-        )
-
-    body = summary_path.read_text(encoding="utf-8")
-    chunks = split_discord_messages(body, limit=chunk_limit)
-
-    for index, chunk in enumerate(chunks, start=1):
-        if len(chunks) > 1:
-            prefix = f"**LotteryAI通知 {index}/{len(chunks)}**\n"
-            available = DISCORD_CONTENT_LIMIT - len(prefix)
-            content = prefix + chunk[:available]
-        else:
-            content = chunk
-
-        _post_discord_message(
-            webhook_url,
-            content,
-            username=username,
-        )
-
-    return len(chunks)
+    messages = load_discord_payload(payload_path)
+    for message in messages:
+        _post_discord_payload(webhook_url, message)
+    return len(messages)
 
 
 def send_from_environment(
-    summary_path: Path,
+    payload_path: Path,
     *,
     environ: Mapping[str, str] | None = None,
 ) -> int:
     source = os.environ if environ is None else environ
-    webhook_url = _required_env(
-        "LOTTERY_DISCORD_WEBHOOK",
-        source,
-    )
-    username = str(
-        source.get("LOTTERY_DISCORD_USERNAME", "LotteryAI")
-    ).strip() or "LotteryAI"
-
-    return send_notification_discord(
-        summary_path,
-        webhook_url=webhook_url,
-        username=username,
-    )
+    webhook_url = _required_env("LOTTERY_DISCORD_WEBHOOK", source)
+    return send_notification_discord(payload_path, webhook_url=webhook_url)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Send the LotteryAI notification summary to Discord."
+        description="Send the LotteryAI Discord Embed notification."
     )
     parser.add_argument(
-        "summary_path",
+        "payload_path",
         nargs="?",
-        default="output/notification_summary.md",
+        default="output/notification_payload.json",
     )
     args = parser.parse_args()
 
-    count = send_from_environment(Path(args.summary_path))
+    count = send_from_environment(Path(args.payload_path))
     print(f"Discord notification sent: {count} message(s)")
 
 
