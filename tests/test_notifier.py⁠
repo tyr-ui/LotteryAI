@@ -1,0 +1,71 @@
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+from notifier import (
+    NotificationConfigurationError,
+    build_email_message,
+    build_email_subject,
+    send_from_environment,
+    send_notification_email,
+)
+
+
+class NotifierTest(unittest.TestCase):
+
+    def test_subject_marks_pending_results(self):
+        subject = build_email_subject(
+            "前回予想の対象回は、まだ結果未反映です。"
+        )
+        self.assertIn("一部結果待ち", subject)
+
+    def test_message_is_utf8_plain_text(self):
+        message = build_email_message(
+            sender="sender@example.com",
+            recipient="receiver@example.com",
+            subject="件名",
+            body="本文",
+        )
+        self.assertEqual(message["To"], "receiver@example.com")
+        self.assertIn("本文", message.get_content())
+
+    def test_missing_environment_is_rejected(self):
+        with self.assertRaises(NotificationConfigurationError):
+            send_from_environment(
+                Path("missing.md"),
+                environ={},
+            )
+
+    @patch("notifier.smtplib.SMTP_SSL")
+    def test_send_uses_gmail_ssl_without_real_email(
+        self,
+        mock_smtp_ssl,
+    ):
+        smtp = MagicMock()
+        mock_smtp_ssl.return_value.__enter__.return_value = smtp
+
+        with tempfile.TemporaryDirectory() as directory:
+            summary = Path(directory) / "notification_summary.md"
+            summary.write_text(
+                "# LotteryAI\n\n通知本文",
+                encoding="utf-8",
+            )
+
+            subject = send_notification_email(
+                summary,
+                sender="sender@gmail.com",
+                app_password="app-password",
+                recipient="receiver@gmail.com",
+            )
+
+        smtp.login.assert_called_once_with(
+            "sender@gmail.com",
+            "app-password",
+        )
+        smtp.send_message.assert_called_once()
+        self.assertIn("LotteryAI", subject)
+
+
+if __name__ == "__main__":
+    unittest.main()
