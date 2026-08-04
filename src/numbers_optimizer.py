@@ -452,6 +452,7 @@ def optimize_numbers(
     config: Mapping[str, object] | object,
     *,
     seed: int = 2025,
+    draw_numbers: Sequence[int] | None = None,
 ) -> dict[str, object]:
     normalized_history = _normalize_history(history)
 
@@ -490,6 +491,17 @@ def optimize_numbers(
         if holdout_periods > 0
         else normalized_history
     )
+    trained_through_draw_no: int | None = None
+    if draw_numbers is not None:
+        normalized_draw_numbers = sorted(int(value) for value in draw_numbers)
+        if len(normalized_draw_numbers) != len(normalized_history):
+            raise ValueError(
+                "draw_numbers length must match normalized history length."
+            )
+        if selection_history:
+            trained_through_draw_no = normalized_draw_numbers[
+                len(selection_history) - 1
+            ]
 
     search_periods = _evaluation_periods(
         digit_count=digit_count,
@@ -498,7 +510,10 @@ def optimize_numbers(
         train_window=train_window,
     )
 
-    allocation = load_search_allocation(game_key)
+    allocation = load_search_allocation(
+        game_key,
+        max_trained_through_draw_no=trained_through_draw_no,
+    )
     allocation_counts = allocation.get("counts", {})
     if not isinstance(allocation_counts, Mapping):
         allocation_counts = {}
@@ -508,7 +523,10 @@ def optimize_numbers(
     requested_local = max(0, int(allocation_counts.get("local", 6)))
     requested_evolution = max(0, int(allocation_counts.get("evolution", 4)))
 
-    evolution_adaptation = load_evolution_adaptation(game_key)
+    evolution_adaptation = load_evolution_adaptation(
+        game_key,
+        max_trained_through_draw_no=trained_through_draw_no,
+    )
     evolution_mutation_rate = float(
         evolution_adaptation.get("mutation_rate", 0.25) or 0.25
     )
@@ -551,6 +569,7 @@ def optimize_numbers(
     loaded_experience = load_experience_configs(
         game_key,
         limit=requested_experience,
+        max_trained_through_draw_no=trained_through_draw_no,
     )
     restored_experience_count = 0
     for item in loaded_experience:
@@ -783,6 +802,7 @@ def optimize_numbers(
             "numbers_holdout_enabled": bool(holdout_evaluation),
             "numbers_holdout_periods": holdout_periods,
             "selection_history_draws": len(selection_history),
+            "trained_through_draw_no": trained_through_draw_no,
             "seed": seed,
         },
         "feature_ablation": [],
@@ -797,6 +817,7 @@ def optimize_numbers(
         "numbers_selection_backtest": selection_backtest.to_dict(),
         "holdout_evaluation": holdout_evaluation,
         "numbers_holdout": holdout_evaluation,
+        "trained_through_draw_no": trained_through_draw_no,
         "prediction": prediction,
         "box_prediction": box_prediction,
     }
