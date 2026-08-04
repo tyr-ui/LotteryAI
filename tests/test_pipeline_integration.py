@@ -338,6 +338,10 @@ class PipelineIntegrationTest(unittest.TestCase):
         )
         self.assertEqual(output["loto6"]["latest_draw_no"], 10)
         self.assertEqual(output["numbers3"]["latest_draw_no"], 41)
+        self.assertEqual(output["loto6"]["data_source"], "test")
+        self.assertEqual(output["numbers3"]["data_source"], "test")
+        self.assertTrue(output["loto6"]["data_loaded_at"])
+        self.assertTrue(output["numbers3"]["data_loaded_at"])
 
     def test_third_run_with_no_changes_skips_optimizers_and_outputs(self) -> None:
         latest_draws = {
