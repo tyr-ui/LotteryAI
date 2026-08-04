@@ -58,7 +58,7 @@ class ExperienceTrainingProvenanceTest(unittest.TestCase):
         self.assertEqual(len(configs), 1)
         self.assertEqual(configs[0]["w"], {"freq": 1.0})
 
-    def test_no_cutoff_keeps_legacy_entries_for_normal_operation(self):
+    def test_legacy_entries_are_not_used_for_normal_operation(self):
         store = {
             "schema_version": optimizer_experience.SCHEMA_VERSION,
             "games": {
@@ -78,7 +78,7 @@ class ExperienceTrainingProvenanceTest(unittest.TestCase):
                 limit=10,
             )
 
-        self.assertEqual(len(configs), 1)
+        self.assertEqual(len(configs), 0)
 
     def test_save_records_training_boundary(self):
         empty_store = {
