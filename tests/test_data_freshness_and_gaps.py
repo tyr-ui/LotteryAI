@@ -42,7 +42,8 @@ class DataFreshnessAndGapTest(unittest.TestCase):
         )
         self.assertTrue(report["stale_data"])
         self.assertGreater(report["data_age_days"], 10)
-        self.assertEqual(report["freshness_status"], "warning")
+        self.assertTrue(report["hard_stale_data"])
+        self.assertEqual(report["freshness_status"], "error")
         self.assertEqual(report["status"], "ok")
 
     def test_recent_contiguous_data_is_ok(self):
