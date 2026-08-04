@@ -75,9 +75,9 @@ class NotificationSummaryTest(unittest.TestCase):
         self.assertIn("キャリーオーバー: 2億円", summary)
         self.assertIn("01 02 03 10 20 30", summary)
         self.assertIn("5口中最高一致 3", summary)
-        self.assertIn("一様Random比 +0.200", summary)
+        self.assertIn("一様ランダム比 +0.200", summary)
         self.assertIn("pair (+0.080)", summary)
-        self.assertIn("Pipeline: 正常完了", summary)
+        self.assertIn("処理結果: 正常完了", summary)
 
     def test_discord_payload_uses_embed_cards(self):
         payload = build_discord_payload(self.output)
