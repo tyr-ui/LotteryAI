@@ -183,6 +183,30 @@ def _lotto_evaluation(section: Mapping[str, Any]) -> str:
 
 
 def _numbers_evaluation(section: Mapping[str, Any]) -> str:
+    holdout = _mapping(section.get("holdout_evaluation"))
+    if holdout:
+        random_baseline = _mapping(holdout.get("random_baseline"))
+        straight = _format_decimal(
+            holdout.get("straight_hit_rate"),
+            digits=4,
+        )
+        box = _format_decimal(holdout.get("box_hit_rate"), digits=4)
+        random_straight = _format_decimal(
+            random_baseline.get("straight_hit_rate"),
+            digits=4,
+        )
+        position_uplift = _format_decimal(
+            holdout.get("random_uplift"),
+            signed=True,
+        )
+        return (
+            f"独立検証: {holdout.get('tested_periods', holdout.get('holdout_periods', '不明'))}回 / "
+            f"平均最高位置一致 {_format_decimal(holdout.get('average_best_position_matches'))} / "
+            f"一様ランダム比 {position_uplift}\n"
+            f"ストレート率 {straight} / ボックス率 {box} / "
+            f"一様ランダムのストレート率 {random_straight}"
+        )
+
     ranked = _mapping((_list(section.get("ranked_configs")) or [{}])[0])
     random_baseline = _mapping(section.get("random_baseline"))
     straight = _format_decimal(ranked.get("straight_hit_rate"), digits=4)
@@ -192,16 +216,19 @@ def _numbers_evaluation(section: Mapping[str, Any]) -> str:
         digits=4,
     )
     return (
-        f"ストレート率 {straight} / ボックス率 {box}\n"
-        f"一様ランダムのストレート率 {random_straight}（探索期間内の参考値）"
+        "独立検証: 未評価\n"
+        f"探索期間のストレート率 {straight} / ボックス率 {box} / "
+        f"一様ランダムのストレート率 {random_straight}"
     )
 
 
 def _ai_summary_lines(output: Mapping[str, Any]) -> list[str]:
     lines: list[str] = []
     holdouts: list[tuple[str, float]] = []
-    for game_key in ("loto6", "loto7", "miniloto"):
-        holdout = _mapping(_mapping(output.get(game_key)).get("holdout_evaluation"))
+    for game_key in GAME_ORDER:
+        holdout = _mapping(
+            _mapping(output.get(game_key)).get("holdout_evaluation")
+        )
         uplift = _number(holdout.get("random_uplift"))
         if uplift is not None:
             holdouts.append((game_key, float(uplift)))
@@ -221,7 +248,7 @@ def _ai_summary_lines(output: Mapping[str, Any]) -> list[str]:
             )
         else:
             lines.append(
-                "評価可能なLOTO系3ゲームは、独立検証で一様ランダム以上でした。"
+                "評価可能な全ゲームは、独立検証で一様ランダム以上でした。"
             )
     else:
         lines.append("独立検証はまだ評価できていません。")
