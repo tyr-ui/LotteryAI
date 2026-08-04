@@ -928,6 +928,13 @@ def main() -> None:
         )
         datasets[game_key] = loaded.dataframe
         validations[game_key] = dict(loaded.validation)
+        if validations[game_key].get("hard_stale_data"):
+            raise RuntimeError(
+                f"{game_key}: latest source data is too old to generate a new prediction. "
+                f"latest_draw_date={validations[game_key].get('latest_draw_date')} "
+                f"data_age_days={validations[game_key].get('data_age_days')} "
+                f"hard_staleness_days={validations[game_key].get('hard_staleness_days')}"
+            )
         data_sources[game_key] = str(loaded.source)
         data_loaded_at[game_key] = now_iso()
 
