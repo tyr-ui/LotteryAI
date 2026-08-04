@@ -4,6 +4,7 @@ from collections import Counter
 from dataclasses import asdict, dataclass
 from statistics import mean
 from random import Random
+from itertools import combinations_with_replacement
 from typing import Iterable, Mapping, Sequence
 
 from numbers_features import (
@@ -776,6 +777,65 @@ def _select_box_candidates_from_ranked(
     return tuple(selected)
 
 
+def run_numbers_box_random_backtest(
+    history: Iterable[Sequence[int]],
+    config: Mapping[str, object] | object,
+    *,
+    train_window: int | None = None,
+    tested_periods: int | None = None,
+    top_k: int | None = None,
+    seed: int = 2025,
+    include_records: bool = False,
+) -> NumbersBoxBacktestSummary:
+    """Random baseline using unique BOX signatures under the model budget.
+
+    Each ticket is an unordered digit multiset, so permutations of the same
+    BOX are never counted twice. This matches the production BOX candidate
+    contract more closely than sampling arbitrary ordered Numbers tickets.
+    """
+    configured_digit_count = int(_config_value(config, "digit_count", default=0) or 0)
+    normalized_history = _normalize_history(
+        history, digit_count=configured_digit_count or None, digit_min=0, digit_max=9
+    )
+    digit_count = len(normalized_history[0])
+    total_draws = len(normalized_history)
+    resolved_train_window = int(train_window if train_window is not None else _config_value(config, "train_window", default=500))
+    resolved_tested_periods = int(tested_periods if tested_periods is not None else _config_value(config, "tested_periods", default=90))
+    resolved_top_k = int(top_k if top_k is not None else _config_value(config, "top_k", default=10))
+    if min(resolved_train_window, resolved_tested_periods, resolved_top_k) <= 0:
+        raise ValueError("backtest parameters must be positive.")
+    box_space = tuple(combinations_with_replacement(range(10), digit_count))
+    if resolved_top_k > len(box_space):
+        raise ValueError("top_k exceeds the unique BOX candidate space.")
+    if total_draws <= resolved_train_window:
+        return NumbersBoxBacktestSummary(0, digit_count, None, None, None, ())
+
+    start_index = max(resolved_train_window, total_draws - resolved_tested_periods)
+    records: list[NumbersBoxBacktestRecord] = []
+    for test_index in range(start_index, total_draws):
+        rng = Random(seed + test_index)
+        predicted_boxes = tuple(rng.sample(box_space, resolved_top_k))
+        actual = normalized_history[test_index]
+        unordered = [unordered_digit_matches(candidate, actual) for candidate in predicted_boxes]
+        records.append(NumbersBoxBacktestRecord(
+            draw_index=test_index,
+            actual=actual,
+            predicted_boxes=predicted_boxes,
+            best_unordered_digit_matches=max(unordered) if unordered else 0,
+            average_unordered_digit_matches=float(mean(unordered)) if unordered else 0.0,
+            box_hit=any(is_box_hit(candidate, actual) for candidate in predicted_boxes),
+        ))
+    tested = len(records)
+    return NumbersBoxBacktestSummary(
+        tested_periods=tested,
+        digit_count=digit_count,
+        average_best_unordered_matches=round(float(mean(r.best_unordered_digit_matches for r in records)), 6) if records else None,
+        average_unordered_matches_per_ticket=round(float(mean(r.average_unordered_digit_matches for r in records)), 6) if records else None,
+        box_hit_rate=round(sum(r.box_hit for r in records) / tested, 6) if tested else None,
+        records=tuple(records) if include_records else (),
+    )
+
+
 def run_numbers_box_backtest(
     history: Iterable[Sequence[int]],
     config: Mapping[str, object] | object,
@@ -850,5 +910,6 @@ __all__ = [
     "numbers_selection_score",
     "run_numbers_backtest",
     "run_numbers_box_backtest",
+    "run_numbers_box_random_backtest",
     "run_numbers_uniform_random_backtest",
 ]
