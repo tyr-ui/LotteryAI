@@ -1,10 +1,10 @@
-name: Run LotteryAI
+name: LotteryAI 自動予測
 
 on:
   workflow_dispatch:
     inputs:
       send_notification:
-        description: "Send Discord notification after a successful run"
+        description: "実行完了後にDiscordへ通知する"
         required: false
         default: false
         type: boolean
@@ -14,18 +14,18 @@ on:
       - main
 
   schedule:
-    # JST 21:30 = UTC 12:30
-    # Monday/Thursday: Loto6
-    # Tuesday: Mini Loto
-    # Friday: Loto7
+    # 日本時間21:30（UTC 12:30）
+    # 月曜・木曜：ロト6
+    # 火曜：ミニロト
+    # 金曜：ロト7
     - cron: "30 12 * * 1,2,4,5"
 
-    # JST 23:30 = UTC 14:30
-    # Retry after data source update delay
+    # 日本時間23:30（UTC 14:30）
+    # データ公開が遅れた場合の再確認
     - cron: "30 14 * * 1,2,4,5"
 
-    # JST next morning 08:30 = UTC 23:30
-    # Final retry after overnight data source update
+    # 日本時間 翌朝8:30（UTC 23:30）
+    # 翌朝の最終確認
     - cron: "30 23 * * 1,2,4,5"
 
 permissions:
@@ -33,40 +33,42 @@ permissions:
 
 jobs:
   quick-check:
+    name: クイックチェック
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: リポジトリを取得
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Pythonを準備
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: 必要なライブラリをインストール
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Check Python syntax
+      - name: Python構文を確認
         run: |
           python -m compileall -q src
 
-      - name: Check module imports
+      - name: 主要モジュールの読み込みを確認
         env:
           PYTHONPATH: src
         run: |
           python -c "import games, main, optimizer, review_output, run_pipeline"
 
-      - name: Check prediction output contract
+      - name: テストを実行
         env:
           PYTHONPATH: src
         run: |
           python -m unittest discover -s tests -p "test_*.py" -v
 
   full-run:
+    name: 本番予測
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
     runs-on: ubuntu-latest
     concurrency:
@@ -74,40 +76,40 @@ jobs:
       cancel-in-progress: false
 
     steps:
-      - name: Checkout repository
+      - name: リポジトリを取得
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Python
+      - name: Pythonを準備
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: 必要なライブラリをインストール
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run LotteryAI pipeline
+      - name: LotteryAI 自動予測 pipeline
         id: pipeline
         run: |
           python src/run_pipeline.py
 
-      - name: Detect generated-data changes
+      - name: 出力ファイルの変更を確認
         id: output_changes
         run: |
           git add output/ data/raw/
 
           if git diff --cached --quiet; then
-            echo "No output or raw-data changes detected."
+            echo "出力・取得データに変更はありません。"
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
-            echo "Output or raw-data changes detected."
+            echo "出力・取得データの変更を検出しました。"
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Send Discord notification
+      - name: Discordへ通知
         if: >-
           steps.pipeline.outcome == 'success' &&
           (
@@ -126,7 +128,7 @@ jobs:
         run: |
           python src/notifier.py output/notification_payload.json
 
-      - name: Commit output and raw-data cache
+      - name: 予測結果と取得データを保存
         if: steps.output_changes.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
@@ -136,7 +138,7 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
 
-      - name: Upload review files
+      - name: レビュー用ファイルを保存
         if: always() && steps.pipeline.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
@@ -147,7 +149,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Upload all output files
+      - name: 出力ファイル一式を保存
         if: always() && steps.pipeline.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
