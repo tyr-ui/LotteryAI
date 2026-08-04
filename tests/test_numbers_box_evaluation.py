@@ -4,7 +4,10 @@ import unittest
 
 import pandas as pd
 
-from numbers_backtester import run_numbers_box_backtest
+from numbers_backtester import (
+    run_numbers_box_backtest,
+    run_numbers_box_random_backtest,
+)
 from run_pipeline import evaluate_previous_for_type
 
 
@@ -32,6 +35,28 @@ class NumbersBoxEvaluationTest(unittest.TestCase):
 
         self.assertEqual(10, summary.tested_periods)
         self.assertIsNotNone(summary.box_hit_rate)
+        for record in summary.records:
+            signatures = [tuple(sorted(row)) for row in record.predicted_boxes]
+            self.assertEqual(len(signatures), len(set(signatures)))
+
+
+    def test_box_random_baseline_uses_unique_box_signatures(self) -> None:
+        history = [
+            ((index + 1) % 10, (index + 2) % 10, (index + 3) % 10)
+            for index in range(80)
+        ]
+        config = {
+            "digit_count": 3,
+            "digit_min": 0,
+            "digit_max": 9,
+            "train_window": 20,
+            "tested_periods": 10,
+            "top_k": 10,
+        }
+        summary = run_numbers_box_random_backtest(
+            history, config, seed=123, include_records=True
+        )
+        self.assertEqual(10, summary.tested_periods)
         for record in summary.records:
             signatures = [tuple(sorted(row)) for row in record.predicted_boxes]
             self.assertEqual(len(signatures), len(set(signatures)))
