@@ -818,6 +818,77 @@ def _split_holdout_history(
     return history[:-resolved], resolved
 
 
+def _evaluate_final_candidate_holdout(
+    history: Sequence[Sequence[int]],
+    game_config: Mapping[str, object],
+    best_config: Mapping[str, object],
+    *,
+    train_window: int,
+    holdout_periods: int,
+    candidate_count: int,
+    selection_history_draws: int,
+) -> dict[str, object] | None:
+    """Evaluate the frozen winner with production candidate volume.
+
+    Search and finalist selection continue to use the smaller backtest
+    candidate budget.  This extra evaluation uses the same candidate count,
+    five-ticket budget, and deterministic seed as the production prediction
+    so that the reported holdout is directly comparable with actual use.
+    """
+    if holdout_periods <= 0 or candidate_count <= 0:
+        return None
+
+    seed = SEED
+    uniform_baselines = {
+        seed: _run_random_backtest_result(
+            history,
+            game_config,
+            config_name="uniform_random",
+            train_window=train_window,
+            tested_periods=holdout_periods,
+            candidate_count=candidate_count,
+            seed=seed,
+            filtered=False,
+        )
+    }
+    filtered_baselines = {
+        seed: _run_random_backtest_result(
+            history,
+            game_config,
+            config_name="filtered_random",
+            train_window=train_window,
+            tested_periods=holdout_periods,
+            candidate_count=candidate_count,
+            seed=seed,
+            filtered=True,
+        )
+    }
+
+    result = _evaluate_config(
+        history,
+        game_config,
+        best_config,
+        train_window=train_window,
+        tested_periods=holdout_periods,
+        candidate_count=candidate_count,
+        seeds=(seed,),
+        random_baselines=uniform_baselines,
+        filtered_random_baselines=filtered_baselines,
+    )
+    result["evaluation_type"] = "production_candidate_count_holdout"
+    result["candidate_count"] = int(candidate_count)
+    result["ticket_count"] = int(OPTIMIZATION_TOP_K)
+    result["holdout_periods"] = int(holdout_periods)
+    result["selection_history_draws"] = int(selection_history_draws)
+    result["frozen_config"] = str(best_config["name"])
+    result["production_seed"] = int(seed)
+    result["note"] = (
+        "The winning configuration was selected with the search candidate "
+        "budget and then frozen before this production-volume evaluation."
+    )
+    return result
+
+
 def optimize(
     df,
     main_cols,
@@ -1146,6 +1217,16 @@ def optimize(
             "independent_rolling_holdout"
         )
 
+    final_candidate_holdout = _evaluate_final_candidate_holdout(
+        history,
+        game_config,
+        best_config,
+        train_window=int(train_window),
+        holdout_periods=holdout_periods,
+        candidate_count=int(final_candidates),
+        selection_history_draws=len(optimization_history),
+    )
+
     final_config = _merge_config(
         game_config,
         best_config,
@@ -1225,5 +1306,6 @@ def optimize(
         "prediction": prediction,
         "feature_ablation": feature_ablation,
         "holdout_evaluation": holdout_evaluation,
+        "final_candidate_holdout": final_candidate_holdout,
         "trained_through_draw_no": trained_through_draw_no,
     }
