@@ -55,7 +55,7 @@ class NotificationSummaryTest(unittest.TestCase):
         self.assertIn("## LOTO6", summary)
         self.assertIn("次回: 第101回", summary)
         self.assertIn("01 02 03 10 20 30", summary)
-        self.assertIn("5口中最高一致: 3", summary)
+        self.assertIn("5口中最高一致 3", summary)
         self.assertIn("一様ランダム比 +0.200", summary)
         self.assertIn("pair (+0.080)", summary)
         self.assertIn("キャリーオーバー: 未取得", summary)
