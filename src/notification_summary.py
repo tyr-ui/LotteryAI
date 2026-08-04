@@ -89,6 +89,35 @@ def _prediction_lines(
     return lines or ["予想なし"]
 
 
+
+def _previous_prediction_lines(
+    game_key: str,
+    previous: Mapping[str, Any],
+) -> list[str]:
+    """Format the predictions that were actually saved for the evaluated draw."""
+    ordered = game_key not in LOTO_GAMES
+    lines: list[str] = []
+
+    for index, item in enumerate(_list(previous.get("predictions")), start=1):
+        row = _mapping(item)
+        label = str(row.get("number") or "")
+        if not label:
+            label = _format_numbers(
+                row.get("numbers", row.get("digits")),
+                ordered=ordered,
+            )
+
+        if ordered:
+            match_count = int(row.get("position_matches", 0) or 0)
+            match_text = f"位置{match_count}個一致"
+        else:
+            match_count = int(row.get("matches", 0) or 0)
+            match_text = f"{match_count}個一致"
+
+        lines.append(f"{index}. {label}（{match_text}）")
+
+    return lines
+
 def _previous_summary(
     game_key: str,
     previous: Mapping[str, Any],
@@ -307,16 +336,35 @@ def build_notification_summary(output: Mapping[str, Any]) -> str:
             f"## {GAME_NAMES[game_key]}",
             "",
             f"次回: 第{section.get('next_draw_no', '不明')}回",
-            f"キャリーオーバー: {_carryover_text(output, game_key)}",
+        ])
+        if game_key in CARRYOVER_GAMES:
+            lines.append(
+                f"キャリーオーバー: {_carryover_text(output, game_key)}"
+            )
+        lines.extend([
             f"採用モデル: {section.get('selected_config', '不明')}",
             "",
             "### 次回予想",
             "",
             *_prediction_lines(game_key, section),
             "",
+        ])
+        previous_row = _mapping(previous.get(game_key))
+        previous_prediction_lines = _previous_prediction_lines(
+            game_key,
+            previous_row,
+        )
+        if previous_prediction_lines:
+            lines.extend([
+                "### 前回予想",
+                "",
+                *previous_prediction_lines,
+                "",
+            ])
+        lines.extend([
             "### 前回結果",
             "",
-            _previous_summary(game_key, _mapping(previous.get(game_key))),
+            _previous_summary(game_key, previous_row),
             "",
             "### 評価",
             "",
@@ -364,6 +412,17 @@ def _game_embed(
             "value": "```\n" + "\n".join(_prediction_lines(game_key, section)) + "\n```",
             "inline": False,
         },
+    ]
+
+    previous_prediction_lines = _previous_prediction_lines(game_key, previous)
+    if previous_prediction_lines:
+        fields.append({
+            "name": "前回予想",
+            "value": "```\n" + "\n".join(previous_prediction_lines) + "\n```",
+            "inline": False,
+        })
+
+    fields.extend([
         {
             "name": "前回結果",
             "value": _previous_summary(game_key, previous),
@@ -378,15 +437,15 @@ def _game_embed(
             ),
             "inline": False,
         },
-    ]
+    ])
     if game_key in LOTO_GAMES:
         fields.append({"name": "主要特徴", "value": _feature_top3(section), "inline": False})
 
     return {
         "title": f"{GAME_NAMES[game_key]}｜第{section.get('next_draw_no', '不明')}回",
         "description": (
-            f"キャリーオーバー: {carryover}\n"
-            f"採用モデル: {section.get('selected_config', '不明')}"
+            (f"キャリーオーバー: {carryover}\n" if game_key in CARRYOVER_GAMES else "")
+            + f"採用モデル: {section.get('selected_config', '不明')}"
         ),
         "color": COLOR_CARRYOVER if _has_carryover(output, game_key) else COLOR_NORMAL,
         "fields": fields,
