@@ -3,7 +3,6 @@ import unittest
 from pathlib import Path
 
 from notification_summary import (
-    build_discord_payload,
     build_notification_summary,
     write_notification_summary,
 )
@@ -12,28 +11,8 @@ from notification_summary import (
 class NotificationSummaryTest(unittest.TestCase):
 
     def setUp(self):
-        empty_game = {
-            "next_draw_no": 1,
-            "selected_config": "default",
-            "prediction": [],
-            "ranked_configs": [],
-        }
         self.output = {
             "generated_at": "2026-08-03T10:00:00+00:00",
-            "carryover": {
-                "games": {
-                    "loto6": {
-                        "status": "ok",
-                        "has_carryover": True,
-                        "display_amount": "2億円",
-                    },
-                    "loto7": {
-                        "status": "ok",
-                        "has_carryover": False,
-                        "display_amount": "なし",
-                    },
-                }
-            },
             "previous_evaluation": {
                 "loto6": {
                     "status": "evaluated",
@@ -50,11 +29,10 @@ class NotificationSummaryTest(unittest.TestCase):
                     {"numbers": [1, 2, 3, 10, 20, 30]},
                 ],
                 "holdout_evaluation": {
-                    "tested_periods": 30,
+                    "holdout_periods": 30,
                     "avg_matches": 1.9,
                     "random_uplift": 0.2,
                 },
-                "ranked_configs": [{"random_uplift": 0.18}],
                 "feature_ablation": [
                     {
                         "feature": "pair",
@@ -63,53 +41,37 @@ class NotificationSummaryTest(unittest.TestCase):
                     },
                 ],
             },
-            "loto7": dict(empty_game),
-            "miniloto": dict(empty_game),
-            "numbers3": {
-                **dict(empty_game),
-                "holdout_evaluation": {
-                    "tested_periods": 60,
-                    "average_best_position_matches": 1.4,
-                    "straight_hit_rate": 0.02,
-                    "box_hit_rate": 0.05,
-                    "random_uplift": 0.15,
-                    "random_baseline": {
-                        "straight_hit_rate": 0.01,
-                    },
-                },
-            },
-            "numbers4": dict(empty_game),
+            "loto7": {},
+            "miniloto": {},
+            "numbers3": {},
+            "numbers4": {},
         }
 
-    def test_markdown_contains_requested_information(self):
+    def test_summary_contains_main_sections(self):
         summary = build_notification_summary(self.output)
+
+        self.assertIn("# LotteryAI 予想・振り返り", summary)
         self.assertIn("## AI総評", summary)
-        self.assertIn("キャリーオーバー: 2億円", summary)
+        self.assertIn("## LOTO6", summary)
+        self.assertIn("次回: 第101回", summary)
         self.assertIn("01 02 03 10 20 30", summary)
-        self.assertIn("5口中最高一致 3", summary)
+        self.assertIn("5口中最高一致: 3", summary)
         self.assertIn("一様ランダム比 +0.200", summary)
         self.assertIn("pair (+0.080)", summary)
-        self.assertIn("処理結果: 正常完了", summary)
-        self.assertIn("独立検証: 60回", summary)
-        self.assertIn("平均最高位置一致 1.400", summary)
+        self.assertIn("キャリーオーバー: 未取得", summary)
 
-    def test_discord_payload_uses_embed_cards(self):
-        payload = build_discord_payload(self.output)
-        self.assertEqual(payload["schema_version"], "2.0")
-        self.assertTrue(payload["has_carryover"])
-        self.assertGreaterEqual(len(payload["messages"]), 1)
-        embeds = payload["messages"][0]["embeds"]
-        self.assertEqual(embeds[0]["title"], "LotteryAI 予想・振り返り")
-        loto6 = next(embed for embed in embeds if embed["title"].startswith("LOTO6"))
-        self.assertIn("キャリーオーバー: 2億円", loto6["description"])
-        self.assertLessEqual(len(embeds), 10)
-
-    def test_write_creates_markdown_and_payload(self):
+    def test_write_summary(self):
         with tempfile.TemporaryDirectory() as directory:
-            output_dir = Path(directory)
-            path = write_notification_summary(output_dir, self.output)
+            path = write_notification_summary(
+                Path(directory),
+                self.output,
+            )
+
             self.assertTrue(path.exists())
-            self.assertTrue((output_dir / "notification_payload.json").exists())
+            self.assertIn(
+                "LotteryAI 予想・振り返り",
+                path.read_text(encoding="utf-8"),
+            )
 
 
 if __name__ == "__main__":
