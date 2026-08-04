@@ -110,9 +110,9 @@ def _previous_summary(
     ]
     if ordered:
         lines.append(
-            "Straight "
+            "ストレート "
             + ("的中" if previous.get("straight_hit") else "なし")
-            + " / Box "
+            + " / ボックス "
             + ("的中" if previous.get("box_hit") else "なし")
         )
     return "\n".join(lines)
@@ -128,7 +128,14 @@ def _carryover_text(output: Mapping[str, Any], game_key: str) -> str:
     if game_key not in CARRYOVER_GAMES:
         return "対象外"
     row = _carryover_row(output, game_key)
-    if row.get("status") != "ok":
+    status = str(row.get("status") or "unknown")
+    if status == "fetch_error":
+        return "取得できず（公式サイトへの接続エラー）"
+    if status == "parse_error":
+        return "取得できず（公式ページを解析できませんでした）"
+    if status == "stale":
+        return "確認待ち（公式情報の回号が未更新）"
+    if status != "ok":
         return "未取得"
     return str(row.get("display_amount") or "未取得")
 
@@ -165,10 +172,10 @@ def _lotto_evaluation(section: Mapping[str, Any]) -> str:
         holdout_text = (
             f"{holdout.get('tested_periods', holdout.get('holdout_periods', '不明'))}回 / "
             f"平均最高一致 {_format_decimal(holdout.get('avg_matches'))} / "
-            f"一様Random比 {_format_decimal(holdout.get('random_uplift'), signed=True)}"
+            f"一様ランダム比 {_format_decimal(holdout.get('random_uplift'), signed=True)}"
         )
     model_uplift = _format_decimal(ranked.get("random_uplift"), signed=True)
-    return f"Holdout: {holdout_text}\n探索期間の一様Random比: {model_uplift}"
+    return f"独立検証: {holdout_text}\n探索期間の一様ランダム比: {model_uplift}"
 
 
 def _numbers_evaluation(section: Mapping[str, Any]) -> str:
@@ -181,8 +188,8 @@ def _numbers_evaluation(section: Mapping[str, Any]) -> str:
         digits=4,
     )
     return (
-        f"Straight率 {straight} / Box率 {box}\n"
-        f"一様Random Straight率 {random_straight}（探索期間内の参考値）"
+        f"ストレート率 {straight} / ボックス率 {box}\n"
+        f"一様ランダムのストレート率 {random_straight}（探索期間内の参考値）"
     )
 
 
@@ -198,23 +205,22 @@ def _ai_summary_lines(output: Mapping[str, Any]) -> list[str]:
     if holdouts:
         best_key, best_value = max(holdouts, key=lambda item: item[1])
         lines.append(
-            f"独立ホールドアウトでは{GAME_NAMES[best_key]}が最も高く、"
+            f"独立検証では{GAME_NAMES[best_key]}の結果が最も高く、"
             f"一様ランダム比は{best_value:+.3f}です。"
         )
         below = [GAME_NAMES[key] for key, value in holdouts if value < 0.0]
         if below:
             lines.append(
-                "独立ホールドアウトで一様ランダムを下回ったゲーム: "
+                "独立検証で一様ランダムを下回ったゲームは"
                 + "、".join(below)
-                + "。"
+                + "です。現時点では優位性を確認できません。"
             )
         else:
             lines.append(
-                "評価可能なLOTO系3ゲームは、独立ホールドアウトで"
-                "一様ランダム以上でした。"
+                "評価可能なLOTO系3ゲームは、独立検証で一様ランダム以上でした。"
             )
     else:
-        lines.append("独立ホールドアウトはまだ評価できていません。")
+        lines.append("独立検証はまだ評価できていません。")
 
     carryovers = [
         f"{GAME_NAMES[key]} {_carryover_text(output, key)}"
@@ -230,7 +236,7 @@ def _ai_summary_lines(output: Mapping[str, Any]) -> list[str]:
             if _carryover_row(output, key).get("status") != "ok"
         ]
         lines.append(
-            "キャリーオーバー情報は取得できませんでした。"
+            "キャリーオーバー情報は公式サイトへの接続または解析に失敗したため、今回は確認できませんでした。"
             if unavailable
             else "LOTO6・LOTO7のキャリーオーバーはありません。"
         )
@@ -296,7 +302,7 @@ def build_notification_summary(output: Mapping[str, Any]) -> str:
         "",
         "---",
         "",
-        "Pipeline: 正常完了",
+        "処理結果: 正常完了",
         "",
         "※ 過去データに基づく評価であり、当選を保証するものではありません。",
         "",
@@ -364,7 +370,7 @@ def build_discord_payload(output: Mapping[str, Any]) -> dict[str, object]:
         "color": COLOR_CARRYOVER if any_carryover else COLOR_NORMAL,
         "footer": {
             "text": (
-                "Pipeline: 正常完了 / "
+                "処理結果: 正常完了 / "
                 "過去データに基づく評価であり、当選を保証しません。"
             )
         },
