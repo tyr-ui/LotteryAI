@@ -858,6 +858,14 @@ def optimize(
         train_window=int(train_window),
         tested_periods=int(tested_periods),
     )
+    sorted_draw_numbers = sorted(
+        int(value) for value in df["draw_no"].tolist()
+    )
+    trained_through_draw_no = (
+        sorted_draw_numbers[len(optimization_history) - 1]
+        if optimization_history
+        else None
+    )
 
     random_baselines: dict[int, dict[str, object]] = {}
     filtered_random_baselines: dict[int, dict[str, object]] = {}
@@ -881,7 +889,10 @@ def optimize(
         or game_config.get("display_name")
         or "unknown"
     ).lower()
-    search_allocation = load_search_allocation(game_name)
+    search_allocation = load_search_allocation(
+        game_name,
+        max_trained_through_draw_no=trained_through_draw_no,
+    )
     allocation_counts = search_allocation.get("counts", {})
     if not isinstance(allocation_counts, Mapping):
         allocation_counts = {}
@@ -903,7 +914,10 @@ def optimize(
         int(allocation_counts.get("evolution", 4)),
     )
 
-    evolution_adaptation = load_evolution_adaptation(game_name)
+    evolution_adaptation = load_evolution_adaptation(
+        game_name,
+        max_trained_through_draw_no=trained_through_draw_no,
+    )
     mutation_rate = float(
         evolution_adaptation.get("mutation_rate", 0.25)
     )
@@ -917,6 +931,7 @@ def optimize(
     raw_experience_candidates = load_experience_configs(
         game_name,
         limit=experience_count,
+        max_trained_through_draw_no=trained_through_draw_no,
     )
     experience_candidates = [
         _copy_search_config(
@@ -1197,6 +1212,7 @@ def optimize(
             "robust_seeds": list(ROBUST_SEEDS),
             "optimization_top_k": OPTIMIZATION_TOP_K,
             "selection_history_draws": len(optimization_history),
+            "trained_through_draw_no": trained_through_draw_no,
             "holdout_periods": holdout_periods,
             "holdout_enabled": holdout_periods > 0,
             "note": (
@@ -1209,4 +1225,5 @@ def optimize(
         "prediction": prediction,
         "feature_ablation": feature_ablation,
         "holdout_evaluation": holdout_evaluation,
+        "trained_through_draw_no": trained_through_draw_no,
     }
