@@ -558,6 +558,9 @@ def save_lotto_optimizer_experience(
             selected_weights
         ),
         learning_strength=load_learning_strength(game_key),
+        trained_through_draw_no=optimizer_result.get(
+            "trained_through_draw_no"
+        ),
     )
 
 
@@ -639,6 +642,9 @@ def save_numbers_optimizer_experience(
         evaluation=experience_evaluation,
         prediction_weights=selected_weights,
         learning_strength=1.0,
+        trained_through_draw_no=optimizer_result.get(
+            "trained_through_draw_no"
+        ),
     )
 
 
@@ -654,6 +660,10 @@ def run_numbers_game(
     return optimize_numbers(
         history,
         game_config,
+        draw_numbers=[
+            int(value)
+            for value in df["draw_no"].tolist()
+        ],
     )
 
 
