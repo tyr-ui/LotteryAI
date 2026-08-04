@@ -23,15 +23,15 @@ on:
     # 月曜・木曜：ロト6
     # 火曜：ミニロト
     # 金曜：ロト7
-    - cron: "30 12 * * 1,2,4,5"
+    - cron: "30 12 * * 1,2,3,4,5"
 
     # 日本時間23:30（UTC 14:30）
     # データ公開が遅れた場合の再確認
-    - cron: "30 14 * * 1,2,4,5"
+    - cron: "30 14 * * 1,2,3,4,5"
 
     # 日本時間 翌朝8:30（UTC 23:30）
     # 翌朝の最終確認
-    - cron: "30 23 * * 1,2,4,5"
+    - cron: "30 23 * * 1,2,3,4,5"
 
 permissions:
   contents: write
@@ -116,7 +116,18 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: 予測結果と取得データを保存
+        if: steps.output_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git commit -m "Update LotteryAI output and data cache [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
       - name: Discordへ通知
+        continue-on-error: true
         if: >-
           steps.pipeline.outcome == 'success' &&
           (
@@ -134,16 +145,6 @@ jobs:
           LOTTERY_DISCORD_WEBHOOK: ${{ secrets.LOTTERY_DISCORD_WEBHOOK }}
         run: |
           python src/notifier.py output/notification_payload.json
-
-      - name: 予測結果と取得データを保存
-        if: steps.output_changes.outputs.changed == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git commit -m "Update LotteryAI output and data cache [skip ci]"
-          git pull --rebase origin main
-          git push origin HEAD:main
 
       - name: レビュー用ファイルを保存
         if: always() && steps.pipeline.outcome == 'success'
