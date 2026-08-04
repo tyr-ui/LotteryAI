@@ -7,6 +7,7 @@ from typing import Iterable, Mapping, Sequence
 from numbers_backtester import (
     NumbersBacktestSummary,
     run_numbers_backtest,
+    run_numbers_box_random_backtest,
     run_numbers_uniform_random_backtest,
 )
 from numbers_features import (
@@ -63,7 +64,7 @@ def _numbers_holdout_result(
     holdout_periods: int,
     selection_history_draws: int,
 ) -> dict[str, object]:
-    model = model_summary.to_dict()
+    model = model_summary.to_dict(include_records=True)
     model_score = float(model.get("selection_score") or 0.0)
     random_score = float(random_baseline.get("selection_score") or 0.0)
     model_position = float(
@@ -447,6 +448,29 @@ def _aggregate_uniform_random_summaries(
     return result
 
 
+def _aggregate_box_random_summaries(summaries: Sequence[object]) -> dict[str, object]:
+    if not summaries:
+        raise ValueError("summaries must not be empty.")
+    metrics = (
+        "average_best_unordered_matches",
+        "average_unordered_matches_per_ticket",
+        "box_hit_rate",
+    )
+    result: dict[str, object] = {
+        "evaluation_type": "box_unique_random_baseline",
+        "tested_periods": int(getattr(summaries[0], "tested_periods", 0) or 0),
+        "evaluated_seeds": len(summaries),
+    }
+    for key in metrics:
+        values = [float(getattr(item, key) or 0.0) for item in summaries]
+        result[key] = round(sum(values) / len(values), 6)
+    result["seed_records"] = {
+        str(index): item.to_dict(include_records=True).get("records", [])
+        for index, item in enumerate(summaries)
+    }
+    return result
+
+
 def optimize_numbers(
     history: Iterable[Sequence[int]],
     config: Mapping[str, object] | object,
@@ -678,6 +702,14 @@ def optimize_numbers(
         )
         for baseline_seed in (seed, seed + 1, seed + 2)
     ])
+    selection_box_random_baseline = _aggregate_box_random_summaries([
+        run_numbers_box_random_backtest(
+            selection_history, config, train_window=train_window,
+            tested_periods=full_tested_periods, top_k=top_k, seed=baseline_seed,
+            include_records=False,
+        )
+        for baseline_seed in (seed, seed + 1, seed + 2)
+    ])
 
     holdout_evaluation: dict[str, object] = {}
     if holdout_periods > 0:
@@ -688,6 +720,7 @@ def optimize_numbers(
             tested_periods=holdout_periods,
             top_k=top_k,
             weights=selected_weights,
+            include_records=True,
         )
         holdout_random_baseline = _aggregate_uniform_random_summaries([
             run_numbers_uniform_random_backtest(
@@ -700,12 +733,41 @@ def optimize_numbers(
             )
             for baseline_seed in (seed, seed + 1, seed + 2)
         ])
+        holdout_box_random_baseline = _aggregate_box_random_summaries([
+            run_numbers_box_random_backtest(
+                normalized_history, config, train_window=train_window,
+                tested_periods=holdout_periods, top_k=top_k, seed=baseline_seed,
+                include_records=True,
+            )
+            for baseline_seed in (seed, seed + 1, seed + 2)
+        ])
         holdout_evaluation = _numbers_holdout_result(
             holdout_summary,
             holdout_random_baseline,
             holdout_periods=holdout_periods,
             selection_history_draws=len(selection_history),
         )
+        holdout_evaluation["box_dedicated_random_baseline"] = holdout_box_random_baseline
+        box_eval = holdout_evaluation.get("box_dedicated_evaluation", {})
+        if isinstance(box_eval, dict):
+            box_eval["random_baseline"] = holdout_box_random_baseline
+            box_eval["random_uplift"] = round(
+                float(box_eval.get("box_hit_rate") or 0.0)
+                - float(holdout_box_random_baseline.get("box_hit_rate") or 0.0), 6
+            )
+            model_records = model.get("records", []) if isinstance((model := holdout_summary.to_dict(include_records=True)), dict) else []
+            random_records = holdout_box_random_baseline.get("seed_records", {}).get("0", [])
+            box_eval["paired_draw_results"] = [
+                {
+                    "draw_index": record.get("draw_index"),
+                    "actual": record.get("actual"),
+                    "model_box_hit": bool(record.get("box_dedicated_hit")),
+                    "random_box_hit": bool(random.get("box_hit")),
+                    "model_best_unordered_matches": record.get("box_dedicated_best_unordered_matches"),
+                    "random_best_unordered_matches": random.get("best_unordered_digit_matches"),
+                }
+                for record, random in zip(model_records, random_records)
+            ]
 
     context = build_numbers_model_context(normalized_history, config)
     prediction_result = predict_numbers(
@@ -815,9 +877,14 @@ def optimize_numbers(
         },
         "numbers_backtest": selection_backtest.to_dict(),
         "numbers_selection_backtest": selection_backtest.to_dict(),
-        "box_prediction_backtest": selection_backtest.to_dict().get(
-            "box_dedicated_evaluation", {}
-        ),
+        "box_prediction_backtest": {
+            **selection_backtest.to_dict().get("box_dedicated_evaluation", {}),
+            "random_baseline": selection_box_random_baseline,
+            "random_uplift": round(
+                float(selection_backtest.to_dict().get("box_dedicated_evaluation", {}).get("box_hit_rate") or 0.0)
+                - float(selection_box_random_baseline.get("box_hit_rate") or 0.0), 6
+            ),
+        },
         "holdout_evaluation": holdout_evaluation,
         "numbers_holdout": holdout_evaluation,
         "box_prediction_holdout": (
