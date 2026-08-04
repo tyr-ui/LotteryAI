@@ -188,7 +188,12 @@ class PipelineIntegrationTest(unittest.TestCase):
             if path.name == "evaluation_history.json":
                 return []
             if path.name == "carryover.json":
-                return {}
+                return {
+                    "games": {
+                        "loto6": {"status": "none"},
+                        "loto7": {"status": "none"},
+                    }
+                }
             return default
 
         def fake_write_review_outputs(output_dir, output, game_keys):
