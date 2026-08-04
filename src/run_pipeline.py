@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 import os
 from collections import Counter
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import numpy as np
 
@@ -656,6 +657,126 @@ def run_numbers_game(
     )
 
 
+
+def resolve_optimizer_workers(
+    game_count: int,
+    *,
+    configured: int | None = None,
+) -> int:
+    """Return a safe number of parallel optimizer processes.
+
+    LOTTERY_OPTIMIZER_WORKERS can override the default.  The default is
+    intentionally capped at three to avoid excessive memory usage on
+    GitHub-hosted runners while still running independent games in parallel.
+    """
+    if game_count <= 0:
+        return 1
+
+    if configured is None:
+        raw = os.getenv("LOTTERY_OPTIMIZER_WORKERS", "").strip()
+        if raw:
+            try:
+                configured = int(raw)
+            except ValueError as exc:
+                raise ValueError(
+                    "LOTTERY_OPTIMIZER_WORKERS must be an integer."
+                ) from exc
+
+    if configured is None:
+        configured = min(3, os.cpu_count() or 1)
+
+    if configured < 1:
+        raise ValueError(
+            "Optimizer worker count must be at least 1."
+        )
+
+    return min(int(configured), int(game_count))
+
+
+def _run_optimizer_job(
+    game_key: str,
+    game_config: dict,
+    dataframe,
+) -> tuple[str, dict]:
+    """Run one game's optimizer without writing shared output files."""
+    if game_family(game_config) == "numbers":
+        result = run_numbers_game(
+            dataframe,
+            game_config,
+        )
+    else:
+        result = optimize(
+            df=dataframe,
+            main_cols=game_config["main_cols"],
+            min_num=game_config["min_num"],
+            max_num=game_config["max_num"],
+            pick_count=game_config["pick_count"],
+            train_window=game_config["train_window"],
+            tested_periods=game_config["tested_periods"],
+            bt_candidates=game_config["backtest_candidates"],
+            final_candidates=game_config["final_candidates"],
+        )
+
+    return game_key, result
+
+
+def run_all_optimizers(
+    datasets: dict,
+    game_configs: dict[str, dict],
+    *,
+    max_workers: int | None = None,
+) -> dict[str, dict]:
+    """Run independent game optimizers in parallel, preserving order."""
+    workers = resolve_optimizer_workers(
+        len(game_configs),
+        configured=max_workers,
+    )
+    print(
+        "\n=== OPTIMIZER EXECUTION ==="
+        f"\nparallel_workers: {workers}"
+    )
+
+    if workers == 1:
+        results = {}
+        for game_key, game_config in game_configs.items():
+            print(f"optimizer_start: {game_key}")
+            key, result = _run_optimizer_job(
+                game_key,
+                game_config,
+                datasets[game_key],
+            )
+            results[key] = result
+            print(f"optimizer_complete: {game_key}")
+        return results
+
+    completed: dict[str, dict] = {}
+    with ProcessPoolExecutor(max_workers=workers) as executor:
+        future_to_key = {
+            executor.submit(
+                _run_optimizer_job,
+                game_key,
+                game_config,
+                datasets[game_key],
+            ): game_key
+            for game_key, game_config in game_configs.items()
+        }
+
+        for future in as_completed(future_to_key):
+            game_key = future_to_key[future]
+            try:
+                returned_key, result = future.result()
+            except Exception as exc:
+                raise RuntimeError(
+                    f"Optimizer failed for {game_key}."
+                ) from exc
+            completed[returned_key] = result
+            print(f"optimizer_complete: {returned_key}")
+
+    return {
+        game_key: completed[game_key]
+        for game_key in game_configs
+    }
+
 def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -738,42 +859,28 @@ def main() -> None:
         evaluation_history
     )
 
-    optimizer_results = {}
+    optimizer_results = run_all_optimizers(
+        datasets,
+        LOTTO_GAMES,
+    )
 
+    # Experience files are shared persistent state.  Save them only after
+    # all parallel workers have completed, in deterministic game order.
     for game_key, game_config in LOTTO_GAMES.items():
         if game_family(game_config) == "numbers":
-            optimizer_results[game_key] = run_numbers_game(
-                datasets[game_key],
-                game_config,
-            )
-            optimizer_results[game_key][
-                "experience_save"
-            ] = save_numbers_optimizer_experience(
+            experience_save = save_numbers_optimizer_experience(
                 game_key,
                 optimizer_results[game_key],
             )
         else:
-            optimizer_results[game_key] = optimize(
-                df=datasets[game_key],
-                main_cols=game_config["main_cols"],
-                min_num=game_config["min_num"],
-                max_num=game_config["max_num"],
-                pick_count=game_config["pick_count"],
-                train_window=game_config["train_window"],
-                tested_periods=game_config["tested_periods"],
-                bt_candidates=game_config[
-                    "backtest_candidates"
-                ],
-                final_candidates=game_config[
-                    "final_candidates"
-                ],
-            )
-            optimizer_results[game_key][
-                "experience_save"
-            ] = save_lotto_optimizer_experience(
+            experience_save = save_lotto_optimizer_experience(
                 game_key,
                 optimizer_results[game_key],
             )
+
+        optimizer_results[game_key][
+            "experience_save"
+        ] = experience_save
 
     game_output = {}
 
