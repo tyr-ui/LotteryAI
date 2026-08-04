@@ -908,6 +908,82 @@ def normalize_game_dataframe(
     )
 
 
+
+def _draw_number_integrity(df: pd.DataFrame) -> dict[str, object]:
+    """Return missing draw-number information for a normalized dataframe."""
+    if "draw_no" not in df.columns or df.empty:
+        return {
+            "draw_number_gap_count": 0,
+            "missing_draw_numbers": [],
+        }
+
+    values = sorted({int(value) for value in df["draw_no"].dropna().tolist()})
+    if len(values) < 2:
+        return {
+            "draw_number_gap_count": 0,
+            "missing_draw_numbers": [],
+        }
+
+    existing = set(values)
+    missing = [
+        draw_no
+        for draw_no in range(values[0], values[-1] + 1)
+        if draw_no not in existing
+    ]
+    return {
+        "draw_number_gap_count": len(missing),
+        # Keep reports bounded even if a malformed source creates a huge gap.
+        "missing_draw_numbers": missing[:100],
+    }
+
+
+def _date_freshness(
+    df: pd.DataFrame,
+    config: Mapping[str, object] | object,
+) -> dict[str, object]:
+    """Return latest-date and staleness metadata without guessing draw results."""
+    max_staleness_days = int(
+        _config_value(
+            config,
+            "max_staleness_days",
+            default=14,
+        )
+        or 14
+    )
+
+    if "date" not in df.columns or df.empty:
+        return {
+            "latest_draw_date": None,
+            "data_age_days": None,
+            "max_staleness_days": max_staleness_days,
+            "stale_data": True,
+            "freshness_status": "warning",
+        }
+
+    parsed = pd.to_datetime(df["date"], errors="coerce")
+    valid = parsed.dropna()
+    if valid.empty:
+        return {
+            "latest_draw_date": None,
+            "data_age_days": None,
+            "max_staleness_days": max_staleness_days,
+            "stale_data": True,
+            "freshness_status": "warning",
+        }
+
+    latest = valid.max()
+    today = pd.Timestamp.now(tz="UTC").tz_localize(None).normalize()
+    age_days = max(0, int((today - latest.normalize()).days))
+    return {
+        "latest_draw_date": latest.date().isoformat(),
+        "data_age_days": age_days,
+        "max_staleness_days": max_staleness_days,
+        "stale_data": age_days > max_staleness_days,
+        "freshness_status": (
+            "warning" if age_days > max_staleness_days else "ok"
+        ),
+    }
+
 def validate_numbers(
     df: pd.DataFrame,
     config: Mapping[str, object] | object,
@@ -984,6 +1060,9 @@ def validate_numbers(
         ),
     }
 
+    report.update(_draw_number_integrity(df))
+    report.update(_date_freshness(df, config))
+
     if (
         not digit_columns
         or missing_digit_columns
@@ -1034,6 +1113,7 @@ def validate_numbers(
                 "invalid_digit_count_rows"
             ] == 0
             and not missing_digit_columns
+            and report["draw_number_gap_count"] == 0
         )
         else "warning"
     )
@@ -1117,6 +1197,9 @@ def validate_lottery(
         "duplicate_main_numbers_rows": 0,
     }
 
+    report.update(_draw_number_integrity(df))
+    report.update(_date_freshness(df, config))
+
     number_columns = (
         *main_columns,
         *bonus_columns,
@@ -1171,6 +1254,7 @@ def validate_lottery(
             and report[
                 "duplicate_main_numbers_rows"
             ] == 0
+            and report["draw_number_gap_count"] == 0
         )
         else "warning"
     )
