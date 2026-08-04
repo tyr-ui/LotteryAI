@@ -23,7 +23,7 @@ EXPERIENCE_PATH = (
     OUTPUT_DIR / "optimizer_experience.json"
 )
 
-SCHEMA_VERSION = "1.3"
+SCHEMA_VERSION = "1.4"
 DEFAULT_HISTORY_LIMIT = 20
 DEFAULT_EXPERIENCE_LIMIT = 3
 
@@ -286,6 +286,11 @@ def _normalize_history_entry(
                 )
             )
         ),
+        "trained_through_draw_no": (
+            int(entry["trained_through_draw_no"])
+            if entry.get("trained_through_draw_no") is not None
+            else None
+        ),
     }
 
 def _load_normalized_history(
@@ -340,30 +345,57 @@ def _load_normalized_history(
     return normalized_history
 
 
+def _filter_history_by_training_cutoff(
+    history: Sequence[Mapping[str, object]],
+    max_trained_through_draw_no: int | None,
+) -> list[dict[str, object]]:
+    """Return only Experience entries known not to cross a holdout boundary.
+
+    Legacy entries without trained_through_draw_no are excluded whenever a
+    cutoff is requested because their provenance cannot be proven.
+    """
+    if max_trained_through_draw_no is None:
+        return [dict(item) for item in history]
+
+    cutoff = int(max_trained_through_draw_no)
+    filtered: list[dict[str, object]] = []
+    for item in history:
+        trained_through = item.get("trained_through_draw_no")
+        if trained_through is None:
+            continue
+        if int(trained_through) <= cutoff:
+            filtered.append(dict(item))
+    return filtered
+
+
 def load_evolution_adaptation(
     game_name: str,
+    *,
+    max_trained_through_draw_no: int | None = None,
 ) -> dict[str, object]:
     """
     保存済み履歴を読み込み、Evolution適応判定を返す。
     """
-    return build_evolution_adaptation(
-        _load_normalized_history(
-            game_name
-        )
+    history = _filter_history_by_training_cutoff(
+        _load_normalized_history(game_name),
+        max_trained_through_draw_no,
     )
+    return build_evolution_adaptation(history)
 
 
 def load_search_allocation(
     game_name: str,
+    *,
+    max_trained_through_draw_no: int | None = None,
 ) -> dict[str, object]:
     """
     保存済み履歴を読み込み、探索元ごとの配分を返す。
     """
-    return build_search_allocation(
-        _load_normalized_history(
-            game_name
-        )
+    history = _filter_history_by_training_cutoff(
+        _load_normalized_history(game_name),
+        max_trained_through_draw_no,
     )
+    return build_search_allocation(history)
 
 
 
@@ -371,6 +403,7 @@ def load_experience_configs(
     game_name: str,
     *,
     limit: int = DEFAULT_EXPERIENCE_LIMIT,
+    max_trained_through_draw_no: int | None = None,
 ) -> list[dict[str, object]]:
     """
     過去成績が高いConfigを読み込み、
@@ -426,6 +459,11 @@ def load_experience_configs(
                 normalized
             )
 
+    normalized_history = _filter_history_by_training_cutoff(
+        normalized_history,
+        max_trained_through_draw_no,
+    )
+
     config_statistics = (
         _build_config_statistics(
             normalized_history
@@ -467,6 +505,9 @@ def load_experience_configs(
                     {},
                 )
             ),
+            "trained_through_draw_no": stats.get(
+                "trained_through_draw_no"
+            ),
         })
 
         if len(selected) >= normalized_limit:
@@ -486,6 +527,7 @@ def save_optimizer_experience(
     ],
     learning_strength: float,
     *,
+    trained_through_draw_no: int | None = None,
     history_limit: int = (
         DEFAULT_HISTORY_LIMIT
     ),
@@ -600,6 +642,11 @@ def save_optimizer_experience(
         "learning_strength": round(
             normalized_learning_strength,
             6,
+        ),
+        "trained_through_draw_no": (
+            int(trained_through_draw_no)
+            if trained_through_draw_no is not None
+            else None
         ),
         "config": normalized_config,
         "prediction_weights": (
