@@ -31,6 +31,59 @@ WEIGHT_FIELDS = tuple(
 )
 
 
+
+
+DEFAULT_NUMBERS_HOLDOUT_PERIODS = 60
+MIN_NUMBERS_HOLDOUT_PERIODS = 10
+
+
+def _resolve_holdout_periods(
+    *,
+    history_size: int,
+    train_window: int,
+    requested_periods: int,
+) -> int:
+    """Return a safe independent holdout size for Numbers evaluation.
+
+    The selection history must still contain at least one evaluable draw after
+    the configured training window. Very small residual holdouts are disabled
+    because they are too unstable to present as an independent evaluation.
+    """
+    available = max(0, int(history_size) - int(train_window) - 1)
+    resolved = min(max(0, int(requested_periods)), available)
+    if resolved < MIN_NUMBERS_HOLDOUT_PERIODS:
+        return 0
+    return resolved
+
+
+def _numbers_holdout_result(
+    model_summary: NumbersBacktestSummary,
+    random_baseline: Mapping[str, object],
+    *,
+    holdout_periods: int,
+    selection_history_draws: int,
+) -> dict[str, object]:
+    model = model_summary.to_dict()
+    model_score = float(model.get("selection_score") or 0.0)
+    random_score = float(random_baseline.get("selection_score") or 0.0)
+    model_position = float(
+        model.get("average_best_position_matches") or 0.0
+    )
+    random_position = float(
+        random_baseline.get("average_best_position_matches") or 0.0
+    )
+    return {
+        "evaluation_type": "independent_rolling_holdout",
+        "holdout_periods": int(holdout_periods),
+        "tested_periods": int(model.get("tested_periods") or 0),
+        "selection_history_draws": int(selection_history_draws),
+        **model,
+        "random_baseline": dict(random_baseline),
+        "selection_score_uplift": round(model_score - random_score, 6),
+        "random_uplift": round(model_position - random_position, 6),
+    }
+
+
 BASE_WEIGHT_CONFIGS: tuple[
     tuple[str, NumbersPredictionWeights],
     ...,
@@ -419,11 +472,29 @@ def optimize_numbers(
     game_key = str(
         _config_value(config, "key", f"numbers{digit_count}")
     )
+    requested_holdout_periods = int(
+        _config_value(
+            config,
+            "numbers_holdout_periods",
+            DEFAULT_NUMBERS_HOLDOUT_PERIODS,
+        )
+        or DEFAULT_NUMBERS_HOLDOUT_PERIODS
+    )
+    holdout_periods = _resolve_holdout_periods(
+        history_size=len(normalized_history),
+        train_window=train_window,
+        requested_periods=requested_holdout_periods,
+    )
+    selection_history = (
+        normalized_history[:-holdout_periods]
+        if holdout_periods > 0
+        else normalized_history
+    )
 
     search_periods = _evaluation_periods(
         digit_count=digit_count,
         configured_periods=configured_search_periods,
-        history_size=len(normalized_history),
+        history_size=len(selection_history),
         train_window=train_window,
     )
 
@@ -458,7 +529,7 @@ def optimize_numbers(
             return False
         seen_weight_signatures.add(signature)
         summary = evaluate_numbers_weights(
-            normalized_history,
+            selection_history,
             config,
             weights=weights,
             tested_periods=search_periods,
@@ -569,17 +640,17 @@ def optimize_numbers(
     selected = ranked[0]
     selected_weights = selected["_weights_object"]
 
-    full_backtest = run_numbers_backtest(
-        normalized_history,
+    selection_backtest = run_numbers_backtest(
+        selection_history,
         config,
         train_window=train_window,
         tested_periods=full_tested_periods,
         top_k=top_k,
         weights=selected_weights,
     )
-    uniform_random_baseline = _aggregate_uniform_random_summaries([
+    selection_random_baseline = _aggregate_uniform_random_summaries([
         run_numbers_uniform_random_backtest(
-            normalized_history,
+            selection_history,
             config,
             train_window=train_window,
             tested_periods=full_tested_periods,
@@ -588,6 +659,34 @@ def optimize_numbers(
         )
         for baseline_seed in (seed, seed + 1, seed + 2)
     ])
+
+    holdout_evaluation: dict[str, object] = {}
+    if holdout_periods > 0:
+        holdout_summary = run_numbers_backtest(
+            normalized_history,
+            config,
+            train_window=train_window,
+            tested_periods=holdout_periods,
+            top_k=top_k,
+            weights=selected_weights,
+        )
+        holdout_random_baseline = _aggregate_uniform_random_summaries([
+            run_numbers_uniform_random_backtest(
+                normalized_history,
+                config,
+                train_window=train_window,
+                tested_periods=holdout_periods,
+                top_k=top_k,
+                seed=baseline_seed,
+            )
+            for baseline_seed in (seed, seed + 1, seed + 2)
+        ])
+        holdout_evaluation = _numbers_holdout_result(
+            holdout_summary,
+            holdout_random_baseline,
+            holdout_periods=holdout_periods,
+            selection_history_draws=len(selection_history),
+        )
 
     context = build_numbers_model_context(normalized_history, config)
     prediction_result = predict_numbers(
@@ -636,7 +735,7 @@ def optimize_numbers(
     }
 
     return {
-        "random_baseline": uniform_random_baseline,
+        "random_baseline": selection_random_baseline,
         "default_model_baseline": default_result or {},
         "selected_random_filtered_baseline": {},
         "ranked_configs": public_ranked,
@@ -680,7 +779,10 @@ def optimize_numbers(
             "experience_restored_count": restored_experience_count,
             "evaluated_config_count": len(public_ranked),
             "search_tested_periods": search_periods,
-            "full_tested_periods": full_backtest.tested_periods,
+            "full_tested_periods": selection_backtest.tested_periods,
+            "numbers_holdout_enabled": bool(holdout_evaluation),
+            "numbers_holdout_periods": holdout_periods,
+            "selection_history_draws": len(selection_history),
             "seed": seed,
         },
         "feature_ablation": [],
@@ -691,7 +793,10 @@ def optimize_numbers(
             "selected_from_experience": str(selected.get("source", "")) == "experience",
             "selected_source": str(selected.get("source", "")),
         },
-        "numbers_backtest": full_backtest.to_dict(),
+        "numbers_backtest": selection_backtest.to_dict(),
+        "numbers_selection_backtest": selection_backtest.to_dict(),
+        "holdout_evaluation": holdout_evaluation,
+        "numbers_holdout": holdout_evaluation,
         "prediction": prediction,
         "box_prediction": box_prediction,
     }
@@ -699,6 +804,8 @@ def optimize_numbers(
 
 __all__ = [
     "BASE_WEIGHT_CONFIGS",
+    "DEFAULT_NUMBERS_HOLDOUT_PERIODS",
+    "_resolve_holdout_periods",
     "evaluate_numbers_weights",
     "optimize_numbers",
 ]
