@@ -23,21 +23,124 @@ EXPERIENCE_PATH = (
     OUTPUT_DIR / "optimizer_experience.json"
 )
 
-SCHEMA_VERSION = "1.4"
+SCHEMA_VERSION = "1.5"
 DEFAULT_HISTORY_LIMIT = 20
 DEFAULT_EXPERIENCE_LIMIT = 3
 
-def _load_store() -> dict[str, object]:
-    """
-    Optimizer Experienceの保存データを読み込む。
+def _partition_history_entries(
+    entries: object,
+) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
+    """Split Experience entries into provenance-safe and legacy histories."""
+    active: list[dict[str, object]] = []
+    legacy: list[dict[str, object]] = []
 
-    外側のJSON読込・破損時フォールバック・schema更新は
-    optimizer_experience_storeへ委譲する。
-    """
-    return load_experience_store(
+    if not isinstance(entries, list):
+        return active, legacy
+
+    for item in entries:
+        if not isinstance(item, Mapping):
+            continue
+
+        normalized = _normalize_history_entry(item)
+        if normalized is None:
+            continue
+
+        if normalized.get("trained_through_draw_no") is None:
+            legacy.append(normalized)
+        else:
+            active.append(normalized)
+
+    return active, legacy
+
+
+def _migrate_legacy_histories(
+    store: Mapping[str, object],
+) -> tuple[dict[str, object], bool]:
+    """Move provenance-unknown entries from history to legacy_history."""
+    games = store.get("games")
+    if not isinstance(games, Mapping):
+        games = {}
+
+    changed = False
+    migrated_games: dict[str, object] = {}
+
+    for game_name, raw_game in games.items():
+        if not isinstance(raw_game, Mapping):
+            migrated_games[str(game_name)] = raw_game
+            continue
+
+        game = dict(raw_game)
+        active, legacy_from_history = _partition_history_entries(
+            game.get("history")
+        )
+        _, existing_legacy = _partition_history_entries(
+            game.get("legacy_history")
+        )
+
+        # legacy_history may already contain legacy entries; preserve them
+        # without duplicating entries during repeated migrations.
+        combined_legacy: list[dict[str, object]] = []
+        seen: set[str] = set()
+        for entry in [*existing_legacy, *legacy_from_history]:
+            signature = json.dumps(
+                entry,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+            if signature in seen:
+                continue
+            seen.add(signature)
+            combined_legacy.append(entry)
+
+        if game.get("history") != active:
+            changed = True
+        if game.get("legacy_history") != combined_legacy:
+            changed = True
+
+        game["history"] = active
+        game["legacy_history"] = combined_legacy
+        game["history_count"] = len(active)
+        game["legacy_history_count"] = len(combined_legacy)
+
+        latest = game.get("latest")
+        if isinstance(latest, Mapping):
+            normalized_latest = _normalize_history_entry(latest)
+            if (
+                normalized_latest is None
+                or normalized_latest.get("trained_through_draw_no") is None
+            ):
+                replacement = max(
+                    active,
+                    key=lambda item: str(item.get("evaluated_at") or ""),
+                    default=None,
+                )
+                if game.get("latest") != replacement:
+                    changed = True
+                game["latest"] = replacement
+
+        migrated_games[str(game_name)] = game
+
+    migrated = {
+        "schema_version": SCHEMA_VERSION,
+        "updated_at": store.get("updated_at"),
+        "games": migrated_games,
+    }
+    if store.get("schema_version") != SCHEMA_VERSION:
+        changed = True
+    return migrated, changed
+
+
+def _load_store() -> dict[str, object]:
+    """Load the Experience store and persist idempotent legacy migration."""
+    loaded = load_experience_store(
         EXPERIENCE_PATH,
         SCHEMA_VERSION,
     )
+    migrated, changed = _migrate_legacy_histories(loaded)
+    if changed:
+        save_experience_store(EXPERIENCE_PATH, migrated)
+    return migrated
 
 
 def _normalize_json_value(
@@ -355,7 +458,11 @@ def _filter_history_by_training_cutoff(
     cutoff is requested because their provenance cannot be proven.
     """
     if max_trained_through_draw_no is None:
-        return [dict(item) for item in history]
+        return [
+            dict(item)
+            for item in history
+            if item.get("trained_through_draw_no") is not None
+        ]
 
     cutoff = int(max_trained_through_draw_no)
     filtered: list[dict[str, object]] = []
@@ -672,32 +779,26 @@ def save_optimizer_experience(
     ):
         existing_game = {}
 
-    existing_history = (
+    normalized_history, legacy_from_history = _partition_history_entries(
         existing_game.get("history")
     )
+    _, existing_legacy_history = _partition_history_entries(
+        existing_game.get("legacy_history")
+    )
 
-    normalized_history: list[
-        dict[str, object]
-    ] = []
-
-    if isinstance(existing_history, list):
-        for item in existing_history:
-            if not isinstance(
-                item,
-                Mapping,
-            ):
-                continue
-
-            normalized = (
-                _normalize_history_entry(
-                    item
-                )
-            )
-
-            if normalized is not None:
-                normalized_history.append(
-                    normalized
-                )
+    legacy_history: list[dict[str, object]] = []
+    legacy_seen: set[str] = set()
+    for entry in [*existing_legacy_history, *legacy_from_history]:
+        signature = json.dumps(
+            entry,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        if signature in legacy_seen:
+            continue
+        legacy_seen.add(signature)
+        legacy_history.append(entry)
 
     normalized_history.append(
         new_entry
@@ -774,6 +875,9 @@ def save_optimizer_experience(
         "history_count": len(
             normalized_history
         ),
+        "legacy_history_count": len(
+            legacy_history
+        ),
         "history_limit": (
             normalized_history_limit
         ),
@@ -819,6 +923,7 @@ def save_optimizer_experience(
         ),
         "latest": new_entry,
         "history": normalized_history,
+        "legacy_history": legacy_history,
     }
 
     games[str(game_name)] = game_output
