@@ -135,6 +135,10 @@ def _carryover_text(output: Mapping[str, Any], game_key: str) -> str:
         return "取得できず（公式ページを解析できませんでした）"
     if status == "stale":
         return "確認待ち（公式情報の回号が未更新）"
+    if status == "status_only":
+        return str(row.get("display_amount") or "発生中（金額未取得）")
+    if status == "cached":
+        return str(row.get("display_amount") or "未取得") + "（前回取得値）"
     if status != "ok":
         return "未取得"
     return str(row.get("display_amount") or "未取得")
@@ -142,7 +146,7 @@ def _carryover_text(output: Mapping[str, Any], game_key: str) -> str:
 
 def _has_carryover(output: Mapping[str, Any], game_key: str) -> bool:
     row = _carryover_row(output, game_key)
-    return bool(row.get("status") == "ok" and row.get("has_carryover"))
+    return bool(row.get("status") in {"ok", "cached", "status_only"} and row.get("has_carryover"))
 
 
 def _feature_top3(section: Mapping[str, Any]) -> str:
