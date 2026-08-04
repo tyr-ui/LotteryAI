@@ -1,7 +1,7 @@
 {
   "status": "ok",
   "note": "run_pipeline evaluates the previous prediction if the target draw is now available, then creates the next prediction.",
-  "generated_at": "2026-08-04T02:20:58.098991+00:00",
+  "generated_at": "2026-08-04T03:41:51.713751+00:00",
   "previous_evaluation": {
     "loto6": {
       "draw_type": "loto6",
@@ -82,34 +82,34 @@
     }
   },
   "carryover": {
-    "source": "mizuho_bank",
-    "fetched_at": "2026-08-04T02:20:58.098977+00:00",
+    "source": "official_multi_source",
+    "fetched_at": "2026-08-04T03:41:51.713733+00:00",
     "games": {
       "loto6": {
         "game_key": "loto6",
-        "status": "fetch_error",
-        "source": "mizuho_bank",
-        "source_url": "https://www.mizuhobank.co.jp/takarakuji/check/loto/loto6/index.html",
+        "status": "status_only",
+        "source": "takarakuji_official",
+        "source_url": "https://www.takarakuji-official.jp/kuji/loto/loto6/",
         "expected_draw_no": 2125,
-        "draw_no": null,
+        "draw_no": 2125,
         "next_draw_no": 2126,
         "amount_yen": null,
-        "has_carryover": null,
-        "display_amount": "未取得",
-        "message": "公式ページの取得に失敗しました: HTTPError"
+        "has_carryover": true,
+        "display_amount": "発生中（金額未取得）",
+        "message": "宝くじ公式サイトで発生中を確認しましたが、金額は取得できませんでした。"
       },
       "loto7": {
         "game_key": "loto7",
-        "status": "fetch_error",
-        "source": "mizuho_bank",
-        "source_url": "https://www.mizuhobank.co.jp/takarakuji/check/loto/loto7/index.html",
+        "status": "status_only",
+        "source": "takarakuji_official",
+        "source_url": "https://www.takarakuji-official.jp/kuji/loto/loto7/",
         "expected_draw_no": 688,
-        "draw_no": null,
+        "draw_no": 688,
         "next_draw_no": 689,
         "amount_yen": null,
-        "has_carryover": null,
-        "display_amount": "未取得",
-        "message": "公式ページの取得に失敗しました: HTTPError"
+        "has_carryover": true,
+        "display_amount": "発生中（金額未取得）",
+        "message": "宝くじ公式サイトで発生中を確認しましたが、金額は取得できませんでした。"
       }
     }
   },
@@ -486,7 +486,7 @@
           "experience": {
             "count": 14,
             "best_selection_score": 2.409939,
-            "average_selection_score": 1.610783,
+            "average_selection_score": 1.697408,
             "latest_selection_score": 2.409939,
             "share": 0.7,
             "recent_count": 6,
@@ -553,7 +553,7 @@
           "experience": {
             "count": 14,
             "best_selection_score": 2.409939,
-            "average_selection_score": 1.610783,
+            "average_selection_score": 1.697408,
             "latest_selection_score": 2.409939,
             "share": 0.7,
             "recent_count": 6,
@@ -986,7 +986,7 @@
       "latest_config_name": "experience_loto6_1",
       "latest_selection_score": 2.409939,
       "best_experience_config_name": "experience_loto6_1",
-      "best_experience_score": 2.434038
+      "best_experience_score": 2.458138
     }
   },
   "loto7": {
@@ -1342,33 +1342,33 @@
         "receiver": "experience",
         "donor": "random",
         "source_scores": {
-          "experience": 0.41,
+          "experience": 0.368182,
           "random": 0.0,
-          "local": 0.217,
+          "local": 0.221773,
           "evolution": 0.0
         },
         "source_statistics": {
           "base": {
-            "count": 8,
+            "count": 9,
             "best_selection_score": 3.59081,
             "average_selection_score": 3.59081,
             "latest_selection_score": 3.59081,
-            "share": 0.4,
-            "recent_count": 8,
-            "recent_share": 0.8,
-            "rank": 2,
-            "is_best_source": false
-          },
-          "experience": {
-            "count": 10,
-            "best_selection_score": 1.75602,
-            "average_selection_score": 1.717058,
-            "latest_selection_score": 1.693407,
-            "share": 0.5,
-            "recent_count": 1,
-            "recent_share": 0.1,
+            "share": 0.45,
+            "recent_count": 9,
+            "recent_share": 0.9,
             "rank": 1,
             "is_best_source": true
+          },
+          "experience": {
+            "count": 9,
+            "best_selection_score": 1.75602,
+            "average_selection_score": 1.719686,
+            "latest_selection_score": 1.693407,
+            "share": 0.45,
+            "recent_count": 0,
+            "recent_share": 0.0,
+            "rank": 2,
+            "is_best_source": false
           },
           "random": {
             "count": 0,
@@ -1416,26 +1416,26 @@
         "mutation_scale": 0.1,
         "source_statistics": {
           "base": {
-            "count": 8,
+            "count": 9,
             "best_selection_score": 3.59081,
             "average_selection_score": 3.59081,
             "latest_selection_score": 3.59081,
-            "share": 0.4,
-            "recent_count": 8,
-            "recent_share": 0.8,
-            "rank": 2,
-            "is_best_source": false
-          },
-          "experience": {
-            "count": 10,
-            "best_selection_score": 1.75602,
-            "average_selection_score": 1.717058,
-            "latest_selection_score": 1.693407,
-            "share": 0.5,
-            "recent_count": 1,
-            "recent_share": 0.1,
+            "share": 0.45,
+            "recent_count": 9,
+            "recent_share": 0.9,
             "rank": 1,
             "is_best_source": true
+          },
+          "experience": {
+            "count": 9,
+            "best_selection_score": 1.75602,
+            "average_selection_score": 1.719686,
+            "latest_selection_score": 1.693407,
+            "share": 0.45,
+            "recent_count": 0,
+            "recent_share": 0.0,
+            "rank": 2,
+            "is_best_source": false
           },
           "random": {
             "count": 0,
@@ -2223,9 +2223,9 @@
         "receiver": "experience",
         "donor": "random",
         "source_scores": {
-          "experience": 0.572876,
+          "experience": 0.5825,
           "random": 0.0,
-          "local": 0.1825,
+          "local": 0.154338,
           "evolution": 0.1545
         },
         "source_statistics": {
@@ -2241,11 +2241,11 @@
             "is_best_source": false
           },
           "experience": {
-            "count": 14,
+            "count": 15,
             "best_selection_score": 2.332336,
-            "average_selection_score": 1.643428,
+            "average_selection_score": 1.689355,
             "latest_selection_score": 2.332336,
-            "share": 0.7,
+            "share": 0.75,
             "recent_count": 7,
             "recent_share": 0.7,
             "rank": 1,
@@ -2263,11 +2263,11 @@
             "is_best_source": false
           },
           "local": {
-            "count": 5,
+            "count": 4,
             "best_selection_score": 2.332336,
-            "average_selection_score": 1.60001,
+            "average_selection_score": 1.722954,
             "latest_selection_score": 2.332336,
-            "share": 0.25,
+            "share": 0.2,
             "recent_count": 2,
             "recent_share": 0.2,
             "rank": 2,
@@ -2308,11 +2308,11 @@
             "is_best_source": false
           },
           "experience": {
-            "count": 14,
+            "count": 15,
             "best_selection_score": 2.332336,
-            "average_selection_score": 1.643428,
+            "average_selection_score": 1.689355,
             "latest_selection_score": 2.332336,
-            "share": 0.7,
+            "share": 0.75,
             "recent_count": 7,
             "recent_share": 0.7,
             "rank": 1,
@@ -2330,11 +2330,11 @@
             "is_best_source": false
           },
           "local": {
-            "count": 5,
+            "count": 4,
             "best_selection_score": 2.332336,
-            "average_selection_score": 1.60001,
+            "average_selection_score": 1.722954,
             "latest_selection_score": 2.332336,
-            "share": 0.25,
+            "share": 0.2,
             "recent_count": 2,
             "recent_share": 0.2,
             "rank": 2,
@@ -2732,7 +2732,7 @@
     "experience_save": {
       "history_count": 20,
       "history_limit": 20,
-      "unique_config_count": 5,
+      "unique_config_count": 4,
       "best_config_name": "local_01_experience_miniloto_1",
       "best_selection_score": 2.332336,
       "latest_config_name": "experience_miniloto_1",
@@ -3666,11 +3666,11 @@
       "allocation_reason": "performance_reallocation",
       "allocation_receiver": "experience",
       "allocation_donor": "evolution",
-      "allocation_sample_count": 17,
+      "allocation_sample_count": 18,
       "evolution_adaptation": {
         "adaptive": true,
         "reason": "evolution_low_performance",
-        "sample_count": 17,
+        "sample_count": 18,
         "evolution_win_count": 0,
         "evolution_win_rate": 0.0,
         "count": 3,
@@ -3689,11 +3689,11 @@
             "is_best_source": false
           },
           "experience": {
-            "count": 14,
+            "count": 15,
             "best_selection_score": 2.616669,
-            "average_selection_score": 2.598018,
+            "average_selection_score": 2.59491,
             "latest_selection_score": 2.551392,
-            "share": 0.823529,
+            "share": 0.833333,
             "recent_count": 10,
             "recent_share": 1.0,
             "rank": 1,
@@ -3704,7 +3704,7 @@
             "best_selection_score": 2.616669,
             "average_selection_score": 2.616669,
             "latest_selection_score": 2.616669,
-            "share": 0.058824,
+            "share": 0.055556,
             "recent_count": 0,
             "recent_share": 0.0,
             "rank": 3,
@@ -3715,7 +3715,7 @@
             "best_selection_score": 2.018055,
             "average_selection_score": 1.993056,
             "latest_selection_score": 2.018055,
-            "share": 0.117647,
+            "share": 0.111111,
             "recent_count": 0,
             "recent_share": 0.0,
             "rank": 2,
@@ -4439,7 +4439,7 @@
       }
     ],
     "experience_save": {
-      "history_count": 18,
+      "history_count": 19,
       "history_limit": 20,
       "unique_config_count": 3,
       "best_config_name": "experience_numbers3_1",
@@ -4447,7 +4447,7 @@
       "latest_config_name": "experience_numbers3_1",
       "latest_selection_score": 2.551392,
       "best_experience_config_name": "experience_numbers3_1",
-      "best_experience_score": 2.723085
+      "best_experience_score": 2.721699
     }
   },
   "numbers4": {
@@ -5375,13 +5375,13 @@
       "allocation_reason": "performance_reallocation",
       "allocation_receiver": "experience",
       "allocation_donor": "random",
-      "allocation_sample_count": 17,
+      "allocation_sample_count": 18,
       "evolution_adaptation": {
         "adaptive": true,
         "reason": "evolution_low_performance",
-        "sample_count": 17,
+        "sample_count": 18,
         "evolution_win_count": 1,
-        "evolution_win_rate": 0.058824,
+        "evolution_win_rate": 0.055556,
         "count": 3,
         "mutation_rate": 0.35,
         "mutation_scale": 0.1,
@@ -5391,18 +5391,18 @@
             "best_selection_score": 1.997916,
             "average_selection_score": 1.997916,
             "latest_selection_score": 1.997916,
-            "share": 0.117647,
+            "share": 0.111111,
             "recent_count": 0,
             "recent_share": 0.0,
             "rank": 2,
             "is_best_source": false
           },
           "experience": {
-            "count": 13,
+            "count": 14,
             "best_selection_score": 2.404166,
-            "average_selection_score": 2.372435,
+            "average_selection_score": 2.374701,
             "latest_selection_score": 2.404166,
-            "share": 0.764706,
+            "share": 0.777778,
             "recent_count": 10,
             "recent_share": 1.0,
             "rank": 1,
@@ -5424,7 +5424,7 @@
             "best_selection_score": 2.316666,
             "average_selection_score": 2.316666,
             "latest_selection_score": 2.316666,
-            "share": 0.058824,
+            "share": 0.055556,
             "recent_count": 0,
             "recent_share": 0.0,
             "rank": 4,
@@ -5435,7 +5435,7 @@
             "best_selection_score": 2.358332,
             "average_selection_score": 2.358332,
             "latest_selection_score": 2.358332,
-            "share": 0.058824,
+            "share": 0.055556,
             "recent_count": 0,
             "recent_share": 0.0,
             "rank": 3,
@@ -6188,7 +6188,7 @@
       }
     ],
     "experience_save": {
-      "history_count": 18,
+      "history_count": 19,
       "history_limit": 20,
       "unique_config_count": 3,
       "best_config_name": "experience_numbers4_2",
@@ -6196,7 +6196,7 @@
       "latest_config_name": "experience_numbers4_1",
       "latest_selection_score": 2.404166,
       "best_experience_config_name": "experience_numbers4_1",
-      "best_experience_score": 2.516718
+      "best_experience_score": 2.517812
     }
   }
 }
