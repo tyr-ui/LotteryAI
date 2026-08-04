@@ -29,6 +29,45 @@ class NumbersBacktestRecord:
     average_unordered_digit_matches: float
     straight_hit: bool
     box_hit: bool
+    box_dedicated_predicted: tuple[NumberRow, ...] = ()
+    box_dedicated_best_unordered_matches: int = 0
+    box_dedicated_average_unordered_matches: float = 0.0
+    box_dedicated_hit: bool = False
+
+
+
+
+@dataclass(frozen=True, slots=True)
+class NumbersBoxBacktestRecord:
+    draw_index: int
+    actual: NumberRow
+    predicted_boxes: tuple[NumberRow, ...]
+    best_unordered_digit_matches: int
+    average_unordered_digit_matches: float
+    box_hit: bool
+
+
+@dataclass(frozen=True, slots=True)
+class NumbersBoxBacktestSummary:
+    tested_periods: int
+    digit_count: int
+    average_best_unordered_matches: float | None
+    average_unordered_matches_per_ticket: float | None
+    box_hit_rate: float | None
+    records: tuple[NumbersBoxBacktestRecord, ...]
+
+    def to_dict(self, *, include_records: bool = False) -> dict[str, object]:
+        result: dict[str, object] = {
+            "evaluation_type": "box_dedicated_walk_forward",
+            "tested_periods": self.tested_periods,
+            "digit_count": self.digit_count,
+            "average_best_unordered_matches": self.average_best_unordered_matches,
+            "average_unordered_matches_per_ticket": self.average_unordered_matches_per_ticket,
+            "box_hit_rate": self.box_hit_rate,
+        }
+        if include_records:
+            result["records"] = [asdict(record) for record in self.records]
+        return result
 
 
 @dataclass(frozen=True, slots=True)
@@ -46,7 +85,10 @@ class NumbersBacktestSummary:
     hit_rate_3_position: float | None
     hit_rate_4_position: float | None
     selection_score: float | None
-    records: tuple[NumbersBacktestRecord, ...]
+    box_dedicated_average_best_unordered_matches: float | None = None
+    box_dedicated_average_unordered_matches_per_ticket: float | None = None
+    box_dedicated_hit_rate: float | None = None
+    records: tuple[NumbersBacktestRecord, ...] = ()
 
     def to_dict(
         self,
@@ -75,6 +117,14 @@ class NumbersBacktestSummary:
             "hit_rate_3_position": self.hit_rate_3_position,
             "hit_rate_4_position": self.hit_rate_4_position,
             "selection_score": self.selection_score,
+            "box_dedicated_evaluation": {
+                "evaluation_type": "box_dedicated_walk_forward",
+                "tested_periods": self.tested_periods,
+                "digit_count": self.digit_count,
+                "average_best_unordered_matches": self.box_dedicated_average_best_unordered_matches,
+                "average_unordered_matches_per_ticket": self.box_dedicated_average_unordered_matches_per_ticket,
+                "box_hit_rate": self.box_dedicated_hit_rate,
+            },
         }
 
         if include_records:
@@ -238,6 +288,9 @@ def _empty_summary(
         hit_rate_3_position=None,
         hit_rate_4_position=None,
         selection_score=None,
+        box_dedicated_average_best_unordered_matches=None,
+        box_dedicated_average_unordered_matches_per_ticket=None,
+        box_dedicated_hit_rate=None,
         records=(),
     )
 
@@ -303,6 +356,25 @@ def _summarize_numbers_records(
     hit_rate_2 = position_hit_rate(2)
     hit_rate_3 = position_hit_rate(3)
     hit_rate_4 = position_hit_rate(4)
+    dedicated_best_values = [
+        record.box_dedicated_best_unordered_matches
+        for record in records
+    ]
+    dedicated_average_values = [
+        record.box_dedicated_average_unordered_matches
+        for record in records
+    ]
+    dedicated_hit_rate = round(
+        sum(record.box_dedicated_hit for record in records) / tested,
+        6,
+    )
+    dedicated_average_best = round(
+        float(mean(dedicated_best_values)), 6
+    )
+    dedicated_average_per_ticket = round(
+        float(mean(dedicated_average_values)), 6
+    )
+
     selection_score = numbers_selection_score(
         digit_count=digit_count,
         average_best_position_matches=average_best_position_matches,
@@ -328,6 +400,9 @@ def _summarize_numbers_records(
         hit_rate_3_position=hit_rate_3,
         hit_rate_4_position=hit_rate_4,
         selection_score=selection_score,
+        box_dedicated_average_best_unordered_matches=dedicated_average_best,
+        box_dedicated_average_unordered_matches_per_ticket=dedicated_average_per_ticket,
+        box_dedicated_hit_rate=dedicated_hit_rate,
         records=tuple(records) if include_records else (),
     )
 
@@ -574,6 +649,14 @@ def run_numbers_backtest(
         )
 
         predicted = prediction.numbers
+        box_dedicated_predicted = _select_box_candidates_from_ranked(
+            prediction.ranked,
+            top_k=resolved_top_k,
+        )
+        box_dedicated_unordered = [
+            unordered_digit_matches(candidate, actual)
+            for candidate in box_dedicated_predicted
+        ]
 
         position_matches = [
             exact_position_matches(
@@ -649,6 +732,21 @@ def run_numbers_backtest(
                 ),
                 straight_hit=straight_hit,
                 box_hit=box_hit,
+                box_dedicated_predicted=box_dedicated_predicted,
+                box_dedicated_best_unordered_matches=(
+                    max(box_dedicated_unordered)
+                    if box_dedicated_unordered
+                    else 0
+                ),
+                box_dedicated_average_unordered_matches=(
+                    float(mean(box_dedicated_unordered))
+                    if box_dedicated_unordered
+                    else 0.0
+                ),
+                box_dedicated_hit=any(
+                    is_box_hit(candidate, actual)
+                    for candidate in box_dedicated_predicted
+                ),
             )
         )
 
@@ -659,12 +757,98 @@ def run_numbers_backtest(
     )
 
 
+def _select_box_candidates_from_ranked(
+    ranked_candidates: Sequence[object],
+    *,
+    top_k: int,
+) -> tuple[NumberRow, ...]:
+    selected: list[NumberRow] = []
+    seen: set[tuple[int, ...]] = set()
+    for item in ranked_candidates:
+        candidate = tuple(int(value) for value in getattr(item, "candidate"))
+        box_digits = tuple(sorted(candidate))
+        if box_digits in seen:
+            continue
+        seen.add(box_digits)
+        selected.append(box_digits)
+        if len(selected) >= top_k:
+            break
+    return tuple(selected)
+
+
+def run_numbers_box_backtest(
+    history: Iterable[Sequence[int]],
+    config: Mapping[str, object] | object,
+    *,
+    train_window: int | None = None,
+    tested_periods: int | None = None,
+    top_k: int | None = None,
+    weights: NumbersPredictionWeights | Mapping[str, object] | None = None,
+    include_records: bool = False,
+) -> NumbersBoxBacktestSummary:
+    """Evaluate the actual BOX-dedicated candidate selection.
+
+    Each test draw rebuilds the model only from earlier draws, ranks the full
+    candidate space, then selects unique BOX signatures using the same rule as
+    the production BOX output.
+    """
+    configured_digit_count = int(_config_value(config, "digit_count", default=0) or 0)
+    normalized_history = _normalize_history(
+        history,
+        digit_count=configured_digit_count or None,
+        digit_min=int(_config_value(config, "digit_min", "min_num", default=0) or 0),
+        digit_max=int(_config_value(config, "digit_max", "max_num", default=9) or 9),
+    )
+    digit_count = len(normalized_history[0])
+    total_draws = len(normalized_history)
+    resolved_train_window = int(train_window if train_window is not None else _config_value(config, "train_window", default=500))
+    resolved_tested_periods = int(tested_periods if tested_periods is not None else _config_value(config, "tested_periods", default=90))
+    resolved_top_k = int(top_k if top_k is not None else _config_value(config, "top_k", default=10))
+    if min(resolved_train_window, resolved_tested_periods, resolved_top_k) <= 0:
+        raise ValueError("backtest parameters must be positive.")
+    if total_draws <= resolved_train_window:
+        return NumbersBoxBacktestSummary(0, digit_count, None, None, None, ())
+
+    start_index = max(resolved_train_window, total_draws - resolved_tested_periods)
+    records: list[NumbersBoxBacktestRecord] = []
+    for test_index in range(start_index, total_draws):
+        training_history = normalized_history[max(0, test_index - resolved_train_window):test_index]
+        actual = normalized_history[test_index]
+        context = build_numbers_model_context(training_history, config)
+        prediction = predict_numbers(context, top_k=resolved_top_k, weights=weights)
+        predicted_boxes = _select_box_candidates_from_ranked(
+            prediction.ranked, top_k=resolved_top_k
+        )
+        unordered = [unordered_digit_matches(candidate, actual) for candidate in predicted_boxes]
+        records.append(NumbersBoxBacktestRecord(
+            draw_index=test_index,
+            actual=actual,
+            predicted_boxes=predicted_boxes,
+            best_unordered_digit_matches=max(unordered) if unordered else 0,
+            average_unordered_digit_matches=float(mean(unordered)) if unordered else 0.0,
+            box_hit=any(is_box_hit(candidate, actual) for candidate in predicted_boxes),
+        ))
+
+    tested = len(records)
+    return NumbersBoxBacktestSummary(
+        tested_periods=tested,
+        digit_count=digit_count,
+        average_best_unordered_matches=round(float(mean(r.best_unordered_digit_matches for r in records)), 6) if records else None,
+        average_unordered_matches_per_ticket=round(float(mean(r.average_unordered_digit_matches for r in records)), 6) if records else None,
+        box_hit_rate=round(sum(r.box_hit for r in records) / tested, 6) if tested else None,
+        records=tuple(records) if include_records else (),
+    )
+
+
 __all__ = [
     "NumbersBacktestRecord",
     "NumbersBacktestSummary",
+    "NumbersBoxBacktestRecord",
+    "NumbersBoxBacktestSummary",
     "is_box_hit",
     "is_straight_hit",
     "numbers_selection_score",
     "run_numbers_backtest",
+    "run_numbers_box_backtest",
     "run_numbers_uniform_random_backtest",
 ]
