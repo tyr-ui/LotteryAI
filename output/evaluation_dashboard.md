@@ -1,6 +1,6 @@
 # LotteryAI Evaluation Dashboard
 
-- 生成日時: `2026-08-04T01:12:33.169024+00:00`
+- 生成日時: `2026-08-04T02:20:58.098991+00:00`
 - Full Run: **ok**
 - Dashboard schema: `1.0`
 
@@ -83,7 +83,7 @@
 - 最大一致: 1
 - Optimizer selection_score: 2.551392
 - Optimizer Random uplift: 未評価
-- Experience履歴: 17件
+- Experience履歴: 18件
 
 ### 次回予想
 
@@ -104,7 +104,7 @@
 ## Numbers4
 
 - 次回抽せん回: **7041**
-- 採用Config: `experience_numbers4_2`
+- 採用Config: `experience_numbers4_1`
 - 採用元: `experience`
 - 事後評価: **データ不足** (1回)
 - 平均最高一致: 2.0
@@ -112,7 +112,7 @@
 - 最大一致: 2
 - Optimizer selection_score: 2.404166
 - Optimizer Random uplift: 未評価
-- Experience履歴: 17件
+- Experience履歴: 18件
 
 ### 次回予想
 

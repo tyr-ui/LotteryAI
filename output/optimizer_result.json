@@ -1,7 +1,7 @@
 {
   "status": "ok",
   "note": "run_pipeline evaluates the previous prediction if the target draw is now available, then creates the next prediction.",
-  "generated_at": "2026-08-04T01:12:33.169024+00:00",
+  "generated_at": "2026-08-04T02:20:58.098991+00:00",
   "previous_evaluation": {
     "loto6": {
       "draw_type": "loto6",
@@ -83,7 +83,7 @@
   },
   "carryover": {
     "source": "mizuho_bank",
-    "fetched_at": "2026-08-04T01:12:33.169010+00:00",
+    "fetched_at": "2026-08-04T02:20:58.098977+00:00",
     "games": {
       "loto6": {
         "game_key": "loto6",
@@ -292,28 +292,28 @@
         "parent": "experience_loto6_1"
       },
       {
-        "config": "evolution_03_experience_loto6_3_experience_loto6_4",
+        "config": "evolution_04_experience_loto6_4_experience_loto6_1",
         "tested_periods": 90,
         "evaluated_seeds": 3,
-        "avg_matches": 1.877767,
-        "average_matches_per_ticket": 0.845933,
+        "avg_matches": 1.944467,
+        "average_matches_per_ticket": 0.862233,
         "hit_rate_1match": 1.0,
-        "hit_rate_2match": 0.737033,
-        "hit_rate_3match": 0.137033,
-        "hit_rate_4match": 0.0037,
+        "hit_rate_2match": 0.777767,
+        "hit_rate_3match": 0.155533,
+        "hit_rate_4match": 0.0111,
         "hit_rate_5match": 0.0,
         "hit_rate_6match": 0.0,
         "hit_rate_7match": 0.0,
-        "avg_matches_std": 0.087495,
+        "avg_matches_std": 0.048004,
         "seed_avg_matches": [
-          2.0,
-          1.8,
-          1.8333
+          1.9889,
+          1.9667,
+          1.8778
         ],
-        "selection_score": 2.249881,
+        "selection_score": 2.383725,
         "random_unfiltered_avg": 1.722233,
         "random_filtered_avg": 1.755533,
-        "random_uplift": 0.155534,
+        "random_uplift": 0.222234,
         "random_filtered_baseline": {
           "config": "filtered_random",
           "tested_periods": 90,
@@ -335,13 +335,13 @@
           ]
         },
         "weights": {
-          "freq": 0.30217112,
-          "recent": 0.0,
-          "pair": 0.0,
-          "triplet": 0.0425257,
-          "delay": 0.05973235,
-          "dist": 0.57649364,
-          "repeat": 0.01907719
+          "freq": 0.07793736,
+          "recent": 0.07586169,
+          "pair": 0.02223544,
+          "triplet": 0.07197683,
+          "delay": 0.00678916,
+          "dist": 0.56344314,
+          "repeat": 0.18175638
         },
         "filters": {
           "max_block": 3,
@@ -353,7 +353,7 @@
         "parent": null
       },
       {
-        "config": "local_05_experience_loto6_3",
+        "config": "local_05_experience_loto6_4",
         "tested_periods": 90,
         "evaluated_seeds": 3,
         "avg_matches": 1.866667,
@@ -411,7 +411,7 @@
           "max_common": 3
         },
         "search_origin": "local",
-        "parent": "experience_loto6_3"
+        "parent": "experience_loto6_4"
       }
     ],
     "selected_config": "experience_loto6_1",
@@ -438,7 +438,7 @@
       "random_config_count": 3,
       "local_config_count": 6,
       "evolution_config_count": 4,
-      "total_unique_config_count": 25,
+      "total_unique_config_count": 23,
       "requested_search_allocation": {
         "experience": 4,
         "random": 3,
@@ -485,9 +485,9 @@
           },
           "experience": {
             "count": 14,
-            "best_selection_score": 2.299926,
-            "average_selection_score": 1.524158,
-            "latest_selection_score": 2.298923,
+            "best_selection_score": 2.409939,
+            "average_selection_score": 1.610783,
+            "latest_selection_score": 2.409939,
             "share": 0.7,
             "recent_count": 6,
             "recent_share": 0.6,
@@ -552,9 +552,9 @@
           },
           "experience": {
             "count": 14,
-            "best_selection_score": 2.299926,
-            "average_selection_score": 1.524158,
-            "latest_selection_score": 2.298923,
+            "best_selection_score": 2.409939,
+            "average_selection_score": 1.610783,
+            "latest_selection_score": 2.409939,
             "share": 0.7,
             "recent_count": 6,
             "recent_share": 0.6,
@@ -986,7 +986,7 @@
       "latest_config_name": "experience_loto6_1",
       "latest_selection_score": 2.409939,
       "best_experience_config_name": "experience_loto6_1",
-      "best_experience_score": 2.409939
+      "best_experience_score": 2.434038
     }
   },
   "loto7": {
@@ -1342,31 +1342,31 @@
         "receiver": "experience",
         "donor": "random",
         "source_scores": {
-          "experience": 0.450769,
+          "experience": 0.41,
           "random": 0.0,
-          "local": 0.212962,
+          "local": 0.217,
           "evolution": 0.0
         },
         "source_statistics": {
           "base": {
-            "count": 7,
+            "count": 8,
             "best_selection_score": 3.59081,
             "average_selection_score": 3.59081,
             "latest_selection_score": 3.59081,
-            "share": 0.35,
-            "recent_count": 7,
-            "recent_share": 0.7,
+            "share": 0.4,
+            "recent_count": 8,
+            "recent_share": 0.8,
             "rank": 2,
             "is_best_source": false
           },
           "experience": {
-            "count": 11,
+            "count": 10,
             "best_selection_score": 1.75602,
-            "average_selection_score": 1.712434,
+            "average_selection_score": 1.717058,
             "latest_selection_score": 1.693407,
-            "share": 0.55,
-            "recent_count": 2,
-            "recent_share": 0.2,
+            "share": 0.5,
+            "recent_count": 1,
+            "recent_share": 0.1,
             "rank": 1,
             "is_best_source": true
           },
@@ -1416,24 +1416,24 @@
         "mutation_scale": 0.1,
         "source_statistics": {
           "base": {
-            "count": 7,
+            "count": 8,
             "best_selection_score": 3.59081,
             "average_selection_score": 3.59081,
             "latest_selection_score": 3.59081,
-            "share": 0.35,
-            "recent_count": 7,
-            "recent_share": 0.7,
+            "share": 0.4,
+            "recent_count": 8,
+            "recent_share": 0.8,
             "rank": 2,
             "is_best_source": false
           },
           "experience": {
-            "count": 11,
+            "count": 10,
             "best_selection_score": 1.75602,
-            "average_selection_score": 1.712434,
+            "average_selection_score": 1.717058,
             "latest_selection_score": 1.693407,
-            "share": 0.55,
-            "recent_count": 2,
-            "recent_share": 0.2,
+            "share": 0.5,
+            "recent_count": 1,
+            "recent_share": 0.1,
             "rank": 1,
             "is_best_source": true
           },
@@ -2223,9 +2223,9 @@
         "receiver": "experience",
         "donor": "random",
         "source_scores": {
-          "experience": 0.56,
+          "experience": 0.572876,
           "random": 0.0,
-          "local": 0.194755,
+          "local": 0.1825,
           "evolution": 0.1545
         },
         "source_statistics": {
@@ -2243,7 +2243,7 @@
           "experience": {
             "count": 14,
             "best_selection_score": 2.332336,
-            "average_selection_score": 1.555991,
+            "average_selection_score": 1.643428,
             "latest_selection_score": 2.332336,
             "share": 0.7,
             "recent_count": 7,
@@ -2310,7 +2310,7 @@
           "experience": {
             "count": 14,
             "best_selection_score": 2.332336,
-            "average_selection_score": 1.555991,
+            "average_selection_score": 1.643428,
             "latest_selection_score": 2.332336,
             "share": 0.7,
             "recent_count": 7,
@@ -2732,7 +2732,7 @@
     "experience_save": {
       "history_count": 20,
       "history_limit": 20,
-      "unique_config_count": 6,
+      "unique_config_count": 5,
       "best_config_name": "local_01_experience_miniloto_1",
       "best_selection_score": 2.332336,
       "latest_config_name": "experience_miniloto_1",
@@ -3666,11 +3666,11 @@
       "allocation_reason": "performance_reallocation",
       "allocation_receiver": "experience",
       "allocation_donor": "evolution",
-      "allocation_sample_count": 16,
+      "allocation_sample_count": 17,
       "evolution_adaptation": {
         "adaptive": true,
         "reason": "evolution_low_performance",
-        "sample_count": 16,
+        "sample_count": 17,
         "evolution_win_count": 0,
         "evolution_win_rate": 0.0,
         "count": 3,
@@ -3689,11 +3689,11 @@
             "is_best_source": false
           },
           "experience": {
-            "count": 13,
+            "count": 14,
             "best_selection_score": 2.616669,
-            "average_selection_score": 2.601605,
+            "average_selection_score": 2.598018,
             "latest_selection_score": 2.551392,
-            "share": 0.8125,
+            "share": 0.823529,
             "recent_count": 10,
             "recent_share": 1.0,
             "rank": 1,
@@ -3704,7 +3704,7 @@
             "best_selection_score": 2.616669,
             "average_selection_score": 2.616669,
             "latest_selection_score": 2.616669,
-            "share": 0.0625,
+            "share": 0.058824,
             "recent_count": 0,
             "recent_share": 0.0,
             "rank": 3,
@@ -3715,7 +3715,7 @@
             "best_selection_score": 2.018055,
             "average_selection_score": 1.993056,
             "latest_selection_score": 2.018055,
-            "share": 0.125,
+            "share": 0.117647,
             "recent_count": 0,
             "recent_share": 0.0,
             "rank": 2,
@@ -4439,7 +4439,7 @@
       }
     ],
     "experience_save": {
-      "history_count": 17,
+      "history_count": 18,
       "history_limit": 20,
       "unique_config_count": 3,
       "best_config_name": "experience_numbers3_1",
@@ -4447,7 +4447,7 @@
       "latest_config_name": "experience_numbers3_1",
       "latest_selection_score": 2.551392,
       "best_experience_config_name": "experience_numbers3_1",
-      "best_experience_score": 2.724656
+      "best_experience_score": 2.723085
     }
   },
   "numbers4": {
@@ -4520,7 +4520,7 @@
     "selected_random_filtered_baseline": {},
     "ranked_configs": [
       {
-        "config": "experience_numbers4_2",
+        "config": "experience_numbers4_1",
         "source": "experience",
         "weights": {
           "position_frequency": 1.136602,
@@ -4553,7 +4553,7 @@
         "selection_score": 2.404166
       },
       {
-        "config": "experience_numbers4_1",
+        "config": "experience_numbers4_2",
         "source": "experience",
         "weights": {
           "position_frequency": 1.456504,
@@ -5279,7 +5279,7 @@
         "selection_score": 1.464583
       }
     ],
-    "selected_config": "experience_numbers4_2",
+    "selected_config": "experience_numbers4_1",
     "selected_weights": {
       "position_frequency": 1.136602,
       "recent_position_frequency": 1.775444,
@@ -5375,13 +5375,13 @@
       "allocation_reason": "performance_reallocation",
       "allocation_receiver": "experience",
       "allocation_donor": "random",
-      "allocation_sample_count": 16,
+      "allocation_sample_count": 17,
       "evolution_adaptation": {
         "adaptive": true,
         "reason": "evolution_low_performance",
-        "sample_count": 16,
+        "sample_count": 17,
         "evolution_win_count": 1,
-        "evolution_win_rate": 0.0625,
+        "evolution_win_rate": 0.058824,
         "count": 3,
         "mutation_rate": 0.35,
         "mutation_scale": 0.1,
@@ -5391,18 +5391,18 @@
             "best_selection_score": 1.997916,
             "average_selection_score": 1.997916,
             "latest_selection_score": 1.997916,
-            "share": 0.125,
+            "share": 0.117647,
             "recent_count": 0,
             "recent_share": 0.0,
             "rank": 2,
             "is_best_source": false
           },
           "experience": {
-            "count": 12,
+            "count": 13,
             "best_selection_score": 2.404166,
-            "average_selection_score": 2.369791,
+            "average_selection_score": 2.372435,
             "latest_selection_score": 2.404166,
-            "share": 0.75,
+            "share": 0.764706,
             "recent_count": 10,
             "recent_share": 1.0,
             "rank": 1,
@@ -5424,7 +5424,7 @@
             "best_selection_score": 2.316666,
             "average_selection_score": 2.316666,
             "latest_selection_score": 2.316666,
-            "share": 0.0625,
+            "share": 0.058824,
             "recent_count": 0,
             "recent_share": 0.0,
             "rank": 4,
@@ -5435,7 +5435,7 @@
             "best_selection_score": 2.358332,
             "average_selection_score": 2.358332,
             "latest_selection_score": 2.358332,
-            "share": 0.0625,
+            "share": 0.058824,
             "recent_count": 0,
             "recent_share": 0.0,
             "rank": 3,
@@ -5490,7 +5490,7 @@
         ],
         "number": "0754",
         "score": 6.653273,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.10017755681818181,
           "recent_position_frequency": 0.15625,
@@ -5525,7 +5525,7 @@
         ],
         "number": "7247",
         "score": 6.592833,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.09580965909090909,
           "recent_position_frequency": 0.165,
@@ -5560,7 +5560,7 @@
         ],
         "number": "0398",
         "score": 6.581353,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.10397727272727274,
           "recent_position_frequency": 0.109375,
@@ -5595,7 +5595,7 @@
         ],
         "number": "5841",
         "score": 6.568547,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.10042613636363636,
           "recent_position_frequency": 0.09125000000000001,
@@ -5630,7 +5630,7 @@
         ],
         "number": "8910",
         "score": 6.551469,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.10134943181818182,
           "recent_position_frequency": 0.08,
@@ -5665,7 +5665,7 @@
         ],
         "number": "7236",
         "score": 6.540373,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.09556107954545454,
           "recent_position_frequency": 0.1225,
@@ -5700,7 +5700,7 @@
         ],
         "number": "6154",
         "score": 6.536474,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.10099431818181819,
           "recent_position_frequency": 0.08937500000000001,
@@ -5735,7 +5735,7 @@
         ],
         "number": "2763",
         "score": 6.535777,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.0989346590909091,
           "recent_position_frequency": 0.118125,
@@ -5770,7 +5770,7 @@
         ],
         "number": "5603",
         "score": 6.506442,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.09857954545454545,
           "recent_position_frequency": 0.10625,
@@ -5805,7 +5805,7 @@
         ],
         "number": "1069",
         "score": 6.48872,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.0990411931818182,
           "recent_position_frequency": 0.063125,
@@ -5843,7 +5843,7 @@
         "number": "0457",
         "representative_straight": "0754",
         "score": 6.653273,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.10017755681818181,
           "recent_position_frequency": 0.15625,
@@ -5879,7 +5879,7 @@
         "number": "2477",
         "representative_straight": "7247",
         "score": 6.592833,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.09580965909090909,
           "recent_position_frequency": 0.165,
@@ -5915,7 +5915,7 @@
         "number": "0389",
         "representative_straight": "0398",
         "score": 6.581353,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.10397727272727274,
           "recent_position_frequency": 0.109375,
@@ -5951,7 +5951,7 @@
         "number": "1458",
         "representative_straight": "5841",
         "score": 6.568547,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.10042613636363636,
           "recent_position_frequency": 0.09125000000000001,
@@ -5987,7 +5987,7 @@
         "number": "0189",
         "representative_straight": "0198",
         "score": 6.56418,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.10291193181818183,
           "recent_position_frequency": 0.08625,
@@ -6023,7 +6023,7 @@
         "number": "3469",
         "representative_straight": "6934",
         "score": 6.554947,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.10191761363636363,
           "recent_position_frequency": 0.1275,
@@ -6059,7 +6059,7 @@
         "number": "1456",
         "representative_straight": "5614",
         "score": 6.54439,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.09762073863636364,
           "recent_position_frequency": 0.140625,
@@ -6095,7 +6095,7 @@
         "number": "3458",
         "representative_straight": "5834",
         "score": 6.542388,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.09854403409090909,
           "recent_position_frequency": 0.135,
@@ -6131,7 +6131,7 @@
         "number": "2367",
         "representative_straight": "7236",
         "score": 6.540373,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.09556107954545454,
           "recent_position_frequency": 0.1225,
@@ -6167,7 +6167,7 @@
         "number": "2347",
         "representative_straight": "2734",
         "score": 6.5315,
-        "model": "experience_numbers4_2",
+        "model": "experience_numbers4_1",
         "components": {
           "position_frequency": 0.10074573863636364,
           "recent_position_frequency": 0.165,
@@ -6188,15 +6188,15 @@
       }
     ],
     "experience_save": {
-      "history_count": 17,
+      "history_count": 18,
       "history_limit": 20,
       "unique_config_count": 3,
       "best_config_name": "experience_numbers4_2",
       "best_selection_score": 2.404166,
-      "latest_config_name": "experience_numbers4_2",
+      "latest_config_name": "experience_numbers4_1",
       "latest_selection_score": 2.404166,
-      "best_experience_config_name": "experience_numbers4_2",
-      "best_experience_score": 2.491233
+      "best_experience_config_name": "experience_numbers4_1",
+      "best_experience_score": 2.516718
     }
   }
 }
