@@ -65,7 +65,19 @@ class NotificationSummaryTest(unittest.TestCase):
             },
             "loto7": dict(empty_game),
             "miniloto": dict(empty_game),
-            "numbers3": dict(empty_game),
+            "numbers3": {
+                **dict(empty_game),
+                "holdout_evaluation": {
+                    "tested_periods": 60,
+                    "average_best_position_matches": 1.4,
+                    "straight_hit_rate": 0.02,
+                    "box_hit_rate": 0.05,
+                    "random_uplift": 0.15,
+                    "random_baseline": {
+                        "straight_hit_rate": 0.01,
+                    },
+                },
+            },
             "numbers4": dict(empty_game),
         }
 
@@ -78,6 +90,8 @@ class NotificationSummaryTest(unittest.TestCase):
         self.assertIn("一様ランダム比 +0.200", summary)
         self.assertIn("pair (+0.080)", summary)
         self.assertIn("処理結果: 正常完了", summary)
+        self.assertIn("独立検証: 60回", summary)
+        self.assertIn("平均最高位置一致 1.400", summary)
 
     def test_discord_payload_uses_embed_cards(self):
         payload = build_discord_payload(self.output)
