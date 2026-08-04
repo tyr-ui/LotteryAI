@@ -777,23 +777,82 @@ def run_all_optimizers(
         for game_key in game_configs
     }
 
+
+
+def resolve_run_mode(value: str | None = None) -> str:
+    """Resolve differential execution mode.
+
+    auto:
+        Optimize only games whose latest draw number changed.
+    all:
+        Re-optimize every game even when draw numbers are unchanged.
+    """
+    raw = (value if value is not None else os.getenv("LOTTERY_RUN_MODE", "auto"))
+    mode = str(raw).strip().lower() or "auto"
+    if mode not in {"auto", "all"}:
+        raise ValueError("LOTTERY_RUN_MODE must be 'auto' or 'all'.")
+    return mode
+
+
+def select_games_for_optimization(
+    previous_output: dict,
+    validations: dict[str, dict],
+    game_configs: dict[str, dict],
+    *,
+    run_mode: str,
+) -> list[str]:
+    """Return games that need a fresh optimizer run."""
+    if run_mode == "all" or not previous_output:
+        return list(game_configs.keys())
+
+    selected: list[str] = []
+    for game_key in game_configs:
+        previous_section = previous_output.get(game_key, {})
+        previous_draw = previous_section.get("latest_draw_no")
+        current_draw = validations[game_key].get("latest_draw_no")
+        if previous_draw != current_draw:
+            selected.append(game_key)
+
+    return selected
+
+
+def reuse_previous_optimizer_result(
+    previous_section: dict,
+) -> dict:
+    """Extract optimizer fields from a previously saved game section."""
+    metadata_keys = {
+        "latest_draw_no",
+        "next_draw_no",
+        "rows",
+        "validation",
+    }
+    return {
+        key: value
+        for key, value in previous_section.items()
+        if key not in metadata_keys
+    }
+
+
+
+def carryover_content_changed(
+    previous_snapshot: dict,
+    current_snapshot: dict,
+) -> bool:
+    """Compare carryover contents while ignoring retrieval timestamps."""
+    return previous_snapshot.get("games", {}) != current_snapshot.get(
+        "games",
+        {},
+    )
+
 def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    previous_output_path = (
-        OUTPUT_DIR / "optimizer_result.json"
-    )
-    history_path = (
-        OUTPUT_DIR / "evaluation_history.json"
-    )
-    summary_path = (
-        OUTPUT_DIR / "evaluation_summary.json"
-    )
+    previous_output_path = OUTPUT_DIR / "optimizer_result.json"
+    history_path = OUTPUT_DIR / "evaluation_history.json"
+    summary_path = OUTPUT_DIR / "evaluation_summary.json"
 
-    previous_output = load_json(
-        previous_output_path,
-        {},
-    )
+    previous_output = load_json(previous_output_path, {})
+    run_mode = resolve_run_mode()
 
     datasets = {}
     validations = {}
@@ -803,96 +862,127 @@ def main() -> None:
             game_key,
             game_config,
             destination=(
-                ROOT
-                / "data"
-                / "raw"
-                / f"{game_key}.csv"
+                ROOT / "data" / "raw" / f"{game_key}.csv"
             ),
         )
         datasets[game_key] = loaded.dataframe
-        validations[game_key] = dict(
-            loaded.validation
-        )
+        validations[game_key] = dict(loaded.validation)
 
-    if is_scheduled_no_new_data(
+    selected_game_keys = select_games_for_optimization(
         previous_output,
         validations,
-    ):
-        print("\n=== NO NEW DATA ===")
-        print(
-            "Scheduled run detected, but latest "
-            "draw numbers have not changed."
-        )
-        for game_key, game_config in LOTTO_GAMES.items():
-            latest_draw_no = validations[
-                game_key
-            ]["latest_draw_no"]
-            print(
-                f'{game_config["display_name"]} '
-                f"latest_draw_no remains {latest_draw_no}."
-            )
-        print("Output files were not rewritten.")
-        return
+        LOTTO_GAMES,
+        run_mode=run_mode,
+    )
+    selected_game_configs = {
+        game_key: LOTTO_GAMES[game_key]
+        for game_key in selected_game_keys
+    }
+    reused_game_keys = [
+        game_key
+        for game_key in LOTTO_GAMES
+        if game_key not in selected_game_configs
+    ]
 
+    print("\n=== DIFFERENTIAL EXECUTION ===")
+    print(f"run_mode: {run_mode}")
+    print(
+        "optimized_games: "
+        + (", ".join(selected_game_keys) if selected_game_keys else "none")
+    )
+    print(
+        "reused_games: "
+        + (", ".join(reused_game_keys) if reused_game_keys else "none")
+    )
+
+    previous_evaluation_snapshot = previous_output.get(
+        "previous_evaluation",
+        {},
+    )
     previous_evaluations = {}
 
     for game_key, game_config in LOTTO_GAMES.items():
-        previous_evaluations[game_key] = (
-            evaluate_previous_for_type(
+        if game_key in selected_game_configs:
+            previous_evaluations[game_key] = evaluate_previous_for_type(
                 draw_type=game_key,
                 previous_section=previous_output.get(game_key),
                 current_df=datasets[game_key],
                 main_cols=game_config["main_cols"],
                 family=game_family(game_config),
             )
-        )
+        else:
+            previous_evaluations[game_key] = dict(
+                previous_evaluation_snapshot.get(
+                    game_key,
+                    _empty_previous_evaluation(
+                        game_key,
+                        "not_updated",
+                        "最新回号に変更がないため、前回評価を引き継ぎました。",
+                    ),
+                )
+            )
 
-    existing_history = load_json(
-        history_path,
-        [],
-    )
+    existing_history = load_json(history_path, [])
+    new_evaluations = [
+        previous_evaluations[game_key]
+        for game_key in selected_game_keys
+    ]
     evaluation_history = merge_evaluation_history(
         existing_history,
-        list(previous_evaluations.values()),
+        new_evaluations,
     )
-    evaluation_summary = build_evaluation_summary(
-        evaluation_history
-    )
+    evaluation_summary = build_evaluation_summary(evaluation_history)
 
-    optimizer_results = run_all_optimizers(
-        datasets,
-        LOTTO_GAMES,
-    )
+    fresh_optimizer_results = {}
+    if selected_game_configs:
+        fresh_optimizer_results = run_all_optimizers(
+            datasets,
+            selected_game_configs,
+        )
 
-    # Experience files are shared persistent state.  Save them only after
-    # all parallel workers have completed, in deterministic game order.
-    for game_key, game_config in LOTTO_GAMES.items():
-        if game_family(game_config) == "numbers":
-            experience_save = save_numbers_optimizer_experience(
-                game_key,
-                optimizer_results[game_key],
-            )
-        else:
-            experience_save = save_lotto_optimizer_experience(
-                game_key,
-                optimizer_results[game_key],
-            )
+        # Shared Experience state is written only in the parent process and
+        # only for games that were actually recalculated.
+        for game_key, game_config in selected_game_configs.items():
+            if game_family(game_config) == "numbers":
+                experience_save = save_numbers_optimizer_experience(
+                    game_key,
+                    fresh_optimizer_results[game_key],
+                )
+            else:
+                experience_save = save_lotto_optimizer_experience(
+                    game_key,
+                    fresh_optimizer_results[game_key],
+                )
+            fresh_optimizer_results[game_key][
+                "experience_save"
+            ] = experience_save
 
-        optimizer_results[game_key][
-            "experience_save"
-        ] = experience_save
-
+    optimizer_results = {}
     game_output = {}
 
-    for game_key in LOTTO_GAMES:
+    for game_key, game_config in LOTTO_GAMES.items():
         validation = validations[game_key]
-        game_output[game_key] = {
-            "latest_draw_no": validation["latest_draw_no"],
-            "next_draw_no": validation["latest_draw_no"] + 1,
-            "rows": validation["rows"],
-            "validation": validation,
-            **optimizer_results[game_key],
-        }
+        if game_key in fresh_optimizer_results:
+            optimizer_result = fresh_optimizer_results[game_key]
+            game_output[game_key] = {
+                "latest_draw_no": validation["latest_draw_no"],
+                "next_draw_no": validation["latest_draw_no"] + 1,
+                "rows": validation["rows"],
+                "validation": validation,
+                **optimizer_result,
+            }
+        else:
+            previous_section = previous_output.get(game_key)
+            if not isinstance(previous_section, dict) or not previous_section:
+                raise RuntimeError(
+                    f"No previous output is available for skipped game: {game_key}"
+                )
+            optimizer_result = reuse_previous_optimizer_result(
+                previous_section
+            )
+            game_output[game_key] = dict(previous_section)
+
+        optimizer_results[game_key] = optimizer_result
 
     previous_carryover_snapshot = load_json(
         OUTPUT_DIR / "carryover.json",
@@ -906,57 +996,60 @@ def main() -> None:
         previous_snapshot=previous_carryover_snapshot,
     )
 
+    if (
+        not selected_game_keys
+        and not carryover_content_changed(
+            previous_carryover_snapshot,
+            carryover_snapshot,
+        )
+    ):
+        print("\n=== NO RELEVANT CHANGES ===")
+        print(
+            "No draw number or carryover status changed; "
+            "existing outputs were retained."
+        )
+        return
+
     output = {
         "status": "ok",
         "note": (
-            "run_pipeline evaluates the previous prediction "
-            "if the target draw is now available, then creates "
-            "the next prediction."
+            "Only games with a changed latest draw number are recalculated "
+            "unless LOTTERY_RUN_MODE=all is selected."
         ),
         "generated_at": now_iso(),
+        "run_metadata": {
+            "mode": run_mode,
+            "optimized_games": selected_game_keys,
+            "reused_games": reused_game_keys,
+        },
         "previous_evaluation": previous_evaluations,
         "evaluation_summary": evaluation_summary,
         "carryover": carryover_snapshot,
         **game_output,
     }
 
-    save_json(
-        OUTPUT_DIR / "optimizer_result.json",
-        output,
-    )
-    save_json(
-        OUTPUT_DIR / "carryover.json",
-        carryover_snapshot,
-    )
+    save_json(previous_output_path, output)
+    save_json(OUTPUT_DIR / "carryover.json", carryover_snapshot)
 
-    save_prediction_outputs(
-        OUTPUT_DIR,
-        optimizer_results,
-        LOTTO_GAMES,
-    )
+    if selected_game_configs:
+        save_prediction_outputs(
+            OUTPUT_DIR,
+            fresh_optimizer_results,
+            selected_game_configs,
+        )
 
     save_json(history_path, evaluation_history)
     save_json(summary_path, evaluation_summary)
 
-    run_summary_path, review_bundle_path = (
-        write_review_outputs(
-            output_dir=OUTPUT_DIR,
-            output=output,
-            game_keys=list(LOTTO_GAMES.keys()),
-        )
+    run_summary_path, review_bundle_path = write_review_outputs(
+        output_dir=OUTPUT_DIR,
+        output=output,
+        game_keys=list(LOTTO_GAMES.keys()),
     )
 
-    write_evaluation_dashboard(
-        OUTPUT_DIR,
-    )
-    dashboard_json_path = (
-        OUTPUT_DIR
-        / "evaluation_dashboard.json"
-    )
-    dashboard_markdown_path = (
-        OUTPUT_DIR
-        / "evaluation_dashboard.md"
-    )
+    write_evaluation_dashboard(OUTPUT_DIR)
+    dashboard_json_path = OUTPUT_DIR / "evaluation_dashboard.json"
+    dashboard_markdown_path = OUTPUT_DIR / "evaluation_dashboard.md"
 
     save_feature_memory_analysis()
 
@@ -968,13 +1061,8 @@ def main() -> None:
     print("\n=== REVIEW OUTPUTS ===")
     print(f"run_summary: {run_summary_path}")
     print(f"review_bundle: {review_bundle_path}")
-    print(
-        f"notification_summary: {notification_summary_path}"
-    )
-    print(
-        "evaluation_dashboard_json: "
-        f"{dashboard_json_path}"
-    )
+    print(f"notification_summary: {notification_summary_path}")
+    print(f"evaluation_dashboard_json: {dashboard_json_path}")
     print(
         "evaluation_dashboard_markdown: "
         f"{dashboard_markdown_path}"
@@ -984,19 +1072,27 @@ def main() -> None:
         result = optimizer_results[game_key]
         section = output[game_key]
 
-        if game_family(game_config) == "lotto":
-            print_learning_weights(game_key)
-
-        print_evaluation(
-            game_config["display_name"],
-            previous_evaluations[game_key],
-        )
-        print_result(
-            game_config["display_name"],
-            section["latest_draw_no"],
-            section["next_draw_no"],
-            result,
-        )
+        if game_key in selected_game_configs:
+            if game_family(game_config) == "lotto":
+                print_learning_weights(game_key)
+            print_evaluation(
+                game_config["display_name"],
+                previous_evaluations[game_key],
+            )
+            print_result(
+                game_config["display_name"],
+                section["latest_draw_no"],
+                section["next_draw_no"],
+                result,
+            )
+        else:
+            print(
+                f"\n=== {game_config['display_name']} REUSED ==="
+            )
+            print(
+                "Latest draw number did not change; "
+                "the previous prediction was retained."
+            )
 
     print("\n=== EVALUATION SUMMARY ===")
     print(
@@ -1007,12 +1103,16 @@ def main() -> None:
         )
     )
 
-    short_output = {"status": "ok"}
+    short_output = {
+        "status": "ok",
+        "run_mode": run_mode,
+        "optimized_games": selected_game_keys,
+        "reused_games": reused_game_keys,
+    }
 
     for game_key in LOTTO_GAMES:
         result = optimizer_results[game_key]
         section = output[game_key]
-
         short_output[
             f"{game_key}_previous_evaluation_status"
         ] = previous_evaluations[game_key].get("status")
@@ -1025,9 +1125,7 @@ def main() -> None:
         short_output[
             f"{game_key}_selected_config"
         ] = result["selected_config"]
-        short_output[
-            f"{game_key}_prediction"
-        ] = [
+        short_output[f"{game_key}_prediction"] = [
             pattern["numbers"]
             for pattern in result["prediction"]
         ]
