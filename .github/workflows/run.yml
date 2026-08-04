@@ -3,6 +3,11 @@ name: LotteryAI 自動予測
 on:
   workflow_dispatch:
     inputs:
+      force_all:
+        description: "全ゲームを再計算する（通常はOFF）"
+        required: false
+        default: false
+        type: boolean
       send_notification:
         description: "実行完了後にDiscordへ通知する"
         required: false
@@ -91,8 +96,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: LotteryAI 自動予測 pipeline
+      - name: 更新されたゲームを判定して予測・評価
         id: pipeline
+        env:
+          LOTTERY_RUN_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.force_all == true && 'all' || 'auto' }}
         run: |
           python src/run_pipeline.py
 
