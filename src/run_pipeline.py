@@ -787,10 +787,17 @@ def main() -> None:
             **optimizer_results[game_key],
         }
 
-    carryover_snapshot = fetch_carryover_snapshot({
-        game_key: game_output[game_key]["latest_draw_no"]
-        for game_key in ("loto6", "loto7")
-    })
+    previous_carryover_snapshot = load_json(
+        OUTPUT_DIR / "carryover.json",
+        {},
+    )
+    carryover_snapshot = fetch_carryover_snapshot(
+        {
+            game_key: game_output[game_key]["latest_draw_no"]
+            for game_key in ("loto6", "loto7")
+        },
+        previous_snapshot=previous_carryover_snapshot,
+    )
 
     output = {
         "status": "ok",
