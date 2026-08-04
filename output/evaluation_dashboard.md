@@ -1,6 +1,6 @@
 # LotteryAI Evaluation Dashboard
 
-- 生成日時: `2026-08-04T12:48:11.865028+00:00`
+- 生成日時: `2026-08-04T15:14:45.334487+00:00`
 - Full Run: **ok**
 - Dashboard schema: `1.0`
 
@@ -12,15 +12,15 @@
 ## LOTO6
 
 - 次回抽せん回: **2126**
-- 採用Config: `evolution_02_random_07_random_05`
-- 採用元: `evolution`
+- 採用Config: `experience_loto6_1`
+- 採用元: `experience`
 - 事後評価: **参考値** (9回)
 - 平均最高一致: 1.5556
 - 平均1口一致: 0.9556
 - 最大一致: 3
 - Optimizer selection_score: 2.453168
 - Optimizer Random uplift: 0.251867
-- Experience履歴: 20件
+- Experience履歴: 2件
 
 ### 次回予想
 
@@ -33,15 +33,15 @@
 ## LOTO7
 
 - 次回抽せん回: **689**
-- 採用Config: `evolution_04_no_delay_strict_freq_pair_strict`
+- 採用Config: `evolution_02_no_delay_strict_freq_pair_strict`
 - 採用元: `evolution`
 - 事後評価: **データ不足** (4回)
 - 平均最高一致: 2.25
 - 平均1口一致: 1.25
 - 最大一致: 3
-- Optimizer selection_score: 3.595625
-- Optimizer Random uplift: 0.288866
-- Experience履歴: 20件
+- Optimizer selection_score: 3.602266
+- Optimizer Random uplift: 0.292566
+- Experience履歴: 2件
 
 ### 次回予想
 
@@ -54,15 +54,15 @@
 ## ミニロト
 
 - 次回抽せん回: **1399**
-- 採用Config: `evolution_02_no_delay_strict_freq_pair_strict`
-- 採用元: `evolution`
+- 採用Config: `local_01_experience_miniloto_1`
+- 採用元: `local`
 - 事後評価: **データ不足** (2回)
 - 平均最高一致: 1.5
 - 平均1口一致: 0.8
 - 最大一致: 2
-- Optimizer selection_score: 2.209786
-- Optimizer Random uplift: 0.151833
-- Experience履歴: 20件
+- Optimizer selection_score: 2.224761
+- Optimizer Random uplift: 0.155567
+- Experience履歴: 2件
 
 ### 次回予想
 
@@ -75,27 +75,27 @@
 ## Numbers3
 
 - 次回抽せん回: **7042**
-- 採用Config: `evolution_02`
-- 採用元: `evolution`
+- 採用Config: `local_01`
+- 採用元: `local`
 - 事後評価: **データ不足** (2回)
 - 平均最高一致: 1.0
 - 平均1口一致: 0.45
 - 最大一致: 1
-- Optimizer selection_score: 2.995837
+- Optimizer selection_score: 3.026392
 - Optimizer Random uplift: 未評価
-- Experience履歴: 20件
+- Experience履歴: 2件
 
 ### 次回予想
 
-1. 473<br>2. 239<br>3. 067<br>4. 671<br>5. 328<br>6. 932<br>7. 526<br>8. 147<br>9. 760<br>10. 852
+1. 473<br>2. 239<br>3. 067<br>4. 671<br>5. 328<br>6. 932<br>7. 526<br>8. 760<br>9. 147<br>10. 852
 
 ### Numbersバックテスト
 
-- 平均最高位置一致: 1.294444
-- 1口平均位置一致: 0.31
-- 平均最高順不同一致: 1.833333
+- 平均最高位置一致: 1.305556
+- 1口平均位置一致: 0.316667
+- 平均最高順不同一致: 1.85
 - Straight率: 1.11%
-- Box率: 7.22%
+- Box率: 7.78%
 
 ### 注意
 
@@ -112,7 +112,7 @@
 - 最大一致: 2
 - Optimizer selection_score: 1.933334
 - Optimizer Random uplift: 未評価
-- Experience履歴: 20件
+- Experience履歴: 1件
 
 ### 次回予想
 
