@@ -21,6 +21,28 @@ class LoadedGameData:
     source: str
 
 
+class RemoteDataValidationError(ValueError):
+    """Raised when newly downloaded data fails lottery validation."""
+
+    def __init__(
+        self,
+        *,
+        game_name: str,
+        source: str,
+        validation: Mapping[str, object],
+    ) -> None:
+        self.game_name = str(game_name)
+        self.source = str(source)
+        self.validation = dict(validation)
+
+        super().__init__(
+            "Remote data validation failed. "
+            f"game_name={self.game_name}, "
+            f"source={self.source}, "
+            f"validation={self.validation}"
+        )
+
+
 class DataNormalizationError(ValueError):
     """Raised when required numeric cells cannot be normalized safely."""
 
@@ -1291,6 +1313,12 @@ def load_game_data(
             dataframe,
             config,
         )
+        if validation.get("status") != "ok":
+            raise RemoteDataValidationError(
+                game_name=game_name,
+                source=source,
+                validation=validation,
+            )
     except (
         requests.RequestException,
         RuntimeError,
