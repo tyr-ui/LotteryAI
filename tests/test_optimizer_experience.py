@@ -8,7 +8,7 @@ from optimizer_experience import SCHEMA_VERSION, load_search_allocation
 class OptimizerExperienceTest(unittest.TestCase):
 
     def test_schema_version_is_current(self):
-        self.assertEqual(SCHEMA_VERSION, "1.4")
+        self.assertEqual(SCHEMA_VERSION, "1.5")
 
     def test_allocation_has_required_structure(self):
         allocation = load_search_allocation("loto6")
