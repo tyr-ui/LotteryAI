@@ -2,6 +2,7 @@ LOTTO_GAMES = {
     "loto6": {
         "display_name": "LOTO6",
         "kind": "loto6",
+        "max_staleness_days": 10,
         "official_url": (
             "https://www.mizuhobank.co.jp/"
             "retail/takarakuji/loto/loto6/csv/loto6.csv"
@@ -48,6 +49,7 @@ LOTTO_GAMES = {
     "loto7": {
         "display_name": "LOTO7",
         "kind": "loto7",
+        "max_staleness_days": 10,
         "official_url": (
             "https://www.mizuhobank.co.jp/"
             "retail/takarakuji/loto/loto7/csv/loto7.csv"
@@ -97,6 +99,7 @@ LOTTO_GAMES = {
     "miniloto": {
         "display_name": "MINILOTO",
         "kind": "miniloto",
+        "max_staleness_days": 10,
         "official_url": (
             "https://www.mizuhobank.co.jp/"
             "retail/takarakuji/loto/miniloto/csv/miniloto.csv"
@@ -142,6 +145,7 @@ LOTTO_GAMES = {
         "display_name": "NUMBERS3",
         "family": "numbers",
         "kind": "numbers3",
+        "max_staleness_days": 4,
         "official_url": "",
         "fallback_kind": "numbers3",
 
@@ -177,6 +181,7 @@ LOTTO_GAMES = {
         "display_name": "NUMBERS4",
         "family": "numbers",
         "kind": "numbers4",
+        "max_staleness_days": 4,
         "official_url": "",
         "fallback_kind": "numbers4",
 
