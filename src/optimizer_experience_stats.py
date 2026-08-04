@@ -527,6 +527,9 @@ def _build_config_statistics(
                     ),
                     "score_sum": 0.0,
                     "last_used": evaluated_at,
+                    "trained_through_draw_no": entry.get(
+                        "trained_through_draw_no"
+                    ),
                     "config": {
                         "w": dict(
                             config.get(
@@ -583,6 +586,9 @@ def _build_config_statistics(
                     "config_name",
                     "unknown",
                 )
+            )
+            stats["trained_through_draw_no"] = entry.get(
+                "trained_through_draw_no"
             )
             stats["config"] = {
                 "w": dict(
