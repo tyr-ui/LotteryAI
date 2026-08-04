@@ -950,14 +950,24 @@ def _date_freshness(
         )
         or 14
     )
+    hard_staleness_days = int(
+        _config_value(
+            config,
+            "hard_staleness_days",
+            default=max_staleness_days * 3,
+        )
+        or max_staleness_days * 3
+    )
 
     if "date" not in df.columns or df.empty:
         return {
             "latest_draw_date": None,
             "data_age_days": None,
             "max_staleness_days": max_staleness_days,
+            "hard_staleness_days": hard_staleness_days,
             "stale_data": True,
-            "freshness_status": "warning",
+            "hard_stale_data": True,
+            "freshness_status": "error",
         }
 
     parsed = pd.to_datetime(df["date"], errors="coerce")
@@ -967,8 +977,10 @@ def _date_freshness(
             "latest_draw_date": None,
             "data_age_days": None,
             "max_staleness_days": max_staleness_days,
+            "hard_staleness_days": hard_staleness_days,
             "stale_data": True,
-            "freshness_status": "warning",
+            "hard_stale_data": True,
+            "freshness_status": "error",
         }
 
     latest = valid.max()
@@ -978,9 +990,13 @@ def _date_freshness(
         "latest_draw_date": latest.date().isoformat(),
         "data_age_days": age_days,
         "max_staleness_days": max_staleness_days,
+        "hard_staleness_days": hard_staleness_days,
         "stale_data": age_days > max_staleness_days,
+        "hard_stale_data": age_days > hard_staleness_days,
         "freshness_status": (
-            "warning" if age_days > max_staleness_days else "ok"
+            "error" if age_days > hard_staleness_days
+            else "warning" if age_days > max_staleness_days
+            else "ok"
         ),
     }
 
