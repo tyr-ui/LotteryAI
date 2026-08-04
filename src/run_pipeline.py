@@ -198,6 +198,54 @@ def evaluate_previous_for_type(
             for item in evaluated_predictions
         ]
 
+        box_predictions = previous_section.get("box_prediction", [])
+        evaluated_box_predictions = []
+        for prediction in box_predictions:
+            numbers = [
+                int(value)
+                for value in prediction.get(
+                    "numbers",
+                    prediction.get("digits", []),
+                )
+            ]
+            unordered = unordered_matches(numbers, actual_numbers)
+            evaluated_box_predictions.append({
+                "pattern_id": prediction.get("pattern_id"),
+                "numbers": numbers,
+                "number": "".join(str(value) for value in numbers),
+                "unordered_matches": unordered,
+                "box_hit": sorted(numbers) == sorted(actual_numbers),
+                "score": prediction.get("score"),
+                "model": prediction.get("model"),
+            })
+
+        box_unordered_counts = [
+            item["unordered_matches"]
+            for item in evaluated_box_predictions
+        ]
+        box_prediction_evaluation = {
+            "status": (
+                "evaluated"
+                if evaluated_box_predictions
+                else "no_previous_box_prediction"
+            ),
+            "predictions": evaluated_box_predictions,
+            "best_unordered_match_count": (
+                max(box_unordered_counts)
+                if box_unordered_counts
+                else 0
+            ),
+            "avg_unordered_match_count": (
+                round(float(np.mean(box_unordered_counts)), 4)
+                if box_unordered_counts
+                else 0.0
+            ),
+            "box_hit": any(
+                item["box_hit"]
+                for item in evaluated_box_predictions
+            ),
+        }
+
         return {
             "draw_type": draw_type,
             "status": "evaluated",
@@ -232,6 +280,7 @@ def evaluate_previous_for_type(
                 item["box_hit"]
                 for item in evaluated_predictions
             ),
+            "box_prediction_evaluation": box_prediction_evaluation,
             **{
                 f"hit_rate_{threshold}match": (
                     round(
