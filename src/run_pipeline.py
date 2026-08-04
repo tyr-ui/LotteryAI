@@ -866,6 +866,8 @@ def main() -> None:
 
     datasets = {}
     validations = {}
+    data_sources = {}
+    data_loaded_at = {}
 
     for game_key, game_config in LOTTO_GAMES.items():
         loaded = load_game_data(
@@ -877,6 +879,8 @@ def main() -> None:
         )
         datasets[game_key] = loaded.dataframe
         validations[game_key] = dict(loaded.validation)
+        data_sources[game_key] = str(loaded.source)
+        data_loaded_at[game_key] = now_iso()
 
     selected_game_keys = select_games_for_optimization(
         previous_output,
@@ -979,6 +983,8 @@ def main() -> None:
                 "next_draw_no": validation["latest_draw_no"] + 1,
                 "rows": validation["rows"],
                 "validation": validation,
+                "data_source": data_sources[game_key],
+                "data_loaded_at": data_loaded_at[game_key],
                 **optimizer_result,
             }
         else:
@@ -991,6 +997,10 @@ def main() -> None:
                 previous_section
             )
             game_output[game_key] = dict(previous_section)
+            game_output[game_key]["validation"] = validation
+            game_output[game_key]["rows"] = validation["rows"]
+            game_output[game_key]["data_source"] = data_sources[game_key]
+            game_output[game_key]["data_loaded_at"] = data_loaded_at[game_key]
 
         optimizer_results[game_key] = optimizer_result
 
