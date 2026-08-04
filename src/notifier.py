@@ -40,7 +40,7 @@ def _required_env(
     value = str(source.get(name, "")).strip()
     if not value:
         raise NotificationConfigurationError(
-            f"Required environment variable is missing: {name}"
+            f"必要な環境変数が設定されていません: {name}"
         )
     return value
 
@@ -133,7 +133,7 @@ def send_from_environment(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Send the LotteryAI Discord Embed notification."
+        description="LotteryAIのDiscordカード通知を送信します。"
     )
     parser.add_argument(
         "payload_path",
@@ -143,7 +143,7 @@ def main() -> None:
     args = parser.parse_args()
 
     count = send_from_environment(Path(args.payload_path))
-    print(f"Discord notification sent: {count} message(s)")
+    print(f"Discord通知を送信しました: {count}件")
 
 
 if __name__ == "__main__":
