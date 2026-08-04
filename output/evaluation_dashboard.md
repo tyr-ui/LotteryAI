@@ -1,6 +1,6 @@
 # LotteryAI Evaluation Dashboard
 
-- 生成日時: `2026-08-03T23:55:12.665271+00:00`
+- 生成日時: `2026-08-04T01:12:33.169024+00:00`
 - Full Run: **ok**
 - Dashboard schema: `1.0`
 
@@ -12,8 +12,8 @@
 ## LOTO6
 
 - 次回抽せん回: **2126**
-- 採用Config: `local_06_random_03`
-- 採用元: `local`
+- 採用Config: `experience_loto6_1`
+- 採用元: `experience`
 - 事後評価: **参考値** (9回)
 - 平均最高一致: 1.5556
 - 平均1口一致: 0.9556
@@ -83,7 +83,7 @@
 - 最大一致: 1
 - Optimizer selection_score: 2.551392
 - Optimizer Random uplift: 未評価
-- Experience履歴: 16件
+- Experience履歴: 17件
 
 ### 次回予想
 
@@ -112,7 +112,7 @@
 - 最大一致: 2
 - Optimizer selection_score: 2.404166
 - Optimizer Random uplift: 未評価
-- Experience履歴: 16件
+- Experience履歴: 17件
 
 ### 次回予想
 
