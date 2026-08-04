@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 from storage import load_json, save_json
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
 GAME_KEYS = ("loto6", "loto7", "miniloto", "numbers3", "numbers4")
 GAME_NAMES = {"loto6":"LOTO6","loto7":"LOTO7","miniloto":"ミニロト","numbers3":"Numbers3","numbers4":"Numbers4"}
 COMBINATION = {"loto6", "loto7", "miniloto"}
@@ -66,7 +66,9 @@ def _game(game:str, run:Mapping[str,Any], hist:Sequence[Any], summary:Mapping[st
     selected=rg.get("selected_config") or og.get("selected_config"); ranked=_list(og.get("ranked_configs")); sr=_selected_rank(og,selected)
     rows=_history_rows(hist,game); sm=_map(summary.get(game)); count=int(sm.get("evaluated_draws",len(rows)) or 0); meta=_map(og.get("search_metadata"))
     observed={"status":_level(count),"evaluated_draws":count,"all_time":{"avg_best_match_count":_round(sm.get("avg_best_match_count")),"avg_all_pattern_matches":_round(sm.get("avg_all_pattern_matches")),"max_best_match_count":_round(sm.get("max_best_match_count")),"best_draw_no":sm.get("best_draw_no"),"latest_evaluated_draw_no":sm.get("latest_evaluated_draw_no")},"recent_5":_window(rows[-5:]),"recent_20":_window(rows[-20:])}
-    back={"selection_score":_round(sr.get("selection_score")),"avg_matches":_round(sr.get("avg_matches")),"average_matches_per_ticket":_round(sr.get("average_matches_per_ticket")),"random_uplift":_round(sr.get("random_uplift")),"tested_periods":sr.get("tested_periods"),"algorithm":meta.get("algorithm"),"requested_allocation":dict(_map(meta.get("requested_allocation"))),"effective_allocation":dict(_map(meta.get("effective_allocation")))}
+    requested = meta.get("requested_allocation") if game not in COMBINATION else meta.get("requested_search_allocation")
+    effective = meta.get("effective_allocation") if game not in COMBINATION else meta.get("effective_search_allocation")
+    back={"selection_score":_round(sr.get("selection_score")),"avg_matches":_round(sr.get("avg_matches")),"average_matches_per_ticket":_round(sr.get("average_matches_per_ticket")),"random_uplift":_round(sr.get("random_uplift")),"tested_periods":sr.get("tested_periods"),"algorithm":meta.get("algorithm"),"requested_allocation":dict(_map(requested)),"effective_allocation":dict(_map(effective))}
     if game not in COMBINATION:
         nb=_map(og.get("numbers_backtest")) or sr
         back["numbers"]={"average_best_position_matches":_round(nb.get("average_best_position_matches") or nb.get("avg_matches")),"average_position_matches_per_ticket":_round(nb.get("average_position_matches_per_ticket") or nb.get("average_matches_per_ticket")),"average_best_unordered_matches":_round(nb.get("average_best_unordered_matches")),"average_unordered_matches_per_ticket":_round(nb.get("average_unordered_matches_per_ticket")),"straight_hit_rate":_round(nb.get("straight_hit_rate")),"box_hit_rate":_round(nb.get("box_hit_rate"))}
@@ -77,7 +79,7 @@ def build_evaluation_dashboard(output_dir:Path)->dict[str,object]:
     run=_map(load_json(output_dir/"run_summary.json",default={})); hist=_list(load_json(output_dir/"evaluation_history.json",default=[])); summary=_map(load_json(output_dir/"evaluation_summary.json",default={})); opt=_map(load_json(output_dir/"optimizer_result.json",default={})); exp=_map(load_json(output_dir/"optimizer_experience.json",default={}))
     games={g:_game(g,run,hist,summary,opt,exp) for g in GAME_KEYS}; counts={g:int(_map(v.get("observed_evaluation")).get("evaluated_draws",0) or 0) for g,v in games.items()}; candidates=[]
     for g,v in games.items():
-        metric=_num(_map(_map(v.get("observed_evaluation")).get("all_time")).get("avg_best_match_count"))
+        metric=_num(_map(v.get("optimizer_backtest")).get("random_uplift"))
         if metric is not None:candidates.append((g,metric))
     minimum=min(counts.values(),default=0)
     return {"schema_version":SCHEMA_VERSION,"generated_at":run.get("generated_at") or opt.get("generated_at") or exp.get("updated_at"),"status":run.get("status","unknown"),"overall":{"full_run_status":run.get("status","unknown"),"best_observed_game":max(candidates,key=lambda x:x[1])[0] if candidates else None,"least_evaluated_games":[g for g,n in counts.items() if n==minimum],"experience_schema_version":exp.get("schema_version"),"warnings":[f"{GAME_NAMES[g]}の事後評価は{n}回です。" for g,n in counts.items() if n<5],"previous_dashboard_comparison":{"status":"unavailable","reason":"初回実装では過去Dashboardとの差分を保存していません。"}},"games":games}
@@ -103,7 +105,7 @@ def _prediction(game:str, rows:Sequence[Any])->str:
 
 def render_evaluation_dashboard_markdown(dashboard:Mapping[str,object])->str:
     overall=_map(dashboard.get("overall")); games=_map(dashboard.get("games")); best=overall.get("best_observed_game"); least=[GAME_NAMES.get(str(x),str(x)) for x in _list(overall.get("least_evaluated_games"))]
-    lines=["# LotteryAI Evaluation Dashboard","",f"- 生成日時: `{dashboard.get('generated_at')}`",f"- Full Run: **{overall.get('full_run_status')}**",f"- Dashboard schema: `{dashboard.get('schema_version')}`","","## 全体","",f"- 事後評価の平均最高一致が最も高いゲーム: **{GAME_NAMES.get(str(best),str(best)) if best else '判定不能'}**",f"- 事後評価が最も少ないゲーム: {', '.join(least) if least else '不明'}",""]
+    lines=["# LotteryAI Evaluation Dashboard","",f"- 生成日時: `{dashboard.get('generated_at')}`",f"- Full Run: **{overall.get('full_run_status')}**",f"- Dashboard schema: `{dashboard.get('schema_version')}`","","## 全体","",f"- Optimizerのゲーム内ランダム差が最も高いゲーム: **{GAME_NAMES.get(str(best),str(best)) if best else '判定不能'}**",f"- 事後評価が最も少ないゲーム: {', '.join(least) if least else '不明'}",""]
     for g in GAME_KEYS:
         game=_map(games.get(g)); cur=_map(game.get("current")); obs=_map(game.get("observed_evaluation")); alltime=_map(obs.get("all_time")); bt=_map(game.get("optimizer_backtest")); ex=_map(game.get("experience"))
         lines += [f"## {GAME_NAMES[g]}","",f"- 次回抽せん回: **{cur.get('next_draw_no')}**",f"- 採用Config: `{cur.get('selected_config')}`",f"- 採用元: `{cur.get('selected_search_source')}`",f"- 事後評価: **{obs.get('status')}** ({obs.get('evaluated_draws')}回)",f"- 平均最高一致: {_display_value(alltime.get('avg_best_match_count'))}",f"- 平均1口一致: {_display_value(alltime.get('avg_all_pattern_matches'))}",f"- 最大一致: {_display_value(alltime.get('max_best_match_count'))}",f"- Optimizer selection_score: {_display_value(bt.get('selection_score'))}",f"- Optimizer Random uplift: {_display_value(bt.get('random_uplift'))}",f"- Experience履歴: {ex.get('history_count')}件","","### 次回予想","",_prediction(g,_list(cur.get("prediction"))),""]
