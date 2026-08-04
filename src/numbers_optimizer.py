@@ -815,8 +815,16 @@ def optimize_numbers(
         },
         "numbers_backtest": selection_backtest.to_dict(),
         "numbers_selection_backtest": selection_backtest.to_dict(),
+        "box_prediction_backtest": selection_backtest.to_dict().get(
+            "box_dedicated_evaluation", {}
+        ),
         "holdout_evaluation": holdout_evaluation,
         "numbers_holdout": holdout_evaluation,
+        "box_prediction_holdout": (
+            holdout_evaluation.get("box_dedicated_evaluation", {})
+            if holdout_evaluation
+            else {}
+        ),
         "trained_through_draw_no": trained_through_draw_no,
         "prediction": prediction,
         "box_prediction": box_prediction,
