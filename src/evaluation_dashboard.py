@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 from storage import load_json, save_json
+from statistical_evaluation import build_game_statistical_report
 
 SCHEMA_VERSION = "1.1"
 GAME_KEYS = ("loto6", "loto7", "miniloto", "numbers3", "numbers4")
@@ -73,7 +74,8 @@ def _game(game:str, run:Mapping[str,Any], hist:Sequence[Any], summary:Mapping[st
         nb=_map(og.get("numbers_backtest")) or sr
         back["numbers"]={"average_best_position_matches":_round(nb.get("average_best_position_matches") or nb.get("avg_matches")),"average_position_matches_per_ticket":_round(nb.get("average_position_matches_per_ticket") or nb.get("average_matches_per_ticket")),"average_best_unordered_matches":_round(nb.get("average_best_unordered_matches")),"average_unordered_matches_per_ticket":_round(nb.get("average_unordered_matches_per_ticket")),"straight_hit_rate":_round(nb.get("straight_hit_rate")),"box_hit_rate":_round(nb.get("box_hit_rate"))}
     warning=f"事後評価が{count}回のため、"+("長期成績は判断できません。" if count<5 else "成績は参考値です。") if count<20 else None
-    return {"display_name":GAME_NAMES[game],"current":{"latest_draw_no":rg.get("latest_draw_no"),"next_draw_no":rg.get("next_draw_no"),"selected_config":selected,"selected_search_source":_source(selected,ranked),"prediction":[dict(_map(x)) for x in _list(rg.get("prediction")) if _map(x)],"previous_evaluation":dict(_map(rg.get("previous_evaluation")))},"observed_evaluation":observed,"optimizer_backtest":back,"experience":_experience(eg),"warnings":[warning] if warning else []}
+    statistics=build_game_statistical_report(game,og,rows)
+    return {"display_name":GAME_NAMES[game],"current":{"latest_draw_no":rg.get("latest_draw_no"),"next_draw_no":rg.get("next_draw_no"),"selected_config":selected,"selected_search_source":_source(selected,ranked),"prediction":[dict(_map(x)) for x in _list(rg.get("prediction")) if _map(x)],"previous_evaluation":dict(_map(rg.get("previous_evaluation")))},"observed_evaluation":observed,"optimizer_backtest":back,"statistical_evaluation":statistics,"experience":_experience(eg),"warnings":[warning] if warning else []}
 
 def build_evaluation_dashboard(output_dir:Path)->dict[str,object]:
     run=_map(load_json(output_dir/"run_summary.json",default={})); hist=_list(load_json(output_dir/"evaluation_history.json",default=[])); summary=_map(load_json(output_dir/"evaluation_summary.json",default={})); opt=_map(load_json(output_dir/"optimizer_result.json",default={})); exp=_map(load_json(output_dir/"optimizer_experience.json",default={}))
@@ -106,13 +108,18 @@ def _prediction(game:str, rows:Sequence[Any])->str:
 def render_evaluation_dashboard_markdown(dashboard:Mapping[str,object])->str:
     overall=_map(dashboard.get("overall")); games=_map(dashboard.get("games")); best=overall.get("best_observed_game"); least=[GAME_NAMES.get(str(x),str(x)) for x in _list(overall.get("least_evaluated_games"))]
     lines=["# LotteryAI Evaluation Dashboard","",f"- 生成日時: `{dashboard.get('generated_at')}`",f"- Full Run: **{overall.get('full_run_status')}**",f"- Dashboard schema: `{dashboard.get('schema_version')}`","","## 全体","",f"- Optimizerのゲーム内ランダム差が最も高いゲーム: **{GAME_NAMES.get(str(best),str(best)) if best else '判定不能'}**",f"- 事後評価が最も少ないゲーム: {', '.join(least) if least else '不明'}",""]
+    lines += [f"- {GAME_NAMES[g]}: {_map(_map(games.get(g)).get('statistical_evaluation')).get('one_line_summary')}" for g in GAME_KEYS]
+    lines.append("")
     for g in GAME_KEYS:
         game=_map(games.get(g)); cur=_map(game.get("current")); obs=_map(game.get("observed_evaluation")); alltime=_map(obs.get("all_time")); bt=_map(game.get("optimizer_backtest")); ex=_map(game.get("experience"))
         lines += [f"## {GAME_NAMES[g]}","",f"- 次回抽せん回: **{cur.get('next_draw_no')}**",f"- 採用Config: `{cur.get('selected_config')}`",f"- 採用元: `{cur.get('selected_search_source')}`",f"- 事後評価: **{obs.get('status')}** ({obs.get('evaluated_draws')}回)",f"- 平均最高一致: {_display_value(alltime.get('avg_best_match_count'))}",f"- 平均1口一致: {_display_value(alltime.get('avg_all_pattern_matches'))}",f"- 最大一致: {_display_value(alltime.get('max_best_match_count'))}",f"- Optimizer selection_score: {_display_value(bt.get('selection_score'))}",f"- Optimizer Random uplift: {_display_value(bt.get('random_uplift'))}",f"- Experience履歴: {ex.get('history_count')}件","","### 次回予想","",_prediction(g,_list(cur.get("prediction"))),""]
+        stats=_map(game.get("statistical_evaluation")); paired=_map(stats.get("paired_evaluation")); operational=_map(stats.get("operational_evaluation")); interval=_map(paired.get("confidence_interval_95")); pref=_map(paired.get("p_value_reference"))
+        lines += ["### 統計評価","",f"- 判定: {paired.get('judgement')}",f"- 指標: {stats.get('metric')}",f"- 比較基準: {stats.get('baseline')}",f"- データ量: {paired.get('data_volume')}",f"- 平均差: {_display_value(paired.get('mean_difference'))}",f"- 95%CI: {_display_value(interval.get('lower'))} ～ {_display_value(interval.get('upper'))}",f"- p値（参考）: {_display_value(pref.get('value'))}",f"- 実運用評価: {operational.get('evaluated_draws',0)}回",f"- 実運用開始: {operational.get('started_at') or '未記録'}",""]
         nums=_map(bt.get("numbers"))
         if nums:lines += ["### Numbersバックテスト","",f"- 平均最高位置一致: {_display_value(nums.get('average_best_position_matches'))}",f"- 1口平均位置一致: {_display_value(nums.get('average_position_matches_per_ticket'))}",f"- 平均最高順不同一致: {_display_value(nums.get('average_best_unordered_matches'))}",f"- Straight率: {_display_percent(nums.get('straight_hit_rate'))}",f"- Box率: {_display_percent(nums.get('box_hit_rate'))}",""]
         warnings=_list(game.get("warnings"))
         if warnings:lines += ["### 注意","",*[f"- {w}" for w in warnings],""]
+    lines += ["---","","※ ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。",""]
     return "\n".join(lines).rstrip()+"\n"
 
 def write_evaluation_dashboard(output_dir:Path)->dict[str,object]:
