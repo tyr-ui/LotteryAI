@@ -20,22 +20,23 @@ class FinalCandidateHoldoutTest(unittest.TestCase):
         )
         self.assertIsNone(result)
 
-    @patch.object(optimizer, "_evaluate_config")
+    @patch.object(optimizer, "_run_backtest_result")
     @patch.object(optimizer, "_run_random_backtest_result")
     def test_uses_production_candidate_count_and_seed(
         self,
         random_backtest,
-        evaluate_config,
+        model_backtest,
     ) -> None:
         random_backtest.side_effect = [
             {"config": "uniform_random", "avg_matches": 1.0},
             {"config": "filtered_random", "avg_matches": 1.1},
         ]
-        evaluate_config.return_value = {
+        model_backtest.return_value = {
             "config": "winner",
             "tested_periods": 30,
             "avg_matches": 2.0,
             "random_uplift": 1.0,
+            "records": [],
         }
 
         history = [(1, 2, 3)] * 200
@@ -59,12 +60,12 @@ class FinalCandidateHoldoutTest(unittest.TestCase):
             self.assertEqual(call.kwargs["seed"], optimizer.SEED)
 
         self.assertEqual(
-            evaluate_config.call_args.kwargs["candidate_count"],
+            model_backtest.call_args.kwargs["candidate_count"],
             10_000,
         )
         self.assertEqual(
-            evaluate_config.call_args.kwargs["seeds"],
-            (optimizer.SEED,),
+            model_backtest.call_args.kwargs["seed"],
+            optimizer.SEED,
         )
         self.assertEqual(
             result["evaluation_type"],
