@@ -19,6 +19,7 @@ from storage import save_json, load_json
 from evaluation_dashboard import write_evaluation_dashboard
 from carryover import fetch_carryover_snapshot
 from notification_summary import write_notification_summary
+from operational_controls import build_operational_controls
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1086,13 +1087,23 @@ def main() -> None:
         )
         return
 
+    generated_at = now_iso()
+    operational_controls = {}
+    for game_key, game_config in LOTTO_GAMES.items():
+        control = build_operational_controls(
+            game_key, game_config, datasets[game_key], optimizer_results[game_key],
+            int(game_output[game_key]["next_draw_no"]), generated_at,
+        )
+        game_output[game_key]["operational_controls"] = control
+        operational_controls[game_key] = control
+
     output = {
         "status": "ok",
         "note": (
             "Only games with a changed latest draw number are recalculated "
             "unless LOTTERY_RUN_MODE=all is selected."
         ),
-        "generated_at": now_iso(),
+        "generated_at": generated_at,
         "run_metadata": {
             "mode": run_mode,
             "optimized_games": selected_game_keys,
@@ -1101,11 +1112,13 @@ def main() -> None:
         "previous_evaluation": previous_evaluations,
         "evaluation_summary": evaluation_summary,
         "carryover": carryover_snapshot,
+        "operational_controls": operational_controls,
         **game_output,
     }
 
     save_json(previous_output_path, output)
     save_json(OUTPUT_DIR / "carryover.json", carryover_snapshot)
+    save_json(OUTPUT_DIR / "operational_controls.json", {"generated_at": generated_at, "games": operational_controls})
 
     if selected_game_configs:
         save_prediction_outputs(
