@@ -77,6 +77,69 @@ class StatisticalEvaluationTest(unittest.TestCase):
         self.assertEqual(result["baseline"], "BOX専用ランダム")
         self.assertEqual(result["paired_evaluation"]["mean_difference"], 0.5)
 
+    def test_permutation_p_value_targets_mean_and_sign_test_targets_wins(self):
+        rows = [
+            {"model": 11, "random": 1},
+            *[{"model": 0, "random": 1} for _ in range(9)],
+        ]
+        result = paired_difference_summary(
+            rows,
+            model_key="model",
+            baseline_key="random",
+        )
+        self.assertIn("permutation_p_value_reference", result)
+        self.assertIn("sign_test_p_value_reference", result)
+        self.assertEqual(
+            result["permutation_p_value_reference"]["target"],
+            "mean_difference",
+        )
+        self.assertEqual(
+            result["sign_test_p_value_reference"]["target"],
+            "win_loss_imbalance",
+        )
+        self.assertNotEqual(
+            result["permutation_p_value_reference"]["value"],
+            result["sign_test_p_value_reference"]["value"],
+        )
+
+    def test_numbers_report_uses_multi_seed_mean_baseline(self):
+        section = {
+            "holdout_evaluation": {
+                "box_dedicated_evaluation": {
+                    "paired_draw_results": [
+                        {
+                            "model_box_hit": 1.0,
+                            "random_box_hit_mean": 1 / 3,
+                        },
+                        {
+                            "model_box_hit": 0.0,
+                            "random_box_hit_mean": 0.0,
+                        },
+                    ]
+                }
+            }
+        }
+        result = build_game_statistical_report("numbers3", section, [])
+        self.assertAlmostEqual(
+            result["paired_evaluation"]["mean_difference"],
+            1 / 3,
+            places=5,
+        )
+
+    def test_non_finite_values_are_ignored(self):
+        rows = [
+            {"model": float("nan"), "random": 0},
+            {"model": float("inf"), "random": 0},
+            {"model": True, "random": False},
+        ]
+        result = paired_difference_summary(
+            rows,
+            model_key="model",
+            baseline_key="random",
+        )
+        self.assertEqual(result["sample_size"], 1)
+        self.assertEqual(result["mean_difference"], 1.0)
+
 
 if __name__ == "__main__":
     unittest.main()
