@@ -1,12 +1,12 @@
 # LotteryAI Evaluation Dashboard
 
-- 生成日時: `2026-08-04T15:14:45.334487+00:00`
+- 生成日時: `2026-08-05T00:07:11.428857+00:00`
 - Full Run: **ok**
-- Dashboard schema: `1.0`
+- Dashboard schema: `1.1`
 
 ## 全体
 
-- 事後評価の平均最高一致が最も高いゲーム: **LOTO7**
+- Optimizerのゲーム内ランダム差が最も高いゲーム: **LOTO7**
 - 事後評価が最も少ないゲーム: ミニロト, Numbers3, Numbers4
 
 ## LOTO6
@@ -20,7 +20,7 @@
 - 最大一致: 3
 - Optimizer selection_score: 2.453168
 - Optimizer Random uplift: 0.251867
-- Experience履歴: 2件
+- Experience履歴: 3件
 
 ### 次回予想
 
@@ -33,19 +33,19 @@
 ## LOTO7
 
 - 次回抽せん回: **689**
-- 採用Config: `evolution_02_no_delay_strict_freq_pair_strict`
+- 採用Config: `evolution_01_no_delay_strict_experience_loto7_1`
 - 採用元: `evolution`
 - 事後評価: **データ不足** (4回)
 - 平均最高一致: 2.25
 - 平均1口一致: 1.25
 - 最大一致: 3
-- Optimizer selection_score: 3.602266
-- Optimizer Random uplift: 0.292566
-- Experience履歴: 2件
+- Optimizer selection_score: 3.656509
+- Optimizer Random uplift: 0.3185
+- Experience履歴: 3件
 
 ### 次回予想
 
-1. 8・9・13・15・22・34・35<br>2. 1・4・17・18・26・29・36<br>3. 7・10・12・14・27・30・31<br>4. 6・13・19・21・24・28・32<br>5. 3・5・11・16・20・26・34
+1. 9・12・15・22・29・34・35<br>2. 1・4・13・17・26・31・36<br>3. 3・7・8・18・20・23・32<br>4. 6・11・14・19・21・27・28<br>5. 2・5・15・22・24・30・33
 
 ### 注意
 
@@ -54,15 +54,15 @@
 ## ミニロト
 
 - 次回抽せん回: **1399**
-- 採用Config: `local_01_experience_miniloto_1`
-- 採用元: `local`
+- 採用Config: `evolution_02_experience_miniloto_1_experience_miniloto_2`
+- 採用元: `evolution`
 - 事後評価: **データ不足** (2回)
 - 平均最高一致: 1.5
 - 平均1口一致: 0.8
 - 最大一致: 2
-- Optimizer selection_score: 2.224761
-- Optimizer Random uplift: 0.155567
-- Experience履歴: 2件
+- Optimizer selection_score: 2.287626
+- Optimizer Random uplift: 0.1926
+- Experience履歴: 3件
 
 ### 次回予想
 
@@ -75,15 +75,15 @@
 ## Numbers3
 
 - 次回抽せん回: **7042**
-- 採用Config: `local_01`
-- 採用元: `local`
+- 採用Config: `experience_numbers3_1`
+- 採用元: `experience`
 - 事後評価: **データ不足** (2回)
 - 平均最高一致: 1.0
 - 平均1口一致: 0.45
 - 最大一致: 1
 - Optimizer selection_score: 3.026392
 - Optimizer Random uplift: 未評価
-- Experience履歴: 2件
+- Experience履歴: 3件
 
 ### 次回予想
 
@@ -104,25 +104,25 @@
 ## Numbers4
 
 - 次回抽せん回: **7042**
-- 採用Config: `random_07`
-- 採用元: `random`
+- 採用Config: `local_01`
+- 採用元: `local`
 - 事後評価: **データ不足** (2回)
 - 平均最高一致: 2.0
 - 平均1口一致: 0.5
 - 最大一致: 2
-- Optimizer selection_score: 1.933334
+- Optimizer selection_score: 2.131251
 - Optimizer Random uplift: 未評価
-- Experience履歴: 1件
+- Experience履歴: 2件
 
 ### 次回予想
 
-1. 7461<br>2. 1647<br>3. 8514<br>4. 4158<br>5. 9225<br>6. 5229<br>7. 7830<br>8. 8703<br>9. 3078<br>10. 2396
+1. 7461<br>2. 1647<br>3. 8514<br>4. 4158<br>5. 9225<br>6. 5229<br>7. 7830<br>8. 0387<br>9. 8703<br>10. 6932
 
 ### Numbersバックテスト
 
-- 平均最高位置一致: 1.538889
-- 1口平均位置一致: 0.399444
-- 平均最高順不同一致: 2.211111
+- 平均最高位置一致: 1.533333
+- 1口平均位置一致: 0.387778
+- 平均最高順不同一致: 2.205556
 - Straight率: 0.00%
 - Box率: 0.56%
 
