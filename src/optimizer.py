@@ -905,18 +905,47 @@ def _evaluate_final_candidate_holdout(
     model_records = model_result.get("records", [])
     uniform_records = uniform_result.get("records", [])
     filtered_records = filtered_result.get("records", [])
-    result["paired_draw_results"] = [
-        {
-            "draw_index": model.get("draw_index"),
+
+    def _records_by_draw(records):
+        indexed = {}
+        for record in records if isinstance(records, list) else []:
+            if not isinstance(record, dict):
+                continue
+            draw_index = record.get("draw_index")
+            if draw_index is None or draw_index in indexed:
+                continue
+            indexed[draw_index] = record
+        return indexed
+
+    model_by_draw = _records_by_draw(model_records)
+    uniform_by_draw = _records_by_draw(uniform_records)
+    filtered_by_draw = _records_by_draw(filtered_records)
+    common_draws = sorted(
+        set(model_by_draw) & set(uniform_by_draw) & set(filtered_by_draw)
+    )
+    result["paired_draw_results"] = []
+    for draw_index in common_draws:
+        model = model_by_draw[draw_index]
+        uniform = uniform_by_draw[draw_index]
+        filtered = filtered_by_draw[draw_index]
+        model_count = int(model.get("best_match_count", 0) or 0)
+        uniform_count = int(uniform.get("best_match_count", 0) or 0)
+        filtered_count = int(filtered.get("best_match_count", 0) or 0)
+        result["paired_draw_results"].append({
+            "draw_index": draw_index,
             "actual": model.get("actual"),
-            "model_best_match_count": model.get("best_match_count"),
-            "uniform_best_match_count": uniform.get("best_match_count"),
-            "filtered_best_match_count": filtered.get("best_match_count"),
-            "model_minus_uniform": int(model.get("best_match_count", 0)) - int(uniform.get("best_match_count", 0)),
-            "model_minus_filtered": int(model.get("best_match_count", 0)) - int(filtered.get("best_match_count", 0)),
-        }
-        for model, uniform, filtered in zip(model_records, uniform_records, filtered_records)
-    ]
+            "model_best_match_count": model_count,
+            "uniform_best_match_count": uniform_count,
+            "filtered_best_match_count": filtered_count,
+            "model_minus_uniform": model_count - uniform_count,
+            "model_minus_filtered": model_count - filtered_count,
+        })
+    result["paired_draw_alignment"] = {
+        "model_records": len(model_by_draw),
+        "uniform_records": len(uniform_by_draw),
+        "filtered_records": len(filtered_by_draw),
+        "matched_records": len(common_draws),
+    }
     result.pop("records", None)
     result["evaluation_type"] = "production_candidate_count_holdout"
     result["candidate_count"] = int(candidate_count)
