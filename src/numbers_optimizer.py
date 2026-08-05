@@ -8,6 +8,7 @@ from numbers_backtester import (
     NumbersBacktestSummary,
     run_numbers_backtest,
     run_numbers_box_random_backtest,
+    run_numbers_composition_matched_box_random_backtest,
     run_numbers_uniform_random_backtest,
 )
 from numbers_features import (
@@ -808,14 +809,20 @@ def optimize_numbers(
             )
             for baseline_seed in (seed, seed + 1, seed + 2)
         ])
+        model_records = (
+            model.get("records", [])
+            if isinstance((model := holdout_summary.to_dict(include_records=True)), dict)
+            else []
+        )
         holdout_box_random_baseline = _aggregate_box_random_summaries([
-            run_numbers_box_random_backtest(
-                normalized_history, config, train_window=train_window,
-                tested_periods=holdout_periods, top_k=top_k, seed=baseline_seed,
-                include_records=True,
+            run_numbers_composition_matched_box_random_backtest(
+                normalized_history, config, model_records=model_records,
+                seed=baseline_seed, include_records=True,
             )
             for baseline_seed in (seed, seed + 1, seed + 2)
         ])
+        holdout_box_random_baseline["evaluation_type"] = "composition_matched_box_random_baseline"
+        holdout_box_random_baseline["composition_matched"] = True
         holdout_evaluation = _numbers_holdout_result(
             holdout_summary,
             holdout_random_baseline,
@@ -829,14 +836,6 @@ def optimize_numbers(
             box_eval["random_uplift"] = round(
                 float(box_eval.get("box_hit_rate") or 0.0)
                 - float(holdout_box_random_baseline.get("box_hit_rate") or 0.0), 6
-            )
-            model_records = (
-                model.get("records", [])
-                if isinstance(
-                    (model := holdout_summary.to_dict(include_records=True)),
-                    dict,
-                )
-                else []
             )
             seed_records = holdout_box_random_baseline.get("seed_records", {})
 
