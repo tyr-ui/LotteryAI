@@ -471,6 +471,81 @@ def _aggregate_box_random_summaries(summaries: Sequence[object]) -> dict[str, ob
     return result
 
 
+def _records_by_draw(records: object) -> dict[object, dict[str, object]]:
+    indexed: dict[object, dict[str, object]] = {}
+    if not isinstance(records, list):
+        return indexed
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        draw_index = record.get("draw_index")
+        if draw_index is None or draw_index in indexed:
+            continue
+        indexed[draw_index] = record
+    return indexed
+
+
+def _build_box_paired_draw_results(
+    model_records: object,
+    seed_records: object,
+) -> tuple[list[dict[str, object]], dict[str, object]]:
+    """Join BOX model/random records by draw and average all random seeds."""
+    model_by_draw = _records_by_draw(model_records)
+    random_by_seed = [
+        _records_by_draw(records)
+        for _, records in sorted(
+            seed_records.items(),
+            key=lambda item: str(item[0]),
+        )
+        if isinstance(records, list)
+    ] if isinstance(seed_records, dict) else []
+
+    common_draws = set(model_by_draw)
+    for records in random_by_seed:
+        common_draws &= set(records)
+
+    paired_rows: list[dict[str, object]] = []
+    for draw_index in sorted(common_draws):
+        record = model_by_draw[draw_index]
+        random_rows = [records[draw_index] for records in random_by_seed]
+        random_hits = [
+            1.0 if bool(random.get("box_hit")) else 0.0
+            for random in random_rows
+        ]
+        random_match_values = [
+            float(random.get("best_unordered_digit_matches", 0) or 0)
+            for random in random_rows
+        ]
+        model_hit = 1.0 if bool(record.get("box_dedicated_hit")) else 0.0
+        random_hit_mean = (
+            sum(random_hits) / len(random_hits)
+            if random_hits else 0.0
+        )
+        paired_rows.append({
+            "draw_index": draw_index,
+            "actual": record.get("actual"),
+            "model_box_hit": model_hit,
+            "random_box_hit_mean": round(random_hit_mean, 6),
+            "model_minus_random_mean": round(model_hit - random_hit_mean, 6),
+            "model_best_unordered_matches": record.get(
+                "box_dedicated_best_unordered_matches"
+            ),
+            "random_best_unordered_matches_mean": round(
+                sum(random_match_values) / len(random_match_values),
+                6,
+            ) if random_match_values else None,
+            "random_seed_count": len(random_rows),
+        })
+
+    alignment = {
+        "model_records": len(model_by_draw),
+        "random_seed_count": len(random_by_seed),
+        "matched_records": len(paired_rows),
+        "baseline": "per_draw_multi_seed_mean",
+    }
+    return paired_rows, alignment
+
+
 def optimize_numbers(
     history: Iterable[Sequence[int]],
     config: Mapping[str, object] | object,
@@ -755,19 +830,22 @@ def optimize_numbers(
                 float(box_eval.get("box_hit_rate") or 0.0)
                 - float(holdout_box_random_baseline.get("box_hit_rate") or 0.0), 6
             )
-            model_records = model.get("records", []) if isinstance((model := holdout_summary.to_dict(include_records=True)), dict) else []
-            random_records = holdout_box_random_baseline.get("seed_records", {}).get("0", [])
-            box_eval["paired_draw_results"] = [
-                {
-                    "draw_index": record.get("draw_index"),
-                    "actual": record.get("actual"),
-                    "model_box_hit": bool(record.get("box_dedicated_hit")),
-                    "random_box_hit": bool(random.get("box_hit")),
-                    "model_best_unordered_matches": record.get("box_dedicated_best_unordered_matches"),
-                    "random_best_unordered_matches": random.get("best_unordered_digit_matches"),
-                }
-                for record, random in zip(model_records, random_records)
-            ]
+            model_records = (
+                model.get("records", [])
+                if isinstance(
+                    (model := holdout_summary.to_dict(include_records=True)),
+                    dict,
+                )
+                else []
+            )
+            seed_records = holdout_box_random_baseline.get("seed_records", {})
+
+            paired_rows, alignment = _build_box_paired_draw_results(
+                model_records,
+                seed_records,
+            )
+            box_eval["paired_draw_results"] = paired_rows
+            box_eval["paired_draw_alignment"] = alignment
 
     context = build_numbers_model_context(normalized_history, config)
     prediction_result = predict_numbers(
