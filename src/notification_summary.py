@@ -250,7 +250,19 @@ def _lotto_evaluation(section: Mapping[str, Any]) -> str:
             f"一様ランダム比 {_format_decimal(holdout.get('random_uplift'), signed=True)}"
         )
     model_uplift = _format_decimal(ranked.get("random_uplift"), signed=True)
-    return f"独立検証: {holdout_text}\n探索期間の一様ランダム比: {model_uplift}"
+    production = _mapping(section.get("final_candidate_holdout"))
+    production_text = "未評価"
+    if production:
+        production_text = (
+            f"{production.get('holdout_periods', '不明')}回 / "
+            f"平均最高一致 {_format_decimal(production.get('avg_matches'))} / "
+            f"一様ランダム比 {_format_decimal(production.get('random_uplift'), signed=True)}"
+        )
+    return (
+        f"開発用頑健性評価（300候補・3seed）: {holdout_text}\n"
+        f"本番条件ホールドアウト（10,000候補・本番seed）: {production_text}\n"
+        f"探索期間の一様ランダム比: {model_uplift}"
+    )
 
 
 def _numbers_evaluation(section: Mapping[str, Any]) -> str:
@@ -271,7 +283,7 @@ def _numbers_evaluation(section: Mapping[str, Any]) -> str:
             signed=True,
         )
         return (
-            f"独立検証: {holdout.get('tested_periods', holdout.get('holdout_periods', '不明'))}回 / "
+            f"開発用ホールドアウト: {holdout.get('tested_periods', holdout.get('holdout_periods', '不明'))}回 / "
             f"平均最高位置一致 {_format_decimal(holdout.get('average_best_position_matches'))} / "
             f"一様ランダム比 {position_uplift}\n"
             f"ストレート率 {straight} / ボックス率 {box} / "
@@ -287,77 +299,28 @@ def _numbers_evaluation(section: Mapping[str, Any]) -> str:
         digits=4,
     )
     return (
-        "独立検証: 未評価\n"
+        "開発用ホールドアウト: 未評価\n"
         f"探索期間のストレート率 {straight} / ボックス率 {box} / "
         f"一様ランダムのストレート率 {random_straight}"
     )
 
 
 def _ai_summary_lines(output: Mapping[str, Any]) -> list[str]:
-    lines: list[str] = []
-    holdouts: list[tuple[str, float]] = []
-    for game_key in GAME_ORDER:
-        holdout = _mapping(
-            _mapping(output.get(game_key)).get("holdout_evaluation")
-        )
-        uplift = _number(holdout.get("random_uplift"))
-        if uplift is not None:
-            holdouts.append((game_key, float(uplift)))
-
-    if holdouts:
-        best_key, best_value = max(holdouts, key=lambda item: item[1])
-        lines.append(
-            f"独立検証では{GAME_NAMES[best_key]}の結果が最も高く、"
-            f"一様ランダム比は{best_value:+.3f}です。"
-        )
-        below = [GAME_NAMES[key] for key, value in holdouts if value < 0.0]
-        if below:
-            lines.append(
-                "独立検証で一様ランダムを下回ったゲームは"
-                + "、".join(below)
-                + "です。現時点では優位性を確認できません。"
-            )
-        else:
-            lines.append(
-                "評価可能な全ゲームは、独立検証で一様ランダム以上でした。"
-            )
-    else:
-        lines.append("独立検証はまだ評価できていません。")
-
+    lines: list[str] = [
+        "開発用ホールドアウトのゲーム間順位は、指標分布が異なるため表示しません。"
+    ]
     for game_key in GAME_ORDER:
         report = _statistical_report(output, game_key)
         lines.append(f"{GAME_NAMES[game_key]}: {report.get('one_line_summary')}")
-
     carryovers = [
         f"{GAME_NAMES[key]} {_carryover_text(output, key)}"
-        for key in ("loto6", "loto7")
-        if _has_carryover(output, key)
+        for key in ("loto6", "loto7") if _has_carryover(output, key)
     ]
     if carryovers:
         lines.append("キャリーオーバー発生中: " + " / ".join(carryovers) + "。")
-    else:
-        unavailable = [
-            key
-            for key in ("loto6", "loto7")
-            if _carryover_row(output, key).get("status") != "ok"
-        ]
-        lines.append(
-            "キャリーオーバー情報は公式サイトへの接続または解析に失敗したため、今回は確認できませんでした。"
-            if unavailable
-            else "LOTO6・LOTO7のキャリーオーバーはありません。"
-        )
-
     previous = _mapping(output.get("previous_evaluation"))
-    evaluated = [
-        GAME_NAMES[key]
-        for key in GAME_ORDER
-        if _mapping(previous.get(key)).get("status") == "evaluated"
-    ]
-    if evaluated:
-        lines.append("前回結果を反映済み: " + "、".join(evaluated) + "。")
-    else:
-        lines.append("今回は前回予想の結果がまだ反映されていません。")
-
+    evaluated = [GAME_NAMES[key] for key in GAME_ORDER if _mapping(previous.get(key)).get("status") == "evaluated"]
+    lines.append("前回結果を反映済み: " + "、".join(evaluated) + "。" if evaluated else "今回は前回予想の結果がまだ反映されていません。")
     return lines
 
 
@@ -432,7 +395,7 @@ def build_notification_summary(output: Mapping[str, Any]) -> str:
         "処理結果: 正常完了",
         "",
         "※ 過去データに基づく評価であり、当選を保証するものではありません。",
-        "※ ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。",
+        "※ 開発用ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。",
         "",
     ])
     return "\n".join(lines)
