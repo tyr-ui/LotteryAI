@@ -20,6 +20,8 @@ from evaluation_dashboard import write_evaluation_dashboard
 from carryover import fetch_carryover_snapshot
 from notification_summary import write_notification_summary
 from operational_controls import build_operational_controls
+from operational_evaluation import evaluate_operational_controls
+from evaluation_epoch import resolve_evaluation_epoch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -910,6 +912,8 @@ def main() -> None:
     previous_output_path = OUTPUT_DIR / "optimizer_result.json"
     history_path = OUTPUT_DIR / "evaluation_history.json"
     summary_path = OUTPUT_DIR / "evaluation_summary.json"
+    control_history_path = OUTPUT_DIR / "operational_control_history.json"
+    controls_path = OUTPUT_DIR / "operational_controls.json"
 
     previous_output = load_json(previous_output_path, {})
     run_mode = resolve_run_mode()
@@ -938,6 +942,15 @@ def main() -> None:
             )
         data_sources[game_key] = str(loaded.source)
         data_loaded_at[game_key] = now_iso()
+
+    evaluation_epoch = resolve_evaluation_epoch(ROOT, OUTPUT_DIR)
+    previous_controls = load_json(controls_path, {})
+    operational_control_history = evaluate_operational_controls(
+        previous_controls,
+        datasets,
+        LOTTO_GAMES,
+        load_json(control_history_path, []),
+    )
 
     selected_game_keys = select_games_for_optimization(
         previous_output,
@@ -1080,6 +1093,7 @@ def main() -> None:
             carryover_snapshot,
         )
     ):
+        save_json(control_history_path, operational_control_history)
         print("\n=== NO RELEVANT CHANGES ===")
         print(
             "No draw number or carryover status changed; "
@@ -1091,8 +1105,14 @@ def main() -> None:
     operational_controls = {}
     for game_key, game_config in LOTTO_GAMES.items():
         control = build_operational_controls(
-            game_key, game_config, datasets[game_key], optimizer_results[game_key],
-            int(game_output[game_key]["next_draw_no"]), generated_at,
+            game_key,
+            game_config,
+            datasets[game_key],
+            optimizer_results[game_key],
+            int(game_output[game_key]["next_draw_no"]),
+            generated_at,
+            evaluation_epoch=int(evaluation_epoch["epoch_id"]),
+            model_version=str(evaluation_epoch["model_version"]),
         )
         game_output[game_key]["operational_controls"] = control
         operational_controls[game_key] = control
@@ -1113,12 +1133,22 @@ def main() -> None:
         "evaluation_summary": evaluation_summary,
         "carryover": carryover_snapshot,
         "operational_controls": operational_controls,
+        "evaluation_epoch": evaluation_epoch,
+        "operational_control_history_count": len(operational_control_history),
         **game_output,
     }
 
     save_json(previous_output_path, output)
     save_json(OUTPUT_DIR / "carryover.json", carryover_snapshot)
-    save_json(OUTPUT_DIR / "operational_controls.json", {"generated_at": generated_at, "games": operational_controls})
+    save_json(
+        controls_path,
+        {
+            "generated_at": generated_at,
+            "evaluation_epoch": evaluation_epoch,
+            "games": operational_controls,
+        },
+    )
+    save_json(control_history_path, operational_control_history)
 
     if selected_game_configs:
         save_prediction_outputs(
