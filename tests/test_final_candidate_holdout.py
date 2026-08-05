@@ -78,6 +78,56 @@ class FinalCandidateHoldoutTest(unittest.TestCase):
         self.assertEqual(result["frozen_config"], "winner")
         self.assertEqual(result["production_seed"], optimizer.SEED)
 
+    @patch.object(optimizer, "_run_backtest_result")
+    @patch.object(optimizer, "_run_random_backtest_result")
+    def test_paired_records_are_joined_by_draw_index(
+        self,
+        random_backtest,
+        model_backtest,
+    ) -> None:
+        model_backtest.return_value = {
+            "config": "winner",
+            "tested_periods": 2,
+            "avg_matches": 2.0,
+            "records": [
+                {"draw_index": 2, "actual": [2], "best_match_count": 1},
+                {"draw_index": 1, "actual": [1], "best_match_count": 3},
+            ],
+        }
+        random_backtest.side_effect = [
+            {
+                "config": "uniform_random",
+                "avg_matches": 1.0,
+                "records": [
+                    {"draw_index": 1, "best_match_count": 2},
+                    {"draw_index": 2, "best_match_count": 0},
+                ],
+            },
+            {
+                "config": "filtered_random",
+                "avg_matches": 1.0,
+                "records": [
+                    {"draw_index": 2, "best_match_count": 1},
+                    {"draw_index": 1, "best_match_count": 1},
+                ],
+            },
+        ]
+        result = optimizer._evaluate_final_candidate_holdout(
+            [(1, 2, 3)] * 50,
+            {"min_num": 1, "max_num": 43, "pick_count": 3},
+            {"name": "winner", "w": {}, "f": {}},
+            train_window=10,
+            holdout_periods=2,
+            candidate_count=100,
+            selection_history_draws=48,
+        )
+        self.assertEqual(
+            [1, 2],
+            [row["draw_index"] for row in result["paired_draw_results"]],
+        )
+        self.assertEqual(result["paired_draw_results"][0]["model_minus_uniform"], 1)
+        self.assertEqual(result["paired_draw_results"][1]["model_minus_filtered"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()
