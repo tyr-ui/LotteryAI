@@ -900,6 +900,81 @@ def run_numbers_box_backtest(
     )
 
 
+def box_composition_signature(candidate: Sequence[int]) -> tuple[int, ...]:
+    """Return a permutation-invariant digit multiplicity signature."""
+    return tuple(sorted(Counter(int(v) for v in candidate).values(), reverse=True))
+
+
+def run_numbers_composition_matched_box_random_backtest(
+    history: Iterable[Sequence[int]],
+    config: Mapping[str, object] | object,
+    *,
+    model_records: Sequence[Mapping[str, object]],
+    seed: int = 2025,
+    include_records: bool = False,
+) -> NumbersBoxBacktestSummary:
+    """Random BOX baseline matched to the model's per-draw composition mix.
+
+    For every evaluated draw, the random control contains exactly the same
+    counts of multiplicity signatures as the model BOX candidates. This
+    removes the mechanical BOX-probability advantage of favouring candidates
+    with more distinct digits.
+    """
+    configured_digit_count = int(_config_value(config, "digit_count", default=0) or 0)
+    normalized_history = _normalize_history(
+        history, digit_count=configured_digit_count or None, digit_min=0, digit_max=9
+    )
+    digit_count = len(normalized_history[0])
+    box_space = tuple(combinations_with_replacement(range(10), digit_count))
+    by_signature: dict[tuple[int, ...], list[NumberRow]] = {}
+    for candidate in box_space:
+        by_signature.setdefault(box_composition_signature(candidate), []).append(candidate)
+
+    records: list[NumbersBoxBacktestRecord] = []
+    for raw in model_records:
+        if not isinstance(raw, Mapping):
+            continue
+        draw_index = int(raw.get("draw_index", -1))
+        if draw_index < 0 or draw_index >= len(normalized_history):
+            continue
+        model_boxes = raw.get("box_dedicated_predicted", ())
+        if not isinstance(model_boxes, Sequence):
+            continue
+        requested = Counter(
+            box_composition_signature(candidate)
+            for candidate in model_boxes
+            if isinstance(candidate, Sequence)
+        )
+        rng = Random(seed + draw_index)
+        selected: list[NumberRow] = []
+        for signature, count in sorted(requested.items()):
+            pool = by_signature.get(signature, [])
+            if count > len(pool):
+                raise ValueError(
+                    f"composition-matched BOX pool is too small: {signature} {count}>{len(pool)}"
+                )
+            selected.extend(rng.sample(pool, count))
+        actual = normalized_history[draw_index]
+        unordered = [unordered_digit_matches(candidate, actual) for candidate in selected]
+        records.append(NumbersBoxBacktestRecord(
+            draw_index=draw_index,
+            actual=actual,
+            predicted_boxes=tuple(selected),
+            best_unordered_digit_matches=max(unordered) if unordered else 0,
+            average_unordered_digit_matches=float(mean(unordered)) if unordered else 0.0,
+            box_hit=any(is_box_hit(candidate, actual) for candidate in selected),
+        ))
+    tested=len(records)
+    return NumbersBoxBacktestSummary(
+        tested_periods=tested,
+        digit_count=digit_count,
+        average_best_unordered_matches=round(float(mean(r.best_unordered_digit_matches for r in records)),6) if records else None,
+        average_unordered_matches_per_ticket=round(float(mean(r.average_unordered_digit_matches for r in records)),6) if records else None,
+        box_hit_rate=round(sum(r.box_hit for r in records)/tested,6) if tested else None,
+        records=tuple(records) if include_records else (),
+    )
+
+
 __all__ = [
     "NumbersBacktestRecord",
     "NumbersBacktestSummary",
@@ -911,5 +986,7 @@ __all__ = [
     "run_numbers_backtest",
     "run_numbers_box_backtest",
     "run_numbers_box_random_backtest",
+    "run_numbers_composition_matched_box_random_backtest",
+    "box_composition_signature",
     "run_numbers_uniform_random_backtest",
 ]
