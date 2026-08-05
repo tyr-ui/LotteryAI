@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-08-05T02:53:13.947416+00:00",
+  "generated_at": "2026-08-05T04:59:13.303985+00:00",
   "status": "ok",
   "overall": {
     "full_run_status": "ok",
@@ -171,10 +171,17 @@
             "method": "paired_bootstrap_percentile",
             "iterations": 10000
           },
-          "p_value_reference": {
+          "permutation_p_value_reference": {
+            "value": 1.0,
+            "method": "two_sided_paired_sign_flip_permutation_test",
+            "target": "mean_difference",
+            "note": "平均差に対する補助検定。主要判定は95%信頼区間を使用。"
+          },
+          "sign_test_p_value_reference": {
             "value": 0.663624,
             "method": "two_sided_exact_sign_test",
-            "note": "補助情報。主要判定は95%信頼区間を使用。"
+            "target": "win_loss_imbalance",
+            "note": "勝敗数の偏りを評価。平均差の検定ではありません。"
           },
           "wins": 12,
           "ties": 9,
@@ -183,6 +190,7 @@
         },
         "operational_evaluation": {
           "evaluated_draws": 9,
+          "evaluation_started_at": "2026-07-06",
           "started_at": "2026-07-06",
           "latest_evaluated_at": "2026-08-03"
         },
@@ -190,7 +198,7 @@
         "holdout_note": "ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。"
       },
       "experience": {
-        "history_count": 4,
+        "history_count": 5,
         "unique_config_count": 1,
         "average_selection_score": 2.453168,
         "best_config_name": "evolution_02_random_07_random_05",
@@ -203,8 +211,8 @@
             "best_selection_score": 0.0
           },
           "experience": {
-            "count": 3,
-            "share": 0.75,
+            "count": 4,
+            "share": 0.8,
             "average_selection_score": 2.453168,
             "best_selection_score": 2.453168
           },
@@ -222,7 +230,7 @@
           },
           "evolution": {
             "count": 1,
-            "share": 0.25,
+            "share": 0.2,
             "average_selection_score": 2.453168,
             "best_selection_score": 2.453168
           }
@@ -385,10 +393,17 @@
             "method": "paired_bootstrap_percentile",
             "iterations": 10000
           },
-          "p_value_reference": {
+          "permutation_p_value_reference": {
+            "value": 0.773661,
+            "method": "two_sided_paired_sign_flip_permutation_test",
+            "target": "mean_difference",
+            "note": "平均差に対する補助検定。主要判定は95%信頼区間を使用。"
+          },
+          "sign_test_p_value_reference": {
             "value": 1.0,
             "method": "two_sided_exact_sign_test",
-            "note": "補助情報。主要判定は95%信頼区間を使用。"
+            "target": "win_loss_imbalance",
+            "note": "勝敗数の偏りを評価。平均差の検定ではありません。"
           },
           "wins": 10,
           "ties": 11,
@@ -397,6 +412,7 @@
         },
         "operational_evaluation": {
           "evaluated_draws": 4,
+          "evaluation_started_at": "2026-07-10",
           "started_at": "2026-07-10",
           "latest_evaluated_at": "2026-07-31"
         },
@@ -404,9 +420,9 @@
         "holdout_note": "ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。"
       },
       "experience": {
-        "history_count": 4,
+        "history_count": 5,
         "unique_config_count": 3,
-        "average_selection_score": 3.627727,
+        "average_selection_score": 3.633484,
         "best_config_name": "evolution_01_no_delay_strict_experience_loto7_1",
         "best_selection_score": 3.656509,
         "source_statistics": {
@@ -417,8 +433,8 @@
             "best_selection_score": 0.0
           },
           "experience": {
-            "count": 1,
-            "share": 0.25,
+            "count": 2,
+            "share": 0.4,
             "average_selection_score": 3.656509,
             "best_selection_score": 3.656509
           },
@@ -436,7 +452,7 @@
           },
           "evolution": {
             "count": 3,
-            "share": 0.75,
+            "share": 0.6,
             "average_selection_score": 3.618133,
             "best_selection_score": 3.656509
           }
@@ -589,10 +605,17 @@
             "method": "paired_bootstrap_percentile",
             "iterations": 10000
           },
-          "p_value_reference": {
+          "permutation_p_value_reference": {
+            "value": 0.246938,
+            "method": "two_sided_paired_sign_flip_permutation_test",
+            "target": "mean_difference",
+            "note": "平均差に対する補助検定。主要判定は95%信頼区間を使用。"
+          },
+          "sign_test_p_value_reference": {
             "value": 0.237885,
             "method": "two_sided_exact_sign_test",
-            "note": "補助情報。主要判定は95%信頼区間を使用。"
+            "target": "win_loss_imbalance",
+            "note": "勝敗数の偏りを評価。平均差の検定ではありません。"
           },
           "wins": 12,
           "ties": 12,
@@ -601,6 +624,7 @@
         },
         "operational_evaluation": {
           "evaluated_draws": 2,
+          "evaluation_started_at": "2026-07-28",
           "started_at": "2026-07-28",
           "latest_evaluated_at": "2026-08-04"
         },
@@ -608,9 +632,9 @@
         "holdout_note": "ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。"
       },
       "experience": {
-        "history_count": 4,
+        "history_count": 5,
         "unique_config_count": 3,
-        "average_selection_score": 2.25245,
+        "average_selection_score": 2.259485,
         "best_config_name": "evolution_02_experience_miniloto_1_experience_miniloto_2",
         "best_selection_score": 2.287626,
         "source_statistics": {
@@ -621,8 +645,8 @@
             "best_selection_score": 0.0
           },
           "experience": {
-            "count": 1,
-            "share": 0.25,
+            "count": 2,
+            "share": 0.4,
             "average_selection_score": 2.287626,
             "best_selection_score": 2.287626
           },
@@ -634,13 +658,13 @@
           },
           "local": {
             "count": 1,
-            "share": 0.25,
+            "share": 0.2,
             "average_selection_score": 2.224761,
             "best_selection_score": 2.224761
           },
           "evolution": {
             "count": 2,
-            "share": 0.5,
+            "share": 0.4,
             "average_selection_score": 2.248706,
             "best_selection_score": 2.287626
           }
@@ -834,25 +858,33 @@
           "status": "evaluated",
           "sample_size": 60,
           "data_volume": "暫定評価（60回）",
-          "mean_difference": 0.05,
+          "mean_difference": 0.055556,
           "confidence_interval_95": {
-            "lower": -0.033333,
-            "upper": 0.133333,
+            "lower": -0.016667,
+            "upper": 0.138889,
             "method": "paired_bootstrap_percentile",
             "iterations": 10000
           },
-          "p_value_reference": {
-            "value": 0.453125,
+          "permutation_p_value_reference": {
+            "value": 0.123544,
+            "method": "two_sided_paired_sign_flip_permutation_test",
+            "target": "mean_difference",
+            "note": "平均差に対する補助検定。主要判定は95%信頼区間を使用。"
+          },
+          "sign_test_p_value_reference": {
+            "value": 1.0,
             "method": "two_sided_exact_sign_test",
-            "note": "補助情報。主要判定は95%信頼区間を使用。"
+            "target": "win_loss_imbalance",
+            "note": "勝敗数の偏りを評価。平均差の検定ではありません。"
           },
           "wins": 5,
-          "ties": 53,
-          "losses": 2,
+          "ties": 50,
+          "losses": 5,
           "judgement": "現時点では差を特定できない"
         },
         "operational_evaluation": {
           "evaluated_draws": 2,
+          "evaluation_started_at": "2026-08-03",
           "started_at": "2026-08-03",
           "latest_evaluated_at": "2026-08-04"
         },
@@ -860,9 +892,9 @@
         "holdout_note": "ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。"
       },
       "experience": {
-        "history_count": 4,
+        "history_count": 5,
         "unique_config_count": 2,
-        "average_selection_score": 3.018753,
+        "average_selection_score": 3.020281,
         "best_config_name": "local_01",
         "best_selection_score": 3.026392,
         "source_statistics": {
@@ -873,8 +905,8 @@
             "best_selection_score": 0.0
           },
           "experience": {
-            "count": 2,
-            "share": 0.5,
+            "count": 3,
+            "share": 0.6,
             "average_selection_score": 3.026392,
             "best_selection_score": 3.026392
           },
@@ -886,13 +918,13 @@
           },
           "local": {
             "count": 1,
-            "share": 0.25,
+            "share": 0.2,
             "average_selection_score": 3.026392,
             "best_selection_score": 3.026392
           },
           "evolution": {
             "count": 1,
-            "share": 0.25,
+            "share": 0.2,
             "average_selection_score": 2.995837,
             "best_selection_score": 2.995837
           }
@@ -1096,25 +1128,33 @@
           "status": "evaluated",
           "sample_size": 60,
           "data_volume": "暫定評価（60回）",
-          "mean_difference": 0.0,
+          "mean_difference": 0.005556,
           "confidence_interval_95": {
-            "lower": -0.066667,
+            "lower": -0.044444,
             "upper": 0.066667,
             "method": "paired_bootstrap_percentile",
             "iterations": 10000
           },
-          "p_value_reference": {
-            "value": 1.0,
+          "permutation_p_value_reference": {
+            "value": 0.935253,
+            "method": "two_sided_paired_sign_flip_permutation_test",
+            "target": "mean_difference",
+            "note": "平均差に対する補助検定。主要判定は95%信頼区間を使用。"
+          },
+          "sign_test_p_value_reference": {
+            "value": 0.6875,
             "method": "two_sided_exact_sign_test",
-            "note": "補助情報。主要判定は95%信頼区間を使用。"
+            "target": "win_loss_imbalance",
+            "note": "勝敗数の偏りを評価。平均差の検定ではありません。"
           },
           "wins": 2,
-          "ties": 56,
-          "losses": 2,
+          "ties": 54,
+          "losses": 4,
           "judgement": "現時点では差を特定できない"
         },
         "operational_evaluation": {
           "evaluated_draws": 2,
+          "evaluation_started_at": "2026-08-03",
           "started_at": "2026-08-03",
           "latest_evaluated_at": "2026-08-04"
         },
@@ -1122,9 +1162,9 @@
         "holdout_note": "ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。"
       },
       "experience": {
-        "history_count": 3,
+        "history_count": 4,
         "unique_config_count": 2,
-        "average_selection_score": 2.065279,
+        "average_selection_score": 2.081772,
         "best_config_name": "local_01",
         "best_selection_score": 2.131251,
         "source_statistics": {
@@ -1135,20 +1175,20 @@
             "best_selection_score": 0.0
           },
           "experience": {
-            "count": 1,
-            "share": 0.333333,
+            "count": 2,
+            "share": 0.5,
             "average_selection_score": 2.131251,
             "best_selection_score": 2.131251
           },
           "random": {
             "count": 1,
-            "share": 0.333333,
+            "share": 0.25,
             "average_selection_score": 1.933334,
             "best_selection_score": 1.933334
           },
           "local": {
             "count": 1,
-            "share": 0.333333,
+            "share": 0.25,
             "average_selection_score": 2.131251,
             "best_selection_score": 2.131251
           },
