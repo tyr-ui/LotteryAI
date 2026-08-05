@@ -194,7 +194,8 @@ def _statistics_text(output: Mapping[str, Any], game_key: str) -> str:
     paired = _mapping(report.get("paired_evaluation"))
     operational = _mapping(report.get("operational_evaluation"))
     interval = _mapping(paired.get("confidence_interval_95"))
-    p_value = _mapping(paired.get("p_value_reference")).get("value")
+    permutation_p = _mapping(paired.get("permutation_p_value_reference")).get("value")
+    sign_test_p = _mapping(paired.get("sign_test_p_value_reference")).get("value")
     mean_difference = paired.get("mean_difference")
     if mean_difference is None:
         return (
@@ -205,15 +206,17 @@ def _statistics_text(output: Mapping[str, Any], game_key: str) -> str:
     lower = interval.get("lower")
     upper = interval.get("upper")
     ci = "未評価" if lower is None or upper is None else f"{float(lower):+.3f}～{float(upper):+.3f}"
-    p_text = "未評価" if p_value is None else f"{float(p_value):.4f}（参考）"
-    started = operational.get("started_at") or "未記録"
+    permutation_text = "未評価" if permutation_p is None else f"{float(permutation_p):.4f}（参考）"
+    sign_text = "未評価" if sign_test_p is None else f"{float(sign_test_p):.4f}（参考）"
+    started = operational.get("evaluation_started_at") or operational.get("started_at") or "未記録"
     return (
         f"統計判定: {paired.get('judgement')}\n"
         f"データ量: {paired.get('data_volume')}\n"
         f"平均差: {float(mean_difference):+.3f}\n"
         f"95%CI: {ci}\n"
-        f"p={p_text}\n"
-        f"実運用: {operational.get('evaluated_draws', 0)}回 / 開始 {started}"
+        f"平均差permutation p={permutation_text}\n"
+        f"勝敗符号検定p={sign_text}\n"
+        f"実運用: {operational.get('evaluated_draws', 0)}回 / 評価開始 {started}"
     )
 
 
