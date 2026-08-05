@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-08-05T00:07:11.428857+00:00",
+  "generated_at": "2026-08-05T02:53:13.947416+00:00",
   "status": "ok",
   "overall": {
     "full_run_status": "ok",
@@ -156,8 +156,41 @@
           "evolution": 4
         }
       },
+      "statistical_evaluation": {
+        "game_key": "loto6",
+        "metric": "5口中の最大一致数",
+        "baseline": "一様ランダム",
+        "paired_evaluation": {
+          "status": "evaluated",
+          "sample_size": 30,
+          "data_volume": "暫定評価（30回）",
+          "mean_difference": 0.033333,
+          "confidence_interval_95": {
+            "lower": -0.333333,
+            "upper": 0.366667,
+            "method": "paired_bootstrap_percentile",
+            "iterations": 10000
+          },
+          "p_value_reference": {
+            "value": 0.663624,
+            "method": "two_sided_exact_sign_test",
+            "note": "補助情報。主要判定は95%信頼区間を使用。"
+          },
+          "wins": 12,
+          "ties": 9,
+          "losses": 9,
+          "judgement": "現時点では差を特定できない"
+        },
+        "operational_evaluation": {
+          "evaluated_draws": 9,
+          "started_at": "2026-07-06",
+          "latest_evaluated_at": "2026-08-03"
+        },
+        "one_line_summary": "現時点では差を特定できない / 評価30回・実運用9回",
+        "holdout_note": "ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。"
+      },
       "experience": {
-        "history_count": 3,
+        "history_count": 4,
         "unique_config_count": 1,
         "average_selection_score": 2.453168,
         "best_config_name": "evolution_02_random_07_random_05",
@@ -170,8 +203,8 @@
             "best_selection_score": 0.0
           },
           "experience": {
-            "count": 2,
-            "share": 0.666667,
+            "count": 3,
+            "share": 0.75,
             "average_selection_score": 2.453168,
             "best_selection_score": 2.453168
           },
@@ -189,7 +222,7 @@
           },
           "evolution": {
             "count": 1,
-            "share": 0.333333,
+            "share": 0.25,
             "average_selection_score": 2.453168,
             "best_selection_score": 2.453168
           }
@@ -204,8 +237,8 @@
       "current": {
         "latest_draw_no": 688,
         "next_draw_no": 689,
-        "selected_config": "evolution_01_no_delay_strict_experience_loto7_1",
-        "selected_search_source": "evolution",
+        "selected_config": "experience_loto7_1",
+        "selected_search_source": "experience",
         "prediction": [
           {
             "pattern_id": "P1",
@@ -219,7 +252,7 @@
               35
             ],
             "score": 0.416832,
-            "model": "evolution_01_no_delay_strict_experience_loto7_1"
+            "model": "experience_loto7_1"
           },
           {
             "pattern_id": "P2",
@@ -233,7 +266,7 @@
               36
             ],
             "score": 0.337271,
-            "model": "evolution_01_no_delay_strict_experience_loto7_1"
+            "model": "experience_loto7_1"
           },
           {
             "pattern_id": "P3",
@@ -247,7 +280,7 @@
               32
             ],
             "score": 0.267128,
-            "model": "evolution_01_no_delay_strict_experience_loto7_1"
+            "model": "experience_loto7_1"
           },
           {
             "pattern_id": "P4",
@@ -261,7 +294,7 @@
               28
             ],
             "score": 0.262238,
-            "model": "evolution_01_no_delay_strict_experience_loto7_1"
+            "model": "experience_loto7_1"
           },
           {
             "pattern_id": "P5",
@@ -275,7 +308,7 @@
               33
             ],
             "score": 0.268915,
-            "model": "evolution_01_no_delay_strict_experience_loto7_1"
+            "model": "experience_loto7_1"
           }
         ],
         "previous_evaluation": {
@@ -331,16 +364,49 @@
           "evolution": 4
         },
         "effective_allocation": {
-          "experience": 2,
-          "random": 5,
+          "experience": 3,
+          "random": 4,
           "local": 6,
           "evolution": 4
         }
       },
+      "statistical_evaluation": {
+        "game_key": "loto7",
+        "metric": "5口中の最大一致数",
+        "baseline": "一様ランダム",
+        "paired_evaluation": {
+          "status": "evaluated",
+          "sample_size": 30,
+          "data_volume": "暫定評価（30回）",
+          "mean_difference": 0.1,
+          "confidence_interval_95": {
+            "lower": -0.333333,
+            "upper": 0.566667,
+            "method": "paired_bootstrap_percentile",
+            "iterations": 10000
+          },
+          "p_value_reference": {
+            "value": 1.0,
+            "method": "two_sided_exact_sign_test",
+            "note": "補助情報。主要判定は95%信頼区間を使用。"
+          },
+          "wins": 10,
+          "ties": 11,
+          "losses": 9,
+          "judgement": "現時点では差を特定できない"
+        },
+        "operational_evaluation": {
+          "evaluated_draws": 4,
+          "started_at": "2026-07-10",
+          "latest_evaluated_at": "2026-07-31"
+        },
+        "one_line_summary": "現時点では差を特定できない / 評価30回・実運用4回",
+        "holdout_note": "ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。"
+      },
       "experience": {
-        "history_count": 3,
+        "history_count": 4,
         "unique_config_count": 3,
-        "average_selection_score": 3.618133,
+        "average_selection_score": 3.627727,
         "best_config_name": "evolution_01_no_delay_strict_experience_loto7_1",
         "best_selection_score": 3.656509,
         "source_statistics": {
@@ -351,10 +417,10 @@
             "best_selection_score": 0.0
           },
           "experience": {
-            "count": 0,
-            "share": 0.0,
-            "average_selection_score": 0.0,
-            "best_selection_score": 0.0
+            "count": 1,
+            "share": 0.25,
+            "average_selection_score": 3.656509,
+            "best_selection_score": 3.656509
           },
           "random": {
             "count": 0,
@@ -370,7 +436,7 @@
           },
           "evolution": {
             "count": 3,
-            "share": 1.0,
+            "share": 0.75,
             "average_selection_score": 3.618133,
             "best_selection_score": 3.656509
           }
@@ -385,8 +451,8 @@
       "current": {
         "latest_draw_no": 1398,
         "next_draw_no": 1399,
-        "selected_config": "evolution_02_experience_miniloto_1_experience_miniloto_2",
-        "selected_search_source": "evolution",
+        "selected_config": "experience_miniloto_1",
+        "selected_search_source": "experience",
         "prediction": [
           {
             "pattern_id": "P1",
@@ -398,7 +464,7 @@
               31
             ],
             "score": 0.449238,
-            "model": "evolution_02_experience_miniloto_1_experience_miniloto_2"
+            "model": "experience_miniloto_1"
           },
           {
             "pattern_id": "P2",
@@ -410,7 +476,7 @@
               27
             ],
             "score": 0.38495,
-            "model": "evolution_02_experience_miniloto_1_experience_miniloto_2"
+            "model": "experience_miniloto_1"
           },
           {
             "pattern_id": "P3",
@@ -422,7 +488,7 @@
               29
             ],
             "score": 0.338195,
-            "model": "evolution_02_experience_miniloto_1_experience_miniloto_2"
+            "model": "experience_miniloto_1"
           },
           {
             "pattern_id": "P4",
@@ -434,7 +500,7 @@
               30
             ],
             "score": 0.289431,
-            "model": "evolution_02_experience_miniloto_1_experience_miniloto_2"
+            "model": "experience_miniloto_1"
           },
           {
             "pattern_id": "P5",
@@ -446,7 +512,7 @@
               31
             ],
             "score": 0.301301,
-            "model": "evolution_02_experience_miniloto_1_experience_miniloto_2"
+            "model": "experience_miniloto_1"
           }
         ],
         "previous_evaluation": {
@@ -502,16 +568,49 @@
           "evolution": 4
         },
         "effective_allocation": {
-          "experience": 2,
-          "random": 5,
+          "experience": 3,
+          "random": 4,
           "local": 6,
           "evolution": 4
         }
       },
+      "statistical_evaluation": {
+        "game_key": "miniloto",
+        "metric": "5口中の最大一致数",
+        "baseline": "一様ランダム",
+        "paired_evaluation": {
+          "status": "evaluated",
+          "sample_size": 30,
+          "data_volume": "暫定評価（30回）",
+          "mean_difference": 0.233333,
+          "confidence_interval_95": {
+            "lower": -0.1,
+            "upper": 0.566667,
+            "method": "paired_bootstrap_percentile",
+            "iterations": 10000
+          },
+          "p_value_reference": {
+            "value": 0.237885,
+            "method": "two_sided_exact_sign_test",
+            "note": "補助情報。主要判定は95%信頼区間を使用。"
+          },
+          "wins": 12,
+          "ties": 12,
+          "losses": 6,
+          "judgement": "現時点では差を特定できない"
+        },
+        "operational_evaluation": {
+          "evaluated_draws": 2,
+          "started_at": "2026-07-28",
+          "latest_evaluated_at": "2026-08-04"
+        },
+        "one_line_summary": "現時点では差を特定できない / 評価30回・実運用2回",
+        "holdout_note": "ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。"
+      },
       "experience": {
-        "history_count": 3,
+        "history_count": 4,
         "unique_config_count": 3,
-        "average_selection_score": 2.240724,
+        "average_selection_score": 2.25245,
         "best_config_name": "evolution_02_experience_miniloto_1_experience_miniloto_2",
         "best_selection_score": 2.287626,
         "source_statistics": {
@@ -522,10 +621,10 @@
             "best_selection_score": 0.0
           },
           "experience": {
-            "count": 0,
-            "share": 0.0,
-            "average_selection_score": 0.0,
-            "best_selection_score": 0.0
+            "count": 1,
+            "share": 0.25,
+            "average_selection_score": 2.287626,
+            "best_selection_score": 2.287626
           },
           "random": {
             "count": 0,
@@ -535,13 +634,13 @@
           },
           "local": {
             "count": 1,
-            "share": 0.333333,
+            "share": 0.25,
             "average_selection_score": 2.224761,
             "best_selection_score": 2.224761
           },
           "evolution": {
             "count": 2,
-            "share": 0.666667,
+            "share": 0.5,
             "average_selection_score": 2.248706,
             "best_selection_score": 2.287626
           }
@@ -727,10 +826,43 @@
           "box_hit_rate": 0.077778
         }
       },
+      "statistical_evaluation": {
+        "game_key": "numbers3",
+        "metric": "BOX専用候補の的中（0/1）",
+        "baseline": "BOX専用ランダム",
+        "paired_evaluation": {
+          "status": "evaluated",
+          "sample_size": 60,
+          "data_volume": "暫定評価（60回）",
+          "mean_difference": 0.05,
+          "confidence_interval_95": {
+            "lower": -0.033333,
+            "upper": 0.133333,
+            "method": "paired_bootstrap_percentile",
+            "iterations": 10000
+          },
+          "p_value_reference": {
+            "value": 0.453125,
+            "method": "two_sided_exact_sign_test",
+            "note": "補助情報。主要判定は95%信頼区間を使用。"
+          },
+          "wins": 5,
+          "ties": 53,
+          "losses": 2,
+          "judgement": "現時点では差を特定できない"
+        },
+        "operational_evaluation": {
+          "evaluated_draws": 2,
+          "started_at": "2026-08-03",
+          "latest_evaluated_at": "2026-08-04"
+        },
+        "one_line_summary": "現時点では差を特定できない / 評価60回・実運用2回",
+        "holdout_note": "ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。"
+      },
       "experience": {
-        "history_count": 3,
+        "history_count": 4,
         "unique_config_count": 2,
-        "average_selection_score": 3.016207,
+        "average_selection_score": 3.018753,
         "best_config_name": "local_01",
         "best_selection_score": 3.026392,
         "source_statistics": {
@@ -741,8 +873,8 @@
             "best_selection_score": 0.0
           },
           "experience": {
-            "count": 1,
-            "share": 0.333333,
+            "count": 2,
+            "share": 0.5,
             "average_selection_score": 3.026392,
             "best_selection_score": 3.026392
           },
@@ -754,13 +886,13 @@
           },
           "local": {
             "count": 1,
-            "share": 0.333333,
+            "share": 0.25,
             "average_selection_score": 3.026392,
             "best_selection_score": 3.026392
           },
           "evolution": {
             "count": 1,
-            "share": 0.333333,
+            "share": 0.25,
             "average_selection_score": 2.995837,
             "best_selection_score": 2.995837
           }
@@ -775,8 +907,8 @@
       "current": {
         "latest_draw_no": 7041,
         "next_draw_no": 7042,
-        "selected_config": "local_01",
-        "selected_search_source": "local",
+        "selected_config": "experience_numbers4_1",
+        "selected_search_source": "experience",
         "prediction": [
           {
             "pattern_id": "P1",
@@ -787,7 +919,7 @@
               1
             ],
             "score": 8.933471,
-            "model": "local_01"
+            "model": "experience_numbers4_1"
           },
           {
             "pattern_id": "P2",
@@ -798,7 +930,7 @@
               7
             ],
             "score": 8.925325,
-            "model": "local_01"
+            "model": "experience_numbers4_1"
           },
           {
             "pattern_id": "P3",
@@ -809,7 +941,7 @@
               4
             ],
             "score": 8.910047,
-            "model": "local_01"
+            "model": "experience_numbers4_1"
           },
           {
             "pattern_id": "P4",
@@ -820,7 +952,7 @@
               8
             ],
             "score": 8.883461,
-            "model": "local_01"
+            "model": "experience_numbers4_1"
           },
           {
             "pattern_id": "P5",
@@ -831,7 +963,7 @@
               5
             ],
             "score": 8.875211,
-            "model": "local_01"
+            "model": "experience_numbers4_1"
           },
           {
             "pattern_id": "P6",
@@ -842,7 +974,7 @@
               9
             ],
             "score": 8.862491,
-            "model": "local_01"
+            "model": "experience_numbers4_1"
           },
           {
             "pattern_id": "P7",
@@ -853,7 +985,7 @@
               0
             ],
             "score": 8.832595,
-            "model": "local_01"
+            "model": "experience_numbers4_1"
           },
           {
             "pattern_id": "P8",
@@ -864,7 +996,7 @@
               7
             ],
             "score": 8.784372,
-            "model": "local_01"
+            "model": "experience_numbers4_1"
           },
           {
             "pattern_id": "P9",
@@ -875,7 +1007,7 @@
               3
             ],
             "score": 8.773995,
-            "model": "local_01"
+            "model": "experience_numbers4_1"
           },
           {
             "pattern_id": "P10",
@@ -886,7 +1018,7 @@
               2
             ],
             "score": 8.703254,
-            "model": "local_01"
+            "model": "experience_numbers4_1"
           }
         ],
         "previous_evaluation": {
@@ -942,8 +1074,8 @@
           "evolution": 4
         },
         "effective_allocation": {
-          "experience": 1,
-          "random": 6,
+          "experience": 2,
+          "random": 5,
           "local": 6,
           "evolution": 4
         },
@@ -956,10 +1088,43 @@
           "box_hit_rate": 0.005556
         }
       },
+      "statistical_evaluation": {
+        "game_key": "numbers4",
+        "metric": "BOX専用候補の的中（0/1）",
+        "baseline": "BOX専用ランダム",
+        "paired_evaluation": {
+          "status": "evaluated",
+          "sample_size": 60,
+          "data_volume": "暫定評価（60回）",
+          "mean_difference": 0.0,
+          "confidence_interval_95": {
+            "lower": -0.066667,
+            "upper": 0.066667,
+            "method": "paired_bootstrap_percentile",
+            "iterations": 10000
+          },
+          "p_value_reference": {
+            "value": 1.0,
+            "method": "two_sided_exact_sign_test",
+            "note": "補助情報。主要判定は95%信頼区間を使用。"
+          },
+          "wins": 2,
+          "ties": 56,
+          "losses": 2,
+          "judgement": "現時点では差を特定できない"
+        },
+        "operational_evaluation": {
+          "evaluated_draws": 2,
+          "started_at": "2026-08-03",
+          "latest_evaluated_at": "2026-08-04"
+        },
+        "one_line_summary": "現時点では差を特定できない / 評価60回・実運用2回",
+        "holdout_note": "ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。"
+      },
       "experience": {
-        "history_count": 2,
+        "history_count": 3,
         "unique_config_count": 2,
-        "average_selection_score": 2.032293,
+        "average_selection_score": 2.065279,
         "best_config_name": "local_01",
         "best_selection_score": 2.131251,
         "source_statistics": {
@@ -970,20 +1135,20 @@
             "best_selection_score": 0.0
           },
           "experience": {
-            "count": 0,
-            "share": 0.0,
-            "average_selection_score": 0.0,
-            "best_selection_score": 0.0
+            "count": 1,
+            "share": 0.333333,
+            "average_selection_score": 2.131251,
+            "best_selection_score": 2.131251
           },
           "random": {
             "count": 1,
-            "share": 0.5,
+            "share": 0.333333,
             "average_selection_score": 1.933334,
             "best_selection_score": 1.933334
           },
           "local": {
             "count": 1,
-            "share": 0.5,
+            "share": 0.333333,
             "average_selection_score": 2.131251,
             "best_selection_score": 2.131251
           },
