@@ -523,8 +523,9 @@ def _summary_to_result(
     summary: BacktestSummary,
     *,
     config_name: str,
+    include_records: bool = False,
 ) -> dict[str, object]:
-    return {
+    result = {
         "config": config_name,
         "tested_periods": summary.tested_periods,
         "avg_matches": summary.average_best_matches,
@@ -537,6 +538,9 @@ def _summary_to_result(
         "hit_rate_6match": summary.hit_rate_6match,
         "hit_rate_7match": summary.hit_rate_7match,
     }
+    if include_records:
+        result["records"] = summary.to_dict(include_records=True).get("records", [])
+    return result
 
 
 def _run_backtest_result(
@@ -549,6 +553,7 @@ def _run_backtest_result(
     candidate_count: int,
     weights: PredictionWeights,
     seed: int,
+    include_records: bool = False,
 ) -> dict[str, object]:
     summary = run_backtest(
         history,
@@ -559,9 +564,13 @@ def _run_backtest_result(
         top_k=OPTIMIZATION_TOP_K,
         weights=weights,
         seed=seed,
-        include_records=False,
+        include_records=include_records,
     )
-    return _summary_to_result(summary, config_name=config_name)
+    return _summary_to_result(
+        summary,
+        config_name=config_name,
+        include_records=include_records,
+    )
 
 
 def _run_random_backtest_result(
@@ -574,6 +583,7 @@ def _run_random_backtest_result(
     candidate_count: int,
     seed: int,
     filtered: bool,
+    include_records: bool = False,
 ) -> dict[str, object]:
     if filtered:
         summary = run_filtered_random_backtest(
@@ -584,7 +594,7 @@ def _run_random_backtest_result(
             candidate_count=candidate_count,
             top_k=OPTIMIZATION_TOP_K,
             seed=seed,
-            include_records=False,
+            include_records=include_records,
         )
     else:
         summary = run_uniform_random_backtest(
@@ -594,9 +604,13 @@ def _run_random_backtest_result(
             tested_periods=tested_periods,
             top_k=OPTIMIZATION_TOP_K,
             seed=seed,
-            include_records=False,
+            include_records=include_records,
         )
-    return _summary_to_result(summary, config_name=config_name)
+    return _summary_to_result(
+        summary,
+        config_name=config_name,
+        include_records=include_records,
+    )
 
 
 def _aggregate_seed_results(
@@ -839,42 +853,71 @@ def _evaluate_final_candidate_holdout(
         return None
 
     seed = SEED
-    uniform_baselines = {
-        seed: _run_random_backtest_result(
-            history,
-            game_config,
-            config_name="uniform_random",
-            train_window=train_window,
-            tested_periods=holdout_periods,
-            candidate_count=candidate_count,
-            seed=seed,
-            filtered=False,
-        )
-    }
-    filtered_baselines = {
-        seed: _run_random_backtest_result(
-            history,
-            game_config,
-            config_name="filtered_random",
-            train_window=train_window,
-            tested_periods=holdout_periods,
-            candidate_count=candidate_count,
-            seed=seed,
-            filtered=True,
-        )
-    }
-
-    result = _evaluate_config(
+    merged_config = _merge_config(game_config, best_config)
+    model_result = _run_backtest_result(
         history,
-        game_config,
-        best_config,
+        merged_config,
+        config_name=str(best_config["name"]),
         train_window=train_window,
         tested_periods=holdout_periods,
         candidate_count=candidate_count,
-        seeds=(seed,),
-        random_baselines=uniform_baselines,
-        filtered_random_baselines=filtered_baselines,
+        weights=_prediction_weights(best_config),
+        seed=seed,
+        include_records=True,
     )
+    uniform_result = _run_random_backtest_result(
+        history,
+        game_config,
+        config_name="uniform_random",
+        train_window=train_window,
+        tested_periods=holdout_periods,
+        candidate_count=candidate_count,
+        seed=seed,
+        filtered=False,
+        include_records=True,
+    )
+    filtered_result = _run_random_backtest_result(
+        history,
+        game_config,
+        config_name="filtered_random",
+        train_window=train_window,
+        tested_periods=holdout_periods,
+        candidate_count=candidate_count,
+        seed=seed,
+        filtered=True,
+        include_records=True,
+    )
+    result = dict(model_result)
+    uniform_avg = float(uniform_result.get("avg_matches") or 0.0)
+    filtered_avg = float(filtered_result.get("avg_matches") or 0.0)
+    result["evaluated_seeds"] = 1
+    result["avg_matches_std"] = 0.0
+    result["seed_avg_matches"] = [float(result.get("avg_matches") or 0.0)]
+    result["selection_score"] = selection_score(result, uniform_avg)
+    result["random_unfiltered_avg"] = uniform_avg
+    result["random_filtered_avg"] = filtered_avg
+    result["random_uplift"] = round(float(result.get("avg_matches") or 0.0) - uniform_avg, 6)
+    result["random_filtered_baseline"] = {k: v for k, v in filtered_result.items() if k != "records"}
+    result["weights"] = dict(best_config["w"])
+    result["filters"] = dict(best_config.get("f", {}))
+    result["search_origin"] = best_config.get("search_origin")
+    result["parent"] = best_config.get("parent")
+    model_records = model_result.get("records", [])
+    uniform_records = uniform_result.get("records", [])
+    filtered_records = filtered_result.get("records", [])
+    result["paired_draw_results"] = [
+        {
+            "draw_index": model.get("draw_index"),
+            "actual": model.get("actual"),
+            "model_best_match_count": model.get("best_match_count"),
+            "uniform_best_match_count": uniform.get("best_match_count"),
+            "filtered_best_match_count": filtered.get("best_match_count"),
+            "model_minus_uniform": int(model.get("best_match_count", 0)) - int(uniform.get("best_match_count", 0)),
+            "model_minus_filtered": int(model.get("best_match_count", 0)) - int(filtered.get("best_match_count", 0)),
+        }
+        for model, uniform, filtered in zip(model_records, uniform_records, filtered_records)
+    ]
+    result.pop("records", None)
     result["evaluation_type"] = "production_candidate_count_holdout"
     result["candidate_count"] = int(candidate_count)
     result["ticket_count"] = int(OPTIMIZATION_TOP_K)
