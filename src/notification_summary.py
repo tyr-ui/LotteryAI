@@ -6,7 +6,8 @@ import json
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
-from storage import save_json
+from storage import load_json, save_json
+from statistical_evaluation import build_game_statistical_report
 
 
 GAME_ORDER = ("loto6", "loto7", "miniloto", "numbers3", "numbers4")
@@ -178,6 +179,44 @@ def _has_carryover(output: Mapping[str, Any], game_key: str) -> bool:
     return bool(row.get("status") in {"ok", "cached", "status_only"} and row.get("has_carryover"))
 
 
+
+
+def _statistical_report(output: Mapping[str, Any], game_key: str) -> Mapping[str, Any]:
+    reports = _mapping(output.get("statistical_reports"))
+    report = _mapping(reports.get(game_key))
+    if report:
+        return report
+    return build_game_statistical_report(game_key, _mapping(output.get(game_key)), [])
+
+
+def _statistics_text(output: Mapping[str, Any], game_key: str) -> str:
+    report = _statistical_report(output, game_key)
+    paired = _mapping(report.get("paired_evaluation"))
+    operational = _mapping(report.get("operational_evaluation"))
+    interval = _mapping(paired.get("confidence_interval_95"))
+    p_value = _mapping(paired.get("p_value_reference")).get("value")
+    mean_difference = paired.get("mean_difference")
+    if mean_difference is None:
+        return (
+            f"統計判定: {paired.get('judgement', '評価データなし')}\n"
+            f"データ量: {paired.get('data_volume', '未評価')}\n"
+            f"実運用: {operational.get('evaluated_draws', 0)}回"
+        )
+    lower = interval.get("lower")
+    upper = interval.get("upper")
+    ci = "未評価" if lower is None or upper is None else f"{float(lower):+.3f}～{float(upper):+.3f}"
+    p_text = "未評価" if p_value is None else f"{float(p_value):.4f}（参考）"
+    started = operational.get("started_at") or "未記録"
+    return (
+        f"統計判定: {paired.get('judgement')}\n"
+        f"データ量: {paired.get('data_volume')}\n"
+        f"平均差: {float(mean_difference):+.3f}\n"
+        f"95%CI: {ci}\n"
+        f"p={p_text}\n"
+        f"実運用: {operational.get('evaluated_draws', 0)}回 / 開始 {started}"
+    )
+
+
 def _feature_top3(section: Mapping[str, Any]) -> str:
     rows = [
         _mapping(item)
@@ -282,6 +321,10 @@ def _ai_summary_lines(output: Mapping[str, Any]) -> list[str]:
     else:
         lines.append("独立検証はまだ評価できていません。")
 
+    for game_key in GAME_ORDER:
+        report = _statistical_report(output, game_key)
+        lines.append(f"{GAME_NAMES[game_key]}: {report.get('one_line_summary')}")
+
     carryovers = [
         f"{GAME_NAMES[key]} {_carryover_text(output, key)}"
         for key in ("loto6", "loto7")
@@ -373,6 +416,8 @@ def build_notification_summary(output: Mapping[str, Any]) -> str:
                 if game_key in LOTO_GAMES
                 else _numbers_evaluation(section)
             ),
+            "",
+            _statistics_text(output, game_key),
         ])
         if game_key in LOTO_GAMES:
             lines.extend(["", f"主要特徴: {_feature_top3(section)}"])
@@ -384,6 +429,7 @@ def build_notification_summary(output: Mapping[str, Any]) -> str:
         "処理結果: 正常完了",
         "",
         "※ 過去データに基づく評価であり、当選を保証するものではありません。",
+        "※ ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。",
         "",
     ])
     return "\n".join(lines)
@@ -431,9 +477,13 @@ def _game_embed(
         {
             "name": "評価",
             "value": (
-                _lotto_evaluation(section)
-                if game_key in LOTO_GAMES
-                else _numbers_evaluation(section)
+                (
+                    _lotto_evaluation(section)
+                    if game_key in LOTO_GAMES
+                    else _numbers_evaluation(section)
+                )
+                + "\n\n"
+                + _statistics_text(output, game_key)
             ),
             "inline": False,
         },
@@ -461,7 +511,8 @@ def build_discord_payload(output: Mapping[str, Any]) -> dict[str, object]:
         "footer": {
             "text": (
                 "処理結果: 正常完了 / "
-                "過去データに基づく評価であり、当選を保証しません。"
+                "過去データに基づく評価であり、当選を保証しません。 "
+                "ホールドアウトは開発中に参照済みのため、実運用結果を優先します。"
             )
         },
     }
@@ -498,11 +549,22 @@ def build_discord_payload(output: Mapping[str, Any]) -> dict[str, object]:
 
 
 def write_notification_summary(output_dir: Path, output: dict) -> Path:
+    history = load_json(output_dir / "evaluation_history.json", default=[])
+    history = history if isinstance(history, list) else []
+    enriched_output = dict(output)
+    enriched_output["statistical_reports"] = {
+        game_key: build_game_statistical_report(
+            game_key,
+            _mapping(output.get(game_key)),
+            history,
+        )
+        for game_key in GAME_ORDER
+    }
     markdown_path = output_dir / "notification_summary.md"
-    markdown_path.write_text(build_notification_summary(output), encoding="utf-8")
+    markdown_path.write_text(build_notification_summary(enriched_output), encoding="utf-8")
     save_json(
         output_dir / "notification_payload.json",
-        build_discord_payload(output),
+        build_discord_payload(enriched_output),
     )
     return markdown_path
 
