@@ -84,7 +84,7 @@ def build_evaluation_dashboard(output_dir:Path)->dict[str,object]:
         metric=_num(_map(v.get("optimizer_backtest")).get("random_uplift"))
         if metric is not None:candidates.append((g,metric))
     minimum=min(counts.values(),default=0)
-    return {"schema_version":SCHEMA_VERSION,"generated_at":run.get("generated_at") or opt.get("generated_at") or exp.get("updated_at"),"status":run.get("status","unknown"),"overall":{"full_run_status":run.get("status","unknown"),"best_observed_game":max(candidates,key=lambda x:x[1])[0] if candidates else None,"least_evaluated_games":[g for g,n in counts.items() if n==minimum],"experience_schema_version":exp.get("schema_version"),"warnings":[f"{GAME_NAMES[g]}の事後評価は{n}回です。" for g,n in counts.items() if n<5],"previous_dashboard_comparison":{"status":"unavailable","reason":"初回実装では過去Dashboardとの差分を保存していません。"}},"games":games}
+    return {"schema_version":SCHEMA_VERSION,"generated_at":run.get("generated_at") or opt.get("generated_at") or exp.get("updated_at"),"status":run.get("status","unknown"),"overall":{"full_run_status":run.get("status","unknown"),"best_observed_game":None,"least_evaluated_games":[g for g,n in counts.items() if n==minimum],"experience_schema_version":exp.get("schema_version"),"warnings":[f"{GAME_NAMES[g]}の事後評価は{n}回です。" for g,n in counts.items() if n<5],"previous_dashboard_comparison":{"status":"unavailable","reason":"初回実装では過去Dashboardとの差分を保存していません。"}},"games":games}
 
 
 def _display_value(value: Any) -> str:
@@ -107,7 +107,7 @@ def _prediction(game:str, rows:Sequence[Any])->str:
 
 def render_evaluation_dashboard_markdown(dashboard:Mapping[str,object])->str:
     overall=_map(dashboard.get("overall")); games=_map(dashboard.get("games")); best=overall.get("best_observed_game"); least=[GAME_NAMES.get(str(x),str(x)) for x in _list(overall.get("least_evaluated_games"))]
-    lines=["# LotteryAI Evaluation Dashboard","",f"- 生成日時: `{dashboard.get('generated_at')}`",f"- Full Run: **{overall.get('full_run_status')}**",f"- Dashboard schema: `{dashboard.get('schema_version')}`","","## 全体","",f"- Optimizerのゲーム内ランダム差が最も高いゲーム: **{GAME_NAMES.get(str(best),str(best)) if best else '判定不能'}**",f"- 事後評価が最も少ないゲーム: {', '.join(least) if least else '不明'}",""]
+    lines=["# LotteryAI Evaluation Dashboard","",f"- 生成日時: `{dashboard.get('generated_at')}`",f"- Full Run: **{overall.get('full_run_status')}**",f"- Dashboard schema: `{dashboard.get('schema_version')}`","","## 全体","","- ゲーム間の最良順位: 表示しません（ゲームごとに指標分布が異なるため）。",f"- 事後評価が最も少ないゲーム: {', '.join(least) if least else '不明'}",""]
     lines += [f"- {GAME_NAMES[g]}: {_map(_map(games.get(g)).get('statistical_evaluation')).get('one_line_summary')}" for g in GAME_KEYS]
     lines.append("")
     for g in GAME_KEYS:
@@ -119,7 +119,7 @@ def render_evaluation_dashboard_markdown(dashboard:Mapping[str,object])->str:
         if nums:lines += ["### Numbersバックテスト","",f"- 平均最高位置一致: {_display_value(nums.get('average_best_position_matches'))}",f"- 1口平均位置一致: {_display_value(nums.get('average_position_matches_per_ticket'))}",f"- 平均最高順不同一致: {_display_value(nums.get('average_best_unordered_matches'))}",f"- Straight率: {_display_percent(nums.get('straight_hit_rate'))}",f"- Box率: {_display_percent(nums.get('box_hit_rate'))}",""]
         warnings=_list(game.get("warnings"))
         if warnings:lines += ["### 注意","",*[f"- {w}" for w in warnings],""]
-    lines += ["---","","※ ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。",""]
+    lines += ["---","","※ 開発用ホールドアウトは開発中に参照済みです。最終的な性能評価は実運用結果を優先してください。",""]
     return "\n".join(lines).rstrip()+"\n"
 
 def write_evaluation_dashboard(output_dir:Path)->dict[str,object]:
