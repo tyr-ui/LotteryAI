@@ -9,6 +9,7 @@ from numbers_backtester import (
     run_numbers_box_random_backtest,
 )
 from run_pipeline import evaluate_previous_for_type
+from numbers_optimizer import _build_box_paired_draw_results
 
 
 class NumbersBoxEvaluationTest(unittest.TestCase):
@@ -89,6 +90,36 @@ class NumbersBoxEvaluationTest(unittest.TestCase):
         self.assertTrue(box["box_hit"])
         self.assertEqual(3, box["best_unordered_match_count"])
         self.assertEqual(2, len(box["predictions"]))
+
+    def test_box_paired_results_average_all_seeds_and_join_by_draw(self) -> None:
+        model_records = [
+            {"draw_index": 2, "box_dedicated_hit": False},
+            {"draw_index": 1, "box_dedicated_hit": True},
+        ]
+        seed_records = {
+            "0": [
+                {"draw_index": 1, "box_hit": True},
+                {"draw_index": 2, "box_hit": False},
+            ],
+            "1": [
+                {"draw_index": 2, "box_hit": False},
+                {"draw_index": 1, "box_hit": False},
+            ],
+            "2": [
+                {"draw_index": 1, "box_hit": False},
+                {"draw_index": 2, "box_hit": True},
+            ],
+        }
+        rows, alignment = _build_box_paired_draw_results(
+            model_records,
+            seed_records,
+        )
+        self.assertEqual([1, 2], [row["draw_index"] for row in rows])
+        self.assertAlmostEqual(rows[0]["random_box_hit_mean"], 1 / 3, places=5)
+        self.assertAlmostEqual(rows[0]["model_minus_random_mean"], 2 / 3, places=5)
+        self.assertAlmostEqual(rows[1]["random_box_hit_mean"], 1 / 3, places=5)
+        self.assertEqual(alignment["random_seed_count"], 3)
+        self.assertEqual(alignment["matched_records"], 2)
 
 
 if __name__ == "__main__":
