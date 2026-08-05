@@ -1,6 +1,6 @@
 # LotteryAI Evaluation Dashboard
 
-- 生成日時: `2026-08-05T06:35:31.230265+00:00`
+- 生成日時: `2026-08-05T07:47:05.288989+00:00`
 - Full Run: **ok**
 - Dashboard schema: `1.1`
 
@@ -26,7 +26,7 @@
 - 最大一致: 3
 - Optimizer selection_score: 2.453168
 - Optimizer Random uplift: 0.251867
-- Experience履歴: 6件
+- Experience履歴: 7件
 
 ### 次回予想
 
@@ -60,7 +60,7 @@
 - 最大一致: 3
 - Optimizer selection_score: 3.656509
 - Optimizer Random uplift: 0.3185
-- Experience履歴: 6件
+- Experience履歴: 7件
 
 ### 次回予想
 
@@ -94,7 +94,7 @@
 - 最大一致: 2
 - Optimizer selection_score: 2.287626
 - Optimizer Random uplift: 0.1926
-- Experience履歴: 6件
+- Experience履歴: 7件
 
 ### 次回予想
 
@@ -128,7 +128,7 @@
 - 最大一致: 1
 - Optimizer selection_score: 3.026392
 - Optimizer Random uplift: 未評価
-- Experience履歴: 6件
+- Experience履歴: 7件
 
 ### 次回予想
 
@@ -170,7 +170,7 @@
 - 最大一致: 2
 - Optimizer selection_score: 2.131251
 - Optimizer Random uplift: 未評価
-- Experience履歴: 5件
+- Experience履歴: 6件
 
 ### 次回予想
 
