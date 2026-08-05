@@ -53,9 +53,26 @@ def _composition_matched_boxes(box_prediction: Sequence[Mapping[str, object]], d
         for candidate in rng.sample(groups[sig],count): result.append(list(candidate))
     return result
 
-def build_operational_controls(game_key:str, config:Mapping[str,object], dataframe, result:Mapping[str,object], target_draw_no:int, generated_at:str):
+def build_operational_controls(
+    game_key: str,
+    config: Mapping[str, object],
+    dataframe,
+    result: Mapping[str, object],
+    target_draw_no: int,
+    generated_at: str,
+    *,
+    evaluation_epoch: int | None = None,
+    model_version: str | None = None,
+):
     rng=Random(_seed(game_key,target_draw_no)); family=str(config.get("family","lotto")).lower()
-    base={"target_draw_no":target_draw_no,"generated_at":generated_at,"generated_before_draw":True,"control_seed":_seed(game_key,target_draw_no)}
+    base = {
+        "target_draw_no": target_draw_no,
+        "generated_at": generated_at,
+        "generated_before_draw": True,
+        "control_seed": _seed(game_key, target_draw_no),
+        "evaluation_epoch": evaluation_epoch,
+        "model_version": model_version,
+    }
     if family=="numbers":
         digit_count=int(config.get("digit_count", config.get("pick_count",0))); box=result.get("box_prediction",[])
         return {**base,"uniform_random_control":_numbers_uniform(digit_count,rng,10),"composition_matched_random_box_control":_composition_matched_boxes(box,digit_count,rng),"model_prediction":result.get("prediction",[]),"model_box_prediction":box}
