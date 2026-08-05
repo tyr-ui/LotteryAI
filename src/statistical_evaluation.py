@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from itertools import product
 from math import comb
 from random import Random
 from statistics import mean
@@ -9,9 +10,14 @@ from typing import Any, Mapping, Sequence
 
 
 def _number(value: Any) -> float | None:
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
+    if isinstance(value, bool):
+        return 1.0 if value else 0.0
+    if not isinstance(value, (int, float)):
         return None
-    return float(value)
+    number = float(value)
+    if number != number or number in {float("inf"), float("-inf")}:
+        return None
+    return number
 
 
 def data_volume_label(sample_size: int) -> str:
@@ -60,6 +66,41 @@ def _two_sided_sign_test_p_value(differences: Sequence[float]) -> float | None:
     return round(min(1.0, 2.0 * probability), 6)
 
 
+
+def _paired_permutation_p_value(
+    differences: Sequence[float],
+    *,
+    iterations: int = 20_000,
+    seed: int = 20260805,
+) -> float | None:
+    """Two-sided paired sign-flip test for the mean difference."""
+    values = [float(value) for value in differences if value == value]
+    if not values:
+        return None
+    observed = abs(mean(values))
+    if observed == 0.0:
+        return 1.0
+
+    n = len(values)
+    tolerance = 1e-12
+    if n <= 20:
+        extreme = 0
+        total = 2 ** n
+        for signs in product((-1.0, 1.0), repeat=n):
+            permuted = abs(mean(value * sign for value, sign in zip(values, signs)))
+            if permuted + tolerance >= observed:
+                extreme += 1
+        return round(extreme / total, 6)
+
+    rng = Random(seed)
+    extreme = 0
+    for _ in range(iterations):
+        permuted = abs(mean(value if rng.random() < 0.5 else -value for value in values))
+        if permuted + tolerance >= observed:
+            extreme += 1
+    return round((extreme + 1) / (iterations + 1), 6)
+
+
 def paired_difference_summary(
     rows: Sequence[Mapping[str, Any]],
     *,
@@ -72,8 +113,8 @@ def paired_difference_summary(
     for row in rows:
         raw_model = row.get(model_key)
         raw_baseline = row.get(baseline_key)
-        model = float(raw_model) if isinstance(raw_model, bool) else _number(raw_model)
-        baseline = float(raw_baseline) if isinstance(raw_baseline, bool) else _number(raw_baseline)
+        model = _number(raw_model)
+        baseline = _number(raw_baseline)
         if model is None or baseline is None:
             continue
         difference = model - baseline
@@ -93,7 +134,8 @@ def paired_difference_summary(
             "data_volume": data_volume_label(0),
             "mean_difference": None,
             "confidence_interval_95": None,
-            "p_value_reference": None,
+            "permutation_p_value_reference": None,
+            "sign_test_p_value_reference": None,
             "wins": 0,
             "ties": 0,
             "losses": 0,
@@ -102,7 +144,8 @@ def paired_difference_summary(
 
     average = round(float(mean(differences)), 6)
     interval = _bootstrap_mean_ci(differences, seed=bootstrap_seed)
-    p_value = _two_sided_sign_test_p_value(differences)
+    permutation_p_value = _paired_permutation_p_value(differences)
+    sign_test_p_value = _two_sided_sign_test_p_value(differences)
     lower, upper = interval if interval is not None else (None, None)
 
     if lower is not None and lower > 0:
@@ -123,10 +166,17 @@ def paired_difference_summary(
             "method": "paired_bootstrap_percentile",
             "iterations": 10_000,
         },
-        "p_value_reference": {
-            "value": p_value,
+        "permutation_p_value_reference": {
+            "value": permutation_p_value,
+            "method": "two_sided_paired_sign_flip_permutation_test",
+            "target": "mean_difference",
+            "note": "平均差に対する補助検定。主要判定は95%信頼区間を使用。",
+        },
+        "sign_test_p_value_reference": {
+            "value": sign_test_p_value,
             "method": "two_sided_exact_sign_test",
-            "note": "補助情報。主要判定は95%信頼区間を使用。",
+            "target": "win_loss_imbalance",
+            "note": "勝敗数の偏りを評価。平均差の検定ではありません。",
         },
         "wins": wins,
         "ties": ties,
@@ -156,6 +206,7 @@ def operational_evaluation_info(
     latest = max(dates).date().isoformat() if dates else None
     return {
         "evaluated_draws": len(rows),
+        "evaluation_started_at": start,
         "started_at": start,
         "latest_evaluated_at": latest,
     }
@@ -187,10 +238,18 @@ def build_game_statistical_report(
         box = box if isinstance(box, Mapping) else {}
         rows = box.get("paired_draw_results", [])
         rows = rows if isinstance(rows, Sequence) and not isinstance(rows, (str, bytes)) else []
+        baseline_key = (
+            "random_box_hit_mean"
+            if any(
+                isinstance(row, Mapping) and "random_box_hit_mean" in row
+                for row in rows
+            )
+            else "random_box_hit"
+        )
         paired = paired_difference_summary(
             rows,
             model_key="model_box_hit",
-            baseline_key="random_box_hit",
+            baseline_key=baseline_key,
         )
         metric = "BOX専用候補の的中（0/1）"
         baseline = "BOX専用ランダム"
