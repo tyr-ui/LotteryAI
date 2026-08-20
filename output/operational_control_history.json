@@ -220,6 +220,61 @@
     "model_minus_filtered_best": 0
   },
   {
+    "game_key": "loto6",
+    "target_draw_no": 2130,
+    "evaluation_epoch": 1,
+    "model_version": "epoch-1",
+    "generated_at": "2026-08-19T13:29:35.122448+00:00",
+    "evaluated_at": "2026-08-20T13:28:14.266252+00:00",
+    "generated_before_draw": true,
+    "actual_numbers": [
+      12,
+      18,
+      35,
+      40,
+      41,
+      43
+    ],
+    "model": {
+      "ticket_count": 5,
+      "best_match_count": 2,
+      "average_match_count": 1.0,
+      "match_counts": [
+        0,
+        2,
+        2,
+        0,
+        1
+      ]
+    },
+    "uniform_random_control": {
+      "ticket_count": 5,
+      "best_match_count": 2,
+      "average_match_count": 0.6,
+      "match_counts": [
+        1,
+        0,
+        0,
+        2,
+        0
+      ]
+    },
+    "filtered_random_control": {
+      "ticket_count": 5,
+      "best_match_count": 1,
+      "average_match_count": 0.6,
+      "match_counts": [
+        0,
+        1,
+        0,
+        1,
+        1
+      ]
+    },
+    "model_minus_uniform_best": 0,
+    "model_minus_filtered_best": 1
+  },
+  {
     "game_key": "loto7",
     "target_draw_no": 689,
     "evaluation_epoch": 1,
@@ -1012,6 +1067,58 @@
     "model_box_minus_control_hit": -1
   },
   {
+    "game_key": "numbers3",
+    "target_draw_no": 7053,
+    "evaluation_epoch": 1,
+    "model_version": "epoch-1",
+    "generated_at": "2026-08-19T13:29:35.122448+00:00",
+    "evaluated_at": "2026-08-20T13:28:14.267119+00:00",
+    "generated_before_draw": true,
+    "actual_numbers": [
+      9,
+      1,
+      9
+    ],
+    "model": {
+      "ticket_count": 10,
+      "best_position_match_count": 1,
+      "average_position_match_count": 0.1,
+      "best_unordered_match_count": 1,
+      "average_unordered_match_count": 0.4,
+      "straight_hit": false,
+      "box_hit": false
+    },
+    "uniform_random_control": {
+      "ticket_count": 10,
+      "best_position_match_count": 1,
+      "average_position_match_count": 0.1,
+      "best_unordered_match_count": 1,
+      "average_unordered_match_count": 0.4,
+      "straight_hit": false,
+      "box_hit": false
+    },
+    "model_box": {
+      "ticket_count": 10,
+      "best_position_match_count": 0,
+      "average_position_match_count": 0.0,
+      "best_unordered_match_count": 1,
+      "average_unordered_match_count": 0.4,
+      "straight_hit": false,
+      "box_hit": false
+    },
+    "composition_matched_random_box_control": {
+      "ticket_count": 10,
+      "best_position_match_count": 1,
+      "average_position_match_count": 0.4,
+      "best_unordered_match_count": 2,
+      "average_unordered_match_count": 0.6,
+      "straight_hit": false,
+      "box_hit": false
+    },
+    "model_minus_uniform_best_position": 0,
+    "model_box_minus_control_hit": 0
+  },
+  {
     "game_key": "numbers4",
     "target_draw_no": 7042,
     "evaluation_epoch": 1,
@@ -1487,5 +1594,58 @@
     },
     "model_minus_uniform_best_position": 0,
     "model_box_minus_control_hit": -1
+  },
+  {
+    "game_key": "numbers4",
+    "target_draw_no": 7052,
+    "evaluation_epoch": 1,
+    "model_version": "epoch-1",
+    "generated_at": "2026-08-19T13:29:35.122448+00:00",
+    "evaluated_at": "2026-08-20T13:28:14.267962+00:00",
+    "generated_before_draw": true,
+    "actual_numbers": [
+      5,
+      9,
+      8,
+      0
+    ],
+    "model": {
+      "ticket_count": 10,
+      "best_position_match_count": 2,
+      "average_position_match_count": 0.4,
+      "best_unordered_match_count": 2,
+      "average_unordered_match_count": 1.3,
+      "straight_hit": false,
+      "box_hit": false
+    },
+    "uniform_random_control": {
+      "ticket_count": 10,
+      "best_position_match_count": 2,
+      "average_position_match_count": 0.5,
+      "best_unordered_match_count": 3,
+      "average_unordered_match_count": 1.5,
+      "straight_hit": false,
+      "box_hit": false
+    },
+    "model_box": {
+      "ticket_count": 10,
+      "best_position_match_count": 1,
+      "average_position_match_count": 0.1,
+      "best_unordered_match_count": 2,
+      "average_unordered_match_count": 1.5,
+      "straight_hit": false,
+      "box_hit": false
+    },
+    "composition_matched_random_box_control": {
+      "ticket_count": 10,
+      "best_position_match_count": 0,
+      "average_position_match_count": 0.0,
+      "best_unordered_match_count": 2,
+      "average_unordered_match_count": 1.4,
+      "straight_hit": false,
+      "box_hit": false
+    },
+    "model_minus_uniform_best_position": 0,
+    "model_box_minus_control_hit": 0
   }
 ]
