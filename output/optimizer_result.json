@@ -1,17 +1,16 @@
 {
   "status": "ok",
   "note": "Only games with a changed latest draw number are recalculated unless LOTTERY_RUN_MODE=all is selected.",
-  "generated_at": "2026-09-10T17:13:33.512848+00:00",
+  "generated_at": "2026-09-11T01:20:50.959519+00:00",
   "run_metadata": {
     "mode": "auto",
-    "optimized_games": [
+    "optimized_games": [],
+    "reused_games": [
       "loto6",
+      "loto7",
+      "miniloto",
       "numbers3",
       "numbers4"
-    ],
-    "reused_games": [
-      "loto7",
-      "miniloto"
     ]
   },
   "previous_evaluation": {
@@ -1026,40 +1025,40 @@
   },
   "carryover": {
     "source": "official_multi_source",
-    "fetched_at": "2026-09-10T17:13:33.512837+00:00",
+    "fetched_at": "2026-09-11T01:20:50.959498+00:00",
     "games": {
       "loto6": {
         "game_key": "loto6",
-        "status": "fetch_error",
-        "source": "mizuho_bank",
-        "source_url": "https://www.mizuhobank.co.jp/takarakuji/check/loto/loto6/index.html",
+        "status": "status_only",
+        "source": "takarakuji_official",
+        "source_url": "https://www.takarakuji-official.jp/kuji/loto/loto6/",
         "expected_draw_no": 2136,
-        "draw_no": null,
+        "draw_no": 2136,
         "next_draw_no": 2137,
         "amount_yen": null,
-        "has_carryover": null,
-        "display_amount": "未取得",
-        "message": "みずほ銀行の公式ページ取得に失敗しました: HTTPError"
+        "has_carryover": true,
+        "display_amount": "発生中（金額未取得）",
+        "message": "宝くじ公式サイトで発生中を確認しましたが、金額は取得できませんでした。"
       },
       "loto7": {
         "game_key": "loto7",
-        "status": "fetch_error",
-        "source": "mizuho_bank",
-        "source_url": "https://www.mizuhobank.co.jp/takarakuji/check/loto/loto7/index.html",
+        "status": "status_only",
+        "source": "takarakuji_official",
+        "source_url": "https://www.takarakuji-official.jp/kuji/loto/loto7/",
         "expected_draw_no": 692,
-        "draw_no": null,
+        "draw_no": 692,
         "next_draw_no": 693,
         "amount_yen": null,
-        "has_carryover": null,
-        "display_amount": "未取得",
-        "message": "みずほ銀行の公式ページ取得に失敗しました: HTTPError"
+        "has_carryover": true,
+        "display_amount": "発生中（金額未取得）",
+        "message": "宝くじ公式サイトで発生中を確認しましたが、金額は取得できませんでした。"
       }
     }
   },
   "operational_controls": {
     "loto6": {
       "target_draw_no": 2137,
-      "generated_at": "2026-09-10T17:13:33.512848+00:00",
+      "generated_at": "2026-09-11T01:20:50.959519+00:00",
       "generated_before_draw": true,
       "control_seed": 2468797953335198896,
       "evaluation_epoch": 1,
@@ -1263,7 +1262,7 @@
     },
     "loto7": {
       "target_draw_no": 693,
-      "generated_at": "2026-09-10T17:13:33.512848+00:00",
+      "generated_at": "2026-09-11T01:20:50.959519+00:00",
       "generated_before_draw": true,
       "control_seed": 16089811834935936238,
       "evaluation_epoch": 1,
@@ -1482,7 +1481,7 @@
     },
     "miniloto": {
       "target_draw_no": 1404,
-      "generated_at": "2026-09-10T17:13:33.512848+00:00",
+      "generated_at": "2026-09-11T01:20:50.959519+00:00",
       "generated_before_draw": true,
       "control_seed": 13463084765173129379,
       "evaluation_epoch": 1,
@@ -1671,7 +1670,7 @@
     },
     "numbers3": {
       "target_draw_no": 7069,
-      "generated_at": "2026-09-10T17:13:33.512848+00:00",
+      "generated_at": "2026-09-11T01:20:50.959519+00:00",
       "generated_before_draw": true,
       "control_seed": 6480205429696631361,
       "evaluation_epoch": 1,
@@ -2457,7 +2456,7 @@
     },
     "numbers4": {
       "target_draw_no": 7069,
-      "generated_at": "2026-09-10T17:13:33.512848+00:00",
+      "generated_at": "2026-09-11T01:20:50.959519+00:00",
       "generated_before_draw": true,
       "control_seed": 8975468734285605390,
       "evaluation_epoch": 1,
@@ -3327,7 +3326,7 @@
       "draw_number_gap_count": 0,
       "missing_draw_numbers": [],
       "latest_draw_date": "2026-09-10",
-      "data_age_days": 0,
+      "data_age_days": 1,
       "max_staleness_days": 10,
       "hard_staleness_days": 30,
       "stale_data": false,
@@ -3336,7 +3335,7 @@
       "status": "ok"
     },
     "data_source": "mk-mode",
-    "data_loaded_at": "2026-09-10T16:36:16.599034+00:00",
+    "data_loaded_at": "2026-09-11T01:20:09.189750+00:00",
     "random_baseline": {
       "config": "uniform_random",
       "tested_periods": 90,
@@ -4749,7 +4748,7 @@
     },
     "operational_controls": {
       "target_draw_no": 2137,
-      "generated_at": "2026-09-10T17:13:33.512848+00:00",
+      "generated_at": "2026-09-11T01:20:50.959519+00:00",
       "generated_before_draw": true,
       "control_seed": 2468797953335198896,
       "evaluation_epoch": 1,
@@ -4968,7 +4967,7 @@
       "draw_number_gap_count": 0,
       "missing_draw_numbers": [],
       "latest_draw_date": "2026-08-28",
-      "data_age_days": 13,
+      "data_age_days": 14,
       "max_staleness_days": 10,
       "hard_staleness_days": 30,
       "stale_data": true,
@@ -4977,7 +4976,7 @@
       "status": "ok"
     },
     "data_source": "mk-mode",
-    "data_loaded_at": "2026-09-10T16:36:20.705025+00:00",
+    "data_loaded_at": "2026-09-11T01:20:31.162685+00:00",
     "random_baseline": {
       "config": "uniform_random",
       "tested_periods": 90,
@@ -6425,7 +6424,7 @@
     },
     "operational_controls": {
       "target_draw_no": 693,
-      "generated_at": "2026-09-10T17:13:33.512848+00:00",
+      "generated_at": "2026-09-11T01:20:50.959519+00:00",
       "generated_before_draw": true,
       "control_seed": 16089811834935936238,
       "evaluation_epoch": 1,
@@ -6659,7 +6658,7 @@
       "draw_number_gap_count": 0,
       "missing_draw_numbers": [],
       "latest_draw_date": "2026-09-08",
-      "data_age_days": 2,
+      "data_age_days": 3,
       "max_staleness_days": 10,
       "hard_staleness_days": 30,
       "stale_data": false,
@@ -6668,7 +6667,7 @@
       "status": "ok"
     },
     "data_source": "mk-mode",
-    "data_loaded_at": "2026-09-10T16:36:24.006361+00:00",
+    "data_loaded_at": "2026-09-11T01:20:33.817872+00:00",
     "random_baseline": {
       "config": "uniform_random",
       "tested_periods": 90,
@@ -8046,7 +8045,7 @@
     },
     "operational_controls": {
       "target_draw_no": 1404,
-      "generated_at": "2026-09-10T17:13:33.512848+00:00",
+      "generated_at": "2026-09-11T01:20:50.959519+00:00",
       "generated_before_draw": true,
       "control_seed": 13463084765173129379,
       "evaluation_epoch": 1,
@@ -8251,7 +8250,7 @@
       "draw_number_gap_count": 0,
       "missing_draw_numbers": [],
       "latest_draw_date": "2026-09-10",
-      "data_age_days": 0,
+      "data_age_days": 1,
       "max_staleness_days": 4,
       "hard_staleness_days": 12,
       "stale_data": false,
@@ -8260,7 +8259,7 @@
       "status": "ok"
     },
     "data_source": "mk-mode",
-    "data_loaded_at": "2026-09-10T16:36:30.007352+00:00",
+    "data_loaded_at": "2026-09-11T01:20:36.418512+00:00",
     "random_baseline": {
       "config": "uniform_random",
       "source": "uniform_random",
@@ -84161,7 +84160,7 @@
     },
     "operational_controls": {
       "target_draw_no": 7069,
-      "generated_at": "2026-09-10T17:13:33.512848+00:00",
+      "generated_at": "2026-09-11T01:20:50.959519+00:00",
       "generated_before_draw": true,
       "control_seed": 6480205429696631361,
       "evaluation_epoch": 1,
@@ -84963,7 +84962,7 @@
       "draw_number_gap_count": 0,
       "missing_draw_numbers": [],
       "latest_draw_date": "2026-09-10",
-      "data_age_days": 0,
+      "data_age_days": 1,
       "max_staleness_days": 4,
       "hard_staleness_days": 12,
       "stale_data": false,
@@ -84972,7 +84971,7 @@
       "status": "ok"
     },
     "data_source": "mk-mode",
-    "data_loaded_at": "2026-09-10T16:36:40.617180+00:00",
+    "data_loaded_at": "2026-09-11T01:20:39.129623+00:00",
     "random_baseline": {
       "config": "uniform_random",
       "source": "uniform_random",
@@ -173513,7 +173512,7 @@
     },
     "operational_controls": {
       "target_draw_no": 7069,
-      "generated_at": "2026-09-10T17:13:33.512848+00:00",
+      "generated_at": "2026-09-11T01:20:50.959519+00:00",
       "generated_before_draw": true,
       "control_seed": 8975468734285605390,
       "evaluation_epoch": 1,
