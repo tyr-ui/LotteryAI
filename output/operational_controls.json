@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T01:20:50.959519+00:00",
+  "generated_at": "2026-09-11T17:08:33.601658+00:00",
   "evaluation_epoch": {
     "epoch_id": 1,
     "model_version": "epoch-1",
@@ -11,7 +11,7 @@
   "games": {
     "loto6": {
       "target_draw_no": 2137,
-      "generated_at": "2026-09-11T01:20:50.959519+00:00",
+      "generated_at": "2026-09-11T17:08:33.601658+00:00",
       "generated_before_draw": true,
       "control_seed": 2468797953335198896,
       "evaluation_epoch": 1,
@@ -214,119 +214,142 @@
       ]
     },
     "loto7": {
-      "target_draw_no": 693,
-      "generated_at": "2026-09-11T01:20:50.959519+00:00",
+      "target_draw_no": 695,
+      "generated_at": "2026-09-11T17:08:33.601658+00:00",
       "generated_before_draw": true,
-      "control_seed": 16089811834935936238,
+      "control_seed": 15706404062230232162,
       "evaluation_epoch": 1,
       "model_version": "epoch-1",
       "uniform_random_control": [
         [
-          4,
-          19,
-          23,
-          27,
-          30,
-          36,
-          37
-        ],
-        [
-          3,
-          5,
+          2,
+          11,
           17,
-          21,
-          22,
-          24,
-          29
+          18,
+          26,
+          29,
+          30
         ],
         [
+          1,
           4,
-          6,
+          12,
+          17,
+          26,
+          30,
+          35
+        ],
+        [
           9,
-          17,
-          20,
-          24,
-          27
-        ],
-        [
-          15,
-          16,
-          17,
           19,
-          27,
-          30,
+          22,
+          23,
+          33,
+          35,
           36
         ],
         [
-          2,
-          9,
-          12,
-          18,
-          19,
-          22,
+          4,
+          5,
+          11,
+          16,
+          21,
+          25,
           35
+        ],
+        [
+          7,
+          12,
+          14,
+          15,
+          16,
+          27,
+          34
         ]
       ],
       "filtered_random_control": [
         [
           5,
-          7,
-          15,
-          22,
-          32,
-          34,
-          35
-        ],
-        [
-          5,
           6,
+          12,
           13,
-          18,
           31,
-          34,
-          36
+          32,
+          34
         ],
         [
-          3,
-          6,
-          9,
-          15,
-          24,
-          28,
-          29
-        ],
-        [
-          6,
+          1,
           8,
           9,
-          23,
-          25,
+          22,
           26,
+          27,
+          30
+        ],
+        [
+          4,
+          12,
+          19,
+          21,
+          29,
+          30,
           35
         ],
         [
-          2,
-          7,
-          14,
-          18,
+          1,
+          6,
+          13,
+          24,
           25,
-          27,
-          28
+          28,
+          32
+        ],
+        [
+          7,
+          8,
+          11,
+          17,
+          22,
+          23,
+          24
         ]
       ],
       "model_prediction": [
         {
           "pattern_id": "P1",
           "numbers": [
+            4,
             9,
+            13,
             15,
-            18,
             22,
-            29,
             34,
             35
           ],
-          "score": 0.424628,
+          "score": 0.42541,
+          "model": "experience_loto7_1",
+          "block_counts": [
+            2,
+            2,
+            1,
+            2
+          ],
+          "consecutive_count": 1,
+          "repeat_count": 1,
+          "estimated_probability": 9.713007815474609e-08
+        },
+        {
+          "pattern_id": "P2",
+          "numbers": [
+            7,
+            14,
+            17,
+            26,
+            29,
+            30,
+            36
+          ],
+          "score": 0.345235,
           "model": "experience_loto7_1",
           "block_counts": [
             1,
@@ -339,102 +362,79 @@
           "estimated_probability": 9.713007815474609e-08
         },
         {
-          "pattern_id": "P2",
-          "numbers": [
-            1,
-            4,
-            13,
-            17,
-            26,
-            31,
-            36
-          ],
-          "score": 0.338668,
-          "model": "experience_loto7_1",
-          "block_counts": [
-            2,
-            2,
-            1,
-            2
-          ],
-          "consecutive_count": 0,
-          "repeat_count": 1,
-          "estimated_probability": 9.713007815474609e-08
-        },
-        {
           "pattern_id": "P3",
           "numbers": [
+            6,
+            8,
             11,
-            12,
-            14,
-            21,
+            18,
             27,
-            30,
+            31,
             32
           ],
-          "score": 0.284167,
+          "score": 0.303086,
           "model": "experience_loto7_1",
           "block_counts": [
-            0,
-            3,
             2,
+            2,
+            1,
             2
           ],
           "consecutive_count": 1,
-          "repeat_count": 0,
+          "repeat_count": 1,
           "estimated_probability": 9.713007815474609e-08
         },
         {
           "pattern_id": "P4",
           "numbers": [
-            6,
-            7,
-            8,
-            19,
-            28,
-            33,
-            35
+            1,
+            2,
+            10,
+            20,
+            21,
+            23,
+            25
           ],
-          "score": 0.28212,
+          "score": 0.219735,
           "model": "experience_loto7_1",
           "block_counts": [
-            3,
-            0,
+            2,
             1,
-            3
+            4,
+            0
           ],
           "consecutive_count": 2,
-          "repeat_count": 2,
+          "repeat_count": 0,
           "estimated_probability": 9.713007815474609e-08
         },
         {
           "pattern_id": "P5",
           "numbers": [
-            2,
-            7,
-            10,
-            20,
-            23,
+            12,
+            15,
+            19,
             24,
-            29
+            27,
+            28,
+            33
           ],
-          "score": 0.261555,
+          "score": 0.266791,
           "model": "experience_loto7_1",
           "block_counts": [
+            0,
             2,
-            1,
             3,
-            1
+            2
           ],
           "consecutive_count": 1,
-          "repeat_count": 2,
+          "repeat_count": 1,
           "estimated_probability": 9.713007815474609e-08
         }
       ]
     },
     "miniloto": {
       "target_draw_no": 1404,
-      "generated_at": "2026-09-11T01:20:50.959519+00:00",
+      "generated_at": "2026-09-11T17:08:33.601658+00:00",
       "generated_before_draw": true,
       "control_seed": 13463084765173129379,
       "evaluation_epoch": 1,
@@ -622,84 +622,104 @@
       ]
     },
     "numbers3": {
-      "target_draw_no": 7069,
-      "generated_at": "2026-09-11T01:20:50.959519+00:00",
+      "target_draw_no": 7070,
+      "generated_at": "2026-09-11T17:08:33.601658+00:00",
       "generated_before_draw": true,
-      "control_seed": 6480205429696631361,
+      "control_seed": 5705879970167327591,
       "evaluation_epoch": 1,
       "model_version": "epoch-1",
       "uniform_random_control": [
         [
+          0,
+          0,
+          2
+        ],
+        [
           3,
-          4,
-          4
-        ],
-        [
-          5,
-          5,
-          1
-        ],
-        [
           9,
+          3
+        ],
+        [
           1,
-          7
-        ],
-        [
-          4,
-          8,
-          6
-        ],
-        [
-          5,
-          9,
-          8
-        ],
-        [
-          4,
-          8,
+          2,
           5
         ],
         [
-          6,
+          8,
+          1,
+          2
+        ],
+        [
+          4,
           6,
           9
         ],
         [
           2,
           9,
-          6
+          4
         ],
         [
-          4,
           3,
-          1
+          3,
+          9
         ],
         [
-          4,
           8,
-          0
+          7,
+          2
+        ],
+        [
+          3,
+          6,
+          3
+        ],
+        [
+          2,
+          4,
+          7
         ]
       ],
       "composition_matched_random_box_control": [
         [
-          3,
-          5,
+          2,
+          6,
+          9
+        ],
+        [
+          1,
+          4,
           6
         ],
         [
           0,
-          6,
+          3,
+          8
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          7
+        ],
+        [
+          4,
+          7,
           8
         ],
         [
           3,
-          6,
-          9
+          7,
+          8
         ],
         [
-          2,
+          0,
           6,
-          8
+          7
         ],
         [
           0,
@@ -707,29 +727,9 @@
           9
         ],
         [
-          1,
-          2,
-          9
-        ],
-        [
-          4,
-          6,
-          9
-        ],
-        [
-          1,
-          6,
-          7
-        ],
-        [
           2,
           3,
-          9
-        ],
-        [
-          1,
-          2,
-          7
+          8
         ]
       ],
       "model_prediction": [
@@ -737,37 +737,70 @@
           "pattern_id": "P1",
           "numbers": [
             2,
-            5,
-            9
+            8,
+            7
           ],
           "digits": [
             2,
-            5,
-            9
+            8,
+            7
           ],
-          "number": "259",
-          "score": 6.52432,
+          "number": "287",
+          "score": 6.496656,
           "model": "experience_numbers3_1",
           "components": {
-            "position_frequency": 0.10073571024335032,
-            "recent_position_frequency": 0.19583333333333333,
-            "position_delay": 0.0008488964346349746,
-            "overall_frequency": 0.0999496950260957,
-            "ordered_pair": 0.0030497390429478715,
-            "ordered_triplet": 0.0008488964346349745,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.801277,
-            "odd_shape": 0.751202,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
+            "position_frequency": 0.09907106144197671,
+            "recent_position_frequency": 0.18916666666666668,
+            "position_delay": 0.0007544678643844014,
+            "overall_frequency": 0.10026563556058536,
+            "ordered_pair": 0.003520850033793873,
+            "ordered_triplet": 0.0014146272457207527,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.670316,
+            "odd_shape": 0.756488,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
         },
         {
           "pattern_id": "P2",
+          "numbers": [
+            7,
+            6,
+            0
+          ],
+          "digits": [
+            7,
+            6,
+            0
+          ],
+          "number": "760",
+          "score": 6.4849,
+          "model": "experience_numbers3_1",
+          "components": {
+            "position_frequency": 0.09765643419625596,
+            "recent_position_frequency": 0.14416666666666667,
+            "position_delay": 0.0006601593813363513,
+            "overall_frequency": 0.09938542305213688,
+            "ordered_pair": 0.003175052262617689,
+            "ordered_triplet": 0.0012731645211486774,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.987559,
+            "odd_shape": 0.756488,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "P3",
           "numbers": [
             2,
             3,
@@ -779,28 +812,94 @@
             9
           ],
           "number": "239",
-          "score": 6.500518,
+          "score": 6.469669,
           "model": "experience_numbers3_1",
           "components": {
-            "position_frequency": 0.10328239954725522,
-            "recent_position_frequency": 0.15083333333333332,
-            "position_delay": 0.001414827391058291,
-            "overall_frequency": 0.10207193611268313,
-            "ordered_pair": 0.003552788781990819,
-            "ordered_triplet": 0.0009903791737408036,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.991743,
-            "odd_shape": 0.751202,
-            "high_shape": 0.749949,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
+            "position_frequency": 0.10326778893761494,
+            "recent_position_frequency": 0.13,
+            "position_delay": 0.001556089970292828,
+            "overall_frequency": 0.10207321481900632,
+            "ordered_pair": 0.00355228619480989,
+            "ordered_triplet": 0.0009902390720045269,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.99176,
+            "odd_shape": 0.751132,
+            "high_shape": 0.749878,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
         },
         {
-          "pattern_id": "P3",
+          "pattern_id": "P4",
+          "numbers": [
+            7,
+            5,
+            0
+          ],
+          "digits": [
+            7,
+            5,
+            0
+          ],
+          "number": "750",
+          "score": 6.456705,
+          "model": "experience_numbers3_1",
+          "components": {
+            "position_frequency": 0.09817513085302022,
+            "recent_position_frequency": 0.14,
+            "position_delay": 0.0007073136228603763,
+            "overall_frequency": 0.09801795004794016,
+            "ordered_pair": 0.0032379245846497224,
+            "ordered_triplet": 0.0014146272457207527,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.909406,
+            "odd_shape": 0.751132,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "P5",
+          "numbers": [
+            8,
+            5,
+            2
+          ],
+          "digits": [
+            8,
+            5,
+            2
+          ],
+          "number": "852",
+          "score": 6.448537,
+          "model": "experience_numbers3_1",
+          "components": {
+            "position_frequency": 0.1007214598953176,
+            "recent_position_frequency": 0.15916666666666665,
+            "position_delay": 0.0006601593813363513,
+            "overall_frequency": 0.09888244447588061,
+            "ordered_pair": 0.003316514987189765,
+            "ordered_triplet": 0.0009902390720045269,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.920174,
+            "odd_shape": 0.756488,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.9608,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "P6",
           "numbers": [
             2,
             4,
@@ -812,121 +911,22 @@
             9
           ],
           "number": "249",
-          "score": 6.467563,
+          "score": 6.443056,
           "model": "experience_numbers3_1",
           "components": {
-            "position_frequency": 0.10200905489530278,
-            "recent_position_frequency": 0.13249999999999998,
-            "position_delay": 0.002452367477834371,
-            "overall_frequency": 0.10169464880840094,
-            "ordered_pair": 0.003238382695088977,
-            "ordered_triplet": 0.0011318619128466328,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.92013,
-            "odd_shape": 0.756453,
-            "high_shape": 0.749949,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "P4",
-          "numbers": [
-            6,
-            7,
-            1
-          ],
-          "digits": [
-            6,
-            7,
-            1
-          ],
-          "number": "671",
-          "score": 6.433852,
-          "model": "experience_numbers3_1",
-          "components": {
-            "position_frequency": 0.10130164119977364,
-            "recent_position_frequency": 0.11083333333333333,
-            "position_delay": 0.0006130918694585928,
-            "overall_frequency": 0.09902219706973527,
-            "ordered_pair": 0.003615669999371188,
-            "ordered_triplet": 0.0011318619128466328,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.991743,
-            "odd_shape": 0.751202,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "P5",
-          "numbers": [
-            6,
-            7,
-            2
-          ],
-          "digits": [
-            6,
-            7,
-            2
-          ],
-          "number": "672",
-          "score": 6.416681,
-          "model": "experience_numbers3_1",
-          "components": {
-            "position_frequency": 0.10229202037351444,
-            "recent_position_frequency": 0.13583333333333333,
-            "position_delay": 0.0005659309564233164,
-            "overall_frequency": 0.09933660315663712,
-            "ordered_pair": 0.00363139030371628,
-            "ordered_triplet": 0.0008488964346349745,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.92013,
-            "odd_shape": 0.756453,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.960914,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "P6",
-          "numbers": [
-            1,
-            7,
-            6
-          ],
-          "digits": [
-            1,
-            7,
-            6
-          ],
-          "number": "176",
-          "score": 6.412047,
-          "model": "experience_numbers3_1",
-          "components": {
-            "position_frequency": 0.09870779098283343,
-            "recent_position_frequency": 0.09916666666666667,
-            "position_delay": 0.0008488964346349744,
-            "overall_frequency": 0.09902219706973527,
-            "ordered_pair": 0.003002578129912595,
-            "ordered_triplet": 0.0008488964346349745,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.991743,
-            "odd_shape": 0.751202,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
+            "position_frequency": 0.10199462441646627,
+            "recent_position_frequency": 0.11583333333333333,
+            "position_delay": 0.0025934832838213798,
+            "overall_frequency": 0.1016959808868141,
+            "ordered_pair": 0.0032379245846497224,
+            "ordered_triplet": 0.0011317017965766021,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.920174,
+            "odd_shape": 0.756488,
+            "high_shape": 0.749878,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -934,104 +934,38 @@
         {
           "pattern_id": "P7",
           "numbers": [
-            0,
             5,
-            7
+            6,
+            0
           ],
           "digits": [
-            0,
             5,
-            7
+            6,
+            0
           ],
-          "number": "057",
-          "score": 6.400672,
+          "number": "560",
+          "score": 6.432888,
           "model": "experience_numbers3_1",
           "components": {
-            "position_frequency": 0.0985663082437276,
-            "recent_position_frequency": 0.10166666666666667,
-            "position_delay": 0.0018864365214110543,
-            "overall_frequency": 0.09801609759164938,
-            "ordered_pair": 0.0030968999559831474,
-            "ordered_triplet": 0.00042444821731748726,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.909463,
-            "odd_shape": 0.751202,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
+            "position_frequency": 0.09548733908615081,
+            "recent_position_frequency": 0.13666666666666666,
+            "position_delay": 0.0011788560381006273,
+            "overall_frequency": 0.09800223196743214,
+            "ordered_pair": 0.0028292544914415053,
+            "ordered_triplet": 0.0009902390720045269,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.78779,
+            "odd_shape": 0.756488,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
         },
         {
           "pattern_id": "P8",
-          "numbers": [
-            6,
-            8,
-            3
-          ],
-          "digits": [
-            6,
-            8,
-            3
-          ],
-          "number": "683",
-          "score": 6.379418,
-          "model": "experience_numbers3_1",
-          "components": {
-            "position_frequency": 0.09950952650443312,
-            "recent_position_frequency": 0.11000000000000001,
-            "position_delay": 0.0013676664780230144,
-            "overall_frequency": 0.10048418537382885,
-            "ordered_pair": 0.003206942086398793,
-            "ordered_triplet": 0.0005659309564233164,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.670269,
-            "odd_shape": 0.756453,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "P9",
-          "numbers": [
-            3,
-            8,
-            6
-          ],
-          "digits": [
-            3,
-            8,
-            6
-          ],
-          "number": "386",
-          "score": 6.362575,
-          "model": "experience_numbers3_1",
-          "components": {
-            "position_frequency": 0.09738728541784569,
-            "recent_position_frequency": 0.10083333333333333,
-            "position_delay": 0.0013676664780230144,
-            "overall_frequency": 0.10048418537382885,
-            "ordered_pair": 0.0030497390429478715,
-            "ordered_triplet": 0.0007074136955291454,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.670269,
-            "odd_shape": 0.756453,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "P10",
           "numbers": [
             8,
             5,
@@ -1043,336 +977,96 @@
             1
           ],
           "number": "851",
-          "score": 6.352279,
+          "score": 6.42826,
           "model": "experience_numbers3_1",
           "components": {
-            "position_frequency": 0.09974533106960952,
-            "recent_position_frequency": 0.15083333333333335,
-            "position_delay": 0.0005659309564233164,
-            "overall_frequency": 0.0985663082437276,
-            "ordered_pair": 0.003489907564610451,
-            "ordered_triplet": 0.0009903791737408036,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.991743,
-            "odd_shape": 0.751202,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.458162
+            "position_frequency": 0.09973122082331305,
+            "recent_position_frequency": 0.10916666666666666,
+            "position_delay": 0.0007073136228603763,
+            "overall_frequency": 0.09856808286572044,
+            "ordered_pair": 0.0034894138727778567,
+            "ordered_triplet": 0.0009902390720045269,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.99176,
+            "odd_shape": 0.751132,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
           },
           "exact_repeat_count": 0,
-          "unordered_repeat_count": 0
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "P9",
+          "numbers": [
+            0,
+            6,
+            7
+          ],
+          "digits": [
+            0,
+            6,
+            7
+          ],
+          "number": "067",
+          "score": 6.404754,
+          "model": "experience_numbers3_1",
+          "components": {
+            "position_frequency": 0.09803366812844816,
+            "recent_position_frequency": 0.08916666666666667,
+            "position_delay": 0.0019804781440090537,
+            "overall_frequency": 0.09938542305213686,
+            "ordered_pair": 0.003175052262617689,
+            "ordered_triplet": 0.0005658508982883011,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.987559,
+            "odd_shape": 0.756488,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "P10",
+          "numbers": [
+            6,
+            8,
+            3
+          ],
+          "digits": [
+            6,
+            8,
+            3
+          ],
+          "number": "683",
+          "score": 6.373475,
+          "model": "experience_numbers3_1",
+          "components": {
+            "position_frequency": 0.09949544961569294,
+            "recent_position_frequency": 0.10583333333333333,
+            "position_delay": 0.0015089357287688028,
+            "overall_frequency": 0.10048568868769747,
+            "ordered_pair": 0.003206488423633706,
+            "ordered_triplet": 0.0005658508982883011,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.670316,
+            "odd_shape": 0.756488,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
         }
       ],
       "model_box_prediction": [
         {
           "pattern_id": "B1",
-          "numbers": [
-            2,
-            5,
-            9
-          ],
-          "digits": [
-            2,
-            5,
-            9
-          ],
-          "number": "259",
-          "representative_straight": "259",
-          "score": 6.52432,
-          "model": "experience_numbers3_1",
-          "components": {
-            "position_frequency": 0.10073571024335032,
-            "recent_position_frequency": 0.19583333333333333,
-            "position_delay": 0.0008488964346349746,
-            "overall_frequency": 0.0999496950260957,
-            "ordered_pair": 0.0030497390429478715,
-            "ordered_triplet": 0.0008488964346349745,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.801277,
-            "odd_shape": 0.751202,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "B2",
-          "numbers": [
-            2,
-            3,
-            9
-          ],
-          "digits": [
-            2,
-            3,
-            9
-          ],
-          "number": "239",
-          "representative_straight": "239",
-          "score": 6.500518,
-          "model": "experience_numbers3_1",
-          "components": {
-            "position_frequency": 0.10328239954725522,
-            "recent_position_frequency": 0.15083333333333332,
-            "position_delay": 0.001414827391058291,
-            "overall_frequency": 0.10207193611268313,
-            "ordered_pair": 0.003552788781990819,
-            "ordered_triplet": 0.0009903791737408036,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.991743,
-            "odd_shape": 0.751202,
-            "high_shape": 0.749949,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "B3",
-          "numbers": [
-            2,
-            4,
-            9
-          ],
-          "digits": [
-            2,
-            4,
-            9
-          ],
-          "number": "249",
-          "representative_straight": "249",
-          "score": 6.467563,
-          "model": "experience_numbers3_1",
-          "components": {
-            "position_frequency": 0.10200905489530278,
-            "recent_position_frequency": 0.13249999999999998,
-            "position_delay": 0.002452367477834371,
-            "overall_frequency": 0.10169464880840094,
-            "ordered_pair": 0.003238382695088977,
-            "ordered_triplet": 0.0011318619128466328,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.92013,
-            "odd_shape": 0.756453,
-            "high_shape": 0.749949,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "B4",
-          "numbers": [
-            2,
-            8,
-            9
-          ],
-          "digits": [
-            2,
-            8,
-            9
-          ],
-          "number": "289",
-          "representative_straight": "289",
-          "score": 6.465205,
-          "model": "experience_numbers3_1",
-          "components": {
-            "position_frequency": 0.10026410111299755,
-            "recent_position_frequency": 0.19416666666666668,
-            "position_delay": 0.0009432182607055272,
-            "overall_frequency": 0.10224485946047916,
-            "ordered_pair": 0.0033012639124693453,
-            "ordered_triplet": 0.0005659309564233164,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.448837,
-            "odd_shape": 0.756453,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "B5",
-          "numbers": [
-            2,
-            6,
-            7
-          ],
-          "digits": [
-            2,
-            6,
-            7
-          ],
-          "number": "267",
-          "representative_straight": "276",
-          "score": 6.463107,
-          "model": "experience_numbers3_1",
-          "components": {
-            "position_frequency": 0.09866063006979815,
-            "recent_position_frequency": 0.1708333333333333,
-            "position_delay": 0.0007074136955291455,
-            "overall_frequency": 0.09933660315663712,
-            "ordered_pair": 0.003537068477645727,
-            "ordered_triplet": 0.0009903791737408036,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.92013,
-            "odd_shape": 0.756453,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.960914,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "B6",
-          "numbers": [
-            1,
-            6,
-            7
-          ],
-          "digits": [
-            1,
-            6,
-            7
-          ],
-          "number": "167",
-          "representative_straight": "671",
-          "score": 6.433852,
-          "model": "experience_numbers3_1",
-          "components": {
-            "position_frequency": 0.10130164119977364,
-            "recent_position_frequency": 0.11083333333333333,
-            "position_delay": 0.0006130918694585928,
-            "overall_frequency": 0.09902219706973527,
-            "ordered_pair": 0.003615669999371188,
-            "ordered_triplet": 0.0011318619128466328,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.991743,
-            "odd_shape": 0.751202,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "B7",
-          "numbers": [
-            2,
-            7,
-            9
-          ],
-          "digits": [
-            2,
-            7,
-            9
-          ],
-          "number": "279",
-          "representative_straight": "279",
-          "score": 6.425684,
-          "model": "experience_numbers3_1",
-          "components": {
-            "position_frequency": 0.10149028485191473,
-            "recent_position_frequency": 0.15833333333333333,
-            "position_delay": 0.0011790228258819091,
-            "overall_frequency": 0.1013330818084638,
-            "ordered_pair": 0.00341130604288499,
-            "ordered_triplet": 0.0011318619128466328,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.549875,
-            "odd_shape": 0.751202,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "B8",
-          "numbers": [
-            0,
-            5,
-            7
-          ],
-          "digits": [
-            0,
-            5,
-            7
-          ],
-          "number": "057",
-          "representative_straight": "057",
-          "score": 6.400672,
-          "model": "experience_numbers3_1",
-          "components": {
-            "position_frequency": 0.0985663082437276,
-            "recent_position_frequency": 0.10166666666666667,
-            "position_delay": 0.0018864365214110543,
-            "overall_frequency": 0.09801609759164938,
-            "ordered_pair": 0.0030968999559831474,
-            "ordered_triplet": 0.00042444821731748726,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.909463,
-            "odd_shape": 0.751202,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "B9",
-          "numbers": [
-            1,
-            2,
-            6
-          ],
-          "digits": [
-            1,
-            2,
-            6
-          ],
-          "number": "126",
-          "representative_straight": "216",
-          "score": 6.384269,
-          "model": "experience_numbers3_1",
-          "components": {
-            "position_frequency": 0.09814186002641011,
-            "recent_position_frequency": 0.165,
-            "position_delay": 0.0006130918694585928,
-            "overall_frequency": 0.09952524680877822,
-            "ordered_pair": 0.00311262026032824,
-            "ordered_triplet": 0.0008488964346349745,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.538551,
-            "odd_shape": 0.756453,
-            "high_shape": 0.749949,
-            "adjacent_difference": 0.960914,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.879749
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "B10",
           "numbers": [
             2,
             7,
@@ -1385,191 +1079,497 @@
           ],
           "number": "278",
           "representative_straight": "287",
-          "score": 6.383431,
+          "score": 6.496656,
           "model": "experience_numbers3_1",
           "components": {
-            "position_frequency": 0.09908507828711564,
-            "recent_position_frequency": 0.20583333333333334,
-            "position_delay": 0.0006130918694585928,
-            "overall_frequency": 0.10026410111299755,
-            "ordered_pair": 0.003521348173300635,
-            "ordered_triplet": 0.0014148273910582908,
-            "duplicate_pattern": 0.717741935483871,
-            "sum_shape": 0.670269,
-            "odd_shape": 0.756453,
-            "high_shape": 0.744175,
-            "adjacent_difference": 0.99334,
-            "exact_repeat": 0.743246,
-            "unordered_repeat": 0.458162
+            "position_frequency": 0.09907106144197671,
+            "recent_position_frequency": 0.18916666666666668,
+            "position_delay": 0.0007544678643844014,
+            "overall_frequency": 0.10026563556058536,
+            "ordered_pair": 0.003520850033793873,
+            "ordered_triplet": 0.0014146272457207527,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.670316,
+            "odd_shape": 0.756488,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
           },
           "exact_repeat_count": 0,
-          "unordered_repeat_count": 0
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "B2",
+          "numbers": [
+            0,
+            6,
+            7
+          ],
+          "digits": [
+            0,
+            6,
+            7
+          ],
+          "number": "067",
+          "representative_straight": "760",
+          "score": 6.4849,
+          "model": "experience_numbers3_1",
+          "components": {
+            "position_frequency": 0.09765643419625596,
+            "recent_position_frequency": 0.14416666666666667,
+            "position_delay": 0.0006601593813363513,
+            "overall_frequency": 0.09938542305213688,
+            "ordered_pair": 0.003175052262617689,
+            "ordered_triplet": 0.0012731645211486774,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.987559,
+            "odd_shape": 0.756488,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "B3",
+          "numbers": [
+            2,
+            5,
+            9
+          ],
+          "digits": [
+            2,
+            5,
+            9
+          ],
+          "number": "259",
+          "representative_straight": "259",
+          "score": 6.474959,
+          "model": "experience_numbers3_1",
+          "components": {
+            "position_frequency": 0.1007214598953176,
+            "recent_position_frequency": 0.1625,
+            "position_delay": 0.0009902390720045269,
+            "overall_frequency": 0.09995127395042518,
+            "ordered_pair": 0.0030493076185536226,
+            "ordered_triplet": 0.0008487763474324516,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.801329,
+            "odd_shape": 0.751132,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "B4",
+          "numbers": [
+            2,
+            3,
+            9
+          ],
+          "digits": [
+            2,
+            3,
+            9
+          ],
+          "number": "239",
+          "representative_straight": "239",
+          "score": 6.469669,
+          "model": "experience_numbers3_1",
+          "components": {
+            "position_frequency": 0.10326778893761494,
+            "recent_position_frequency": 0.13,
+            "position_delay": 0.001556089970292828,
+            "overall_frequency": 0.10207321481900632,
+            "ordered_pair": 0.00355228619480989,
+            "ordered_triplet": 0.0009902390720045269,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.99176,
+            "odd_shape": 0.751132,
+            "high_shape": 0.749878,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "B5",
+          "numbers": [
+            2,
+            6,
+            9
+          ],
+          "digits": [
+            2,
+            6,
+            9
+          ],
+          "number": "269",
+          "representative_straight": "269",
+          "score": 6.46604,
+          "model": "experience_numbers3_1",
+          "components": {
+            "position_frequency": 0.1002027632385533,
+            "recent_position_frequency": 0.16666666666666669,
+            "position_delay": 0.0009430848304805018,
+            "overall_frequency": 0.1013187469546219,
+            "ordered_pair": 0.003175052262617689,
+            "ordered_triplet": 0.0014146272457207527,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.670316,
+            "odd_shape": 0.756488,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "B6",
+          "numbers": [
+            0,
+            5,
+            7
+          ],
+          "digits": [
+            0,
+            5,
+            7
+          ],
+          "number": "057",
+          "representative_straight": "750",
+          "score": 6.456705,
+          "model": "experience_numbers3_1",
+          "components": {
+            "position_frequency": 0.09817513085302022,
+            "recent_position_frequency": 0.14,
+            "position_delay": 0.0007073136228603763,
+            "overall_frequency": 0.09801795004794016,
+            "ordered_pair": 0.0032379245846497224,
+            "ordered_triplet": 0.0014146272457207527,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.909406,
+            "odd_shape": 0.751132,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "B7",
+          "numbers": [
+            2,
+            5,
+            8
+          ],
+          "digits": [
+            2,
+            5,
+            8
+          ],
+          "number": "258",
+          "representative_straight": "852",
+          "score": 6.448537,
+          "model": "experience_numbers3_1",
+          "components": {
+            "position_frequency": 0.1007214598953176,
+            "recent_position_frequency": 0.15916666666666665,
+            "position_delay": 0.0006601593813363513,
+            "overall_frequency": 0.09888244447588061,
+            "ordered_pair": 0.003316514987189765,
+            "ordered_triplet": 0.0009902390720045269,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.920174,
+            "odd_shape": 0.756488,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.9608,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "B8",
+          "numbers": [
+            2,
+            4,
+            9
+          ],
+          "digits": [
+            2,
+            4,
+            9
+          ],
+          "number": "249",
+          "representative_straight": "249",
+          "score": 6.443056,
+          "model": "experience_numbers3_1",
+          "components": {
+            "position_frequency": 0.10199462441646627,
+            "recent_position_frequency": 0.11583333333333333,
+            "position_delay": 0.0025934832838213798,
+            "overall_frequency": 0.1016959808868141,
+            "ordered_pair": 0.0032379245846497224,
+            "ordered_triplet": 0.0011317017965766021,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.920174,
+            "odd_shape": 0.756488,
+            "high_shape": 0.749878,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "B9",
+          "numbers": [
+            0,
+            5,
+            6
+          ],
+          "digits": [
+            0,
+            5,
+            6
+          ],
+          "number": "056",
+          "representative_straight": "560",
+          "score": 6.432888,
+          "model": "experience_numbers3_1",
+          "components": {
+            "position_frequency": 0.09548733908615081,
+            "recent_position_frequency": 0.13666666666666666,
+            "position_delay": 0.0011788560381006273,
+            "overall_frequency": 0.09800223196743214,
+            "ordered_pair": 0.0028292544914415053,
+            "ordered_triplet": 0.0009902390720045269,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.78779,
+            "odd_shape": 0.756488,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "B10",
+          "numbers": [
+            1,
+            6,
+            8
+          ],
+          "digits": [
+            1,
+            6,
+            8
+          ],
+          "number": "168",
+          "representative_straight": "861",
+          "score": 6.429692,
+          "model": "experience_numbers3_1",
+          "components": {
+            "position_frequency": 0.09921252416654879,
+            "recent_position_frequency": 0.11333333333333334,
+            "position_delay": 0.0006601593813363513,
+            "overall_frequency": 0.09993555586991716,
+            "ordered_pair": 0.003300796906681756,
+            "ordered_triplet": 0.0012731645211486774,
+            "duplicate_pattern": 0.7177818644787098,
+            "sum_shape": 0.920174,
+            "odd_shape": 0.756488,
+            "high_shape": 0.744211,
+            "adjacent_difference": 0.993413,
+            "exact_repeat": 0.743144,
+            "unordered_repeat": 0.879932
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
         }
       ]
     },
     "numbers4": {
-      "target_draw_no": 7069,
-      "generated_at": "2026-09-11T01:20:50.959519+00:00",
+      "target_draw_no": 7070,
+      "generated_at": "2026-09-11T17:08:33.601658+00:00",
       "generated_before_draw": true,
-      "control_seed": 8975468734285605390,
+      "control_seed": 199154031325665044,
       "evaluation_epoch": 1,
       "model_version": "epoch-1",
       "uniform_random_control": [
         [
-          8,
           2,
-          3,
-          3
-        ],
-        [
-          3,
-          6,
-          2,
-          9
-        ],
-        [
-          8,
-          4,
-          9,
-          6
-        ],
-        [
-          1,
-          8,
-          5,
-          6
-        ],
-        [
-          1,
-          8,
-          3,
-          8
-        ],
-        [
-          4,
-          2,
-          4,
-          3
+          0,
+          7,
+          0
         ],
         [
           7,
-          1,
+          3,
+          5,
+          3
+        ],
+        [
+          9,
           8,
-          0
+          3,
+          7
+        ],
+        [
+          4,
+          8,
+          7,
+          9
+        ],
+        [
+          1,
+          9,
+          2,
+          6
+        ],
+        [
+          2,
+          7,
+          0,
+          2
         ],
         [
           0,
           5,
-          3,
-          0
-        ],
-        [
-          5,
-          2,
-          3,
-          4
+          6,
+          3
         ],
         [
           1,
-          3,
-          7,
-          8
+          1,
+          1,
+          0
+        ],
+        [
+          1,
+          8,
+          1,
+          9
+        ],
+        [
+          0,
+          2,
+          6,
+          9
         ]
       ],
       "composition_matched_random_box_control": [
         [
           0,
-          3,
           4,
+          5,
+          6
+        ],
+        [
+          0,
+          3,
+          8,
           9
         ],
         [
-          1,
-          4,
+          3,
+          7,
           8,
           9
         ],
         [
           1,
-          3,
-          6,
-          8
-        ],
-        [
           2,
           3,
-          5,
-          9
-        ],
-        [
-          0,
-          1,
-          5,
           9
         ],
         [
           1,
           4,
           5,
-          8
+          6
         ],
         [
           2,
           4,
           5,
-          7
+          9
         ],
         [
-          0,
-          2,
+          1,
           6,
-          7
-        ],
-        [
-          1,
-          3,
-          4,
-          4
+          7,
+          8
         ],
         [
           0,
-          1,
           3,
-          3
+          7,
+          8
+        ],
+        [
+          4,
+          7,
+          7,
+          9
+        ],
+        [
+          1,
+          1,
+          6,
+          9
         ]
       ],
       "model_prediction": [
         {
           "pattern_id": "P1",
           "numbers": [
+            0,
+            1,
             9,
-            5,
-            2,
-            0
+            8
           ],
           "digits": [
+            0,
+            1,
             9,
-            5,
-            2,
-            0
+            8
           ],
-          "number": "9520",
-          "score": 10.411402,
-          "model": "experience_numbers4_2",
+          "number": "0198",
+          "score": 10.537971,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.09928551216751556,
-            "recent_position_frequency": 0.22999999999999998,
-            "position_delay": 0.0002475947934352009,
-            "overall_frequency": 0.100788766270515,
-            "ordered_pair": 0.0016702823366660376,
-            "ordered_triplet": 0.00042444821731748726,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.881416,
+            "position_frequency": 0.10312632621304287,
+            "recent_position_frequency": 0.11125000000000002,
+            "position_delay": 0.001167067477719621,
+            "overall_frequency": 0.10205651435846655,
+            "ordered_pair": 0.0017525659766429325,
+            "ordered_triplet": 0.0004597538548592446,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.959919,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.999353,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -1577,34 +1577,34 @@
         {
           "pattern_id": "P2",
           "numbers": [
-            4,
-            7,
-            7,
-            0
+            0,
+            2,
+            9,
+            7
           ],
           "digits": [
-            4,
-            7,
-            7,
-            0
+            0,
+            2,
+            9,
+            7
           ],
-          "number": "4770",
-          "score": 10.407686,
-          "model": "experience_numbers4_2",
+          "number": "0297",
+          "score": 10.525247,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.09978070175438597,
-            "recent_position_frequency": 0.09562500000000002,
-            "position_delay": 0.0016977928692699493,
-            "overall_frequency": 0.09970111771363893,
-            "ordered_pair": 0.001717443249701314,
-            "ordered_triplet": 0.00045981890209394454,
-            "duplicate_pattern": 0.42855121675155633,
-            "sum_shape": 0.999567,
+            "position_frequency": 0.09863488470787948,
+            "recent_position_frequency": 0.14750000000000002,
+            "position_delay": 0.0005658508982883011,
+            "overall_frequency": 0.100562314330174,
+            "ordered_pair": 0.0015796670910548404,
+            "ordered_triplet": 0.0004951195360022634,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.99936,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.938904,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -1612,34 +1612,34 @@
         {
           "pattern_id": "P3",
           "numbers": [
-            0,
-            3,
             9,
-            8
+            8,
+            0,
+            1
           ],
           "digits": [
-            0,
-            3,
             9,
-            8
+            8,
+            0,
+            1
           ],
-          "number": "0398",
-          "score": 10.380045,
-          "model": "experience_numbers4_2",
+          "number": "9801",
+          "score": 10.518265,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.10413129598189022,
-            "recent_position_frequency": 0.13125000000000003,
-            "position_delay": 0.0008135257498585173,
-            "overall_frequency": 0.10197368421052631,
-            "ordered_pair": 0.0018785763692385083,
-            "ordered_triplet": 0.0004951895868704018,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.904367,
+            "position_frequency": 0.10312632621304287,
+            "recent_position_frequency": 0.095,
+            "position_delay": 0.0007073136228603763,
+            "overall_frequency": 0.10205651435846655,
+            "ordered_pair": 0.0017918611779129533,
+            "ordered_triplet": 0.0004597538548592446,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.99936,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.999353,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -1647,34 +1647,34 @@
         {
           "pattern_id": "P4",
           "numbers": [
-            3,
-            5,
-            8,
-            4
+            1,
+            6,
+            4,
+            7
           ],
           "digits": [
-            3,
-            5,
-            8,
-            4
+            1,
+            6,
+            4,
+            7
           ],
-          "number": "3584",
-          "score": 10.373388,
-          "model": "experience_numbers4_2",
+          "number": "1647",
+          "score": 10.507774,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.10186757215619693,
-            "recent_position_frequency": 0.15687500000000001,
-            "position_delay": 0.0009196378041878891,
-            "overall_frequency": 0.09990449915110357,
-            "ordered_pair": 0.0015327296736464817,
-            "ordered_triplet": 0.0002829654782116582,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.904367,
+            "position_frequency": 0.09686660065072854,
+            "recent_position_frequency": 0.099375,
+            "position_delay": 0.0008841420285754704,
+            "overall_frequency": 0.09899738293959541,
+            "ordered_pair": 0.0016189622923248612,
+            "ordered_triplet": 0.0004597538548592446,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.959919,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.999353,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -1682,34 +1682,34 @@
         {
           "pattern_id": "P5",
           "numbers": [
+            7,
             2,
             5,
-            4,
-            9
+            4
           ],
           "digits": [
+            7,
             2,
             5,
-            4,
-            9
+            4
           ],
-          "number": "2549",
-          "score": 10.365856,
-          "model": "experience_numbers4_2",
+          "number": "7254",
+          "score": 10.474716,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.1038129598189021,
-            "recent_position_frequency": 0.14687499999999998,
-            "position_delay": 0.0011318619128466328,
-            "overall_frequency": 0.10003713921901529,
-            "ordered_pair": 0.0016427718040621265,
-            "ordered_triplet": 0.00045981890209394454,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.904367,
+            "position_frequency": 0.09644221247701229,
+            "recent_position_frequency": 0.096875,
+            "position_delay": 0.0007073136228603763,
+            "overall_frequency": 0.0984934219833074,
+            "ordered_pair": 0.0016503984533408778,
+            "ordered_triplet": 0.0006719479417173575,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.959919,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.959965,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -1717,34 +1717,34 @@
         {
           "pattern_id": "P6",
           "numbers": [
-            3,
-            8,
-            4,
-            5
+            2,
+            1,
+            6,
+            9
           ],
           "digits": [
-            3,
-            8,
-            4,
-            5
+            2,
+            1,
+            6,
+            9
           ],
-          "number": "3845",
-          "score": 10.345924,
-          "model": "experience_numbers4_2",
+          "number": "2169",
+          "score": 10.452969,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.10009903791737407,
-            "recent_position_frequency": 0.11124999999999999,
-            "position_delay": 0.0007074136955291454,
-            "overall_frequency": 0.09990449915110357,
-            "ordered_pair": 0.0015720304345092121,
-            "ordered_triplet": 0.0006013016411997737,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.904367,
+            "position_frequency": 0.10160560192389305,
+            "recent_position_frequency": 0.0675,
+            "position_delay": 0.0015914556514358468,
+            "overall_frequency": 0.09986384212759938,
+            "ordered_pair": 0.001791861177912953,
+            "ordered_triplet": 0.0006365822605743387,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.99936,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.959965,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -1752,34 +1752,34 @@
         {
           "pattern_id": "P7",
           "numbers": [
-            5,
-            9,
-            2,
-            2
+            1,
+            0,
+            8,
+            9
           ],
           "digits": [
-            5,
-            9,
-            2,
-            2
+            1,
+            0,
+            8,
+            9
           ],
-          "number": "5922",
-          "score": 10.342159,
-          "model": "experience_numbers4_2",
+          "number": "1089",
+          "score": 10.450891,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.09861346915676289,
-            "recent_position_frequency": 0.079375,
-            "position_delay": 0.0015916808149405773,
-            "overall_frequency": 0.0993650962082626,
-            "ordered_pair": 0.0016152612714582153,
-            "ordered_triplet": 0.0004951895868704018,
-            "duplicate_pattern": 0.42855121675155633,
-            "sum_shape": 0.999567,
+            "position_frequency": 0.10054463148960249,
+            "recent_position_frequency": 0.037500000000000006,
+            "position_delay": 0.003182911302871693,
+            "overall_frequency": 0.10205651435846655,
+            "ordered_pair": 0.001571808050800836,
+            "ordered_triplet": 0.0004243881737162258,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.938962,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.999353,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -1787,69 +1787,69 @@
         {
           "pattern_id": "P8",
           "numbers": [
-            4,
-            0,
-            7,
-            7
+            8,
+            5,
+            1,
+            4
           ],
           "digits": [
-            4,
-            0,
-            7,
-            7
+            8,
+            5,
+            1,
+            4
           ],
-          "number": "4077",
-          "score": 10.329916,
-          "model": "experience_numbers4_2",
+          "number": "8514",
+          "score": 10.425725,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.0984366157328806,
-            "recent_position_frequency": 0.06625,
-            "position_delay": 0.0029711375212224107,
-            "overall_frequency": 0.09970111771363895,
-            "ordered_pair": 0.0016584921084072189,
-            "ordered_triplet": 0.0007427843803056028,
-            "duplicate_pattern": 0.42855121675155633,
-            "sum_shape": 0.999567,
+            "position_frequency": 0.10142877351817797,
+            "recent_position_frequency": 0.17625000000000002,
+            "position_delay": 0.000778044985146414,
+            "overall_frequency": 0.09998762201159996,
+            "ordered_pair": 0.0017054117351189071,
+            "ordered_triplet": 0.0004597538548592446,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.938962,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.999353,
+            "exact_repeat": 0.518608,
+            "unordered_repeat": 0.936389
           },
-          "exact_repeat_count": 0,
+          "exact_repeat_count": 1,
           "unordered_repeat_count": 1
         },
         {
           "pattern_id": "P9",
           "numbers": [
-            9,
-            6,
-            0,
-            1
+            4,
+            7,
+            2,
+            5
           ],
           "digits": [
-            9,
-            6,
-            0,
-            1
+            4,
+            7,
+            2,
+            5
           ],
-          "number": "9601",
-          "score": 10.308345,
-          "model": "experience_numbers4_2",
+          "number": "4725",
+          "score": 10.422915,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.10207979626485568,
-            "recent_position_frequency": 0.111875,
-            "position_delay": 0.0006013016411997737,
-            "overall_frequency": 0.10129279852857952,
-            "ordered_pair": 0.0017646041627365904,
-            "ordered_triplet": 0.00045981890209394454,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.881416,
+            "position_frequency": 0.09803366812844815,
+            "recent_position_frequency": 0.0625,
+            "position_delay": 0.0017682840571509408,
+            "overall_frequency": 0.09849342198330739,
+            "ordered_pair": 0.0014342748463557632,
+            "ordered_triplet": 0.0002475597680011317,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.99936,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.938904,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -1857,34 +1857,34 @@
         {
           "pattern_id": "P10",
           "numbers": [
-            8,
+            5,
+            4,
             7,
-            1,
-            4
+            2
           ],
           "digits": [
-            8,
+            5,
+            4,
             7,
-            1,
-            4
+            2
           ],
-          "number": "8714",
-          "score": 10.296326,
-          "model": "experience_numbers4_2",
+          "number": "5472",
+          "score": 10.417222,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.10034663271080929,
-            "recent_position_frequency": 0.0675,
-            "position_delay": 0.0014855687606112051,
-            "overall_frequency": 0.09977185908319186,
-            "ordered_pair": 0.0015956108910268503,
-            "ordered_triplet": 0.0005305602716468591,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.904367,
+            "position_frequency": 0.09810439949073418,
+            "recent_position_frequency": 0.04187500000000001,
+            "position_delay": 0.003112179940585656,
+            "overall_frequency": 0.09849342198330739,
+            "ordered_pair": 0.0016779050942298927,
+            "ordered_triplet": 0.0004951195360022634,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.99936,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.959965,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -1895,34 +1895,34 @@
           "pattern_id": "B1",
           "numbers": [
             0,
-            2,
-            5,
+            1,
+            8,
             9
           ],
           "digits": [
             0,
-            2,
-            5,
+            1,
+            8,
             9
           ],
-          "number": "0259",
-          "representative_straight": "9520",
-          "score": 10.411402,
-          "model": "experience_numbers4_2",
+          "number": "0189",
+          "representative_straight": "0198",
+          "score": 10.537971,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.09928551216751556,
-            "recent_position_frequency": 0.22999999999999998,
-            "position_delay": 0.0002475947934352009,
-            "overall_frequency": 0.100788766270515,
-            "ordered_pair": 0.0016702823366660376,
-            "ordered_triplet": 0.00042444821731748726,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.881416,
+            "position_frequency": 0.10312632621304287,
+            "recent_position_frequency": 0.11125000000000002,
+            "position_delay": 0.001167067477719621,
+            "overall_frequency": 0.10205651435846655,
+            "ordered_pair": 0.0017525659766429325,
+            "ordered_triplet": 0.0004597538548592446,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.959919,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.999353,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -1931,34 +1931,34 @@
           "pattern_id": "B2",
           "numbers": [
             0,
-            4,
+            2,
             7,
-            7
+            9
           ],
           "digits": [
             0,
-            4,
+            2,
             7,
-            7
+            9
           ],
-          "number": "0477",
-          "representative_straight": "4770",
-          "score": 10.407686,
-          "model": "experience_numbers4_2",
+          "number": "0279",
+          "representative_straight": "0297",
+          "score": 10.525247,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.09978070175438597,
-            "recent_position_frequency": 0.09562500000000002,
-            "position_delay": 0.0016977928692699493,
-            "overall_frequency": 0.09970111771363893,
-            "ordered_pair": 0.001717443249701314,
-            "ordered_triplet": 0.00045981890209394454,
-            "duplicate_pattern": 0.42855121675155633,
-            "sum_shape": 0.999567,
+            "position_frequency": 0.09863488470787948,
+            "recent_position_frequency": 0.14750000000000002,
+            "position_delay": 0.0005658508982883011,
+            "overall_frequency": 0.100562314330174,
+            "ordered_pair": 0.0015796670910548404,
+            "ordered_triplet": 0.0004951195360022634,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.99936,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.938904,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -1966,35 +1966,35 @@
         {
           "pattern_id": "B3",
           "numbers": [
-            2,
+            1,
             4,
-            5,
-            9
+            6,
+            7
           ],
           "digits": [
-            2,
+            1,
             4,
-            5,
-            9
+            6,
+            7
           ],
-          "number": "2459",
-          "representative_straight": "9524",
-          "score": 10.397231,
-          "model": "experience_numbers4_2",
+          "number": "1467",
+          "representative_straight": "1647",
+          "score": 10.507774,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.09935625353706848,
-            "recent_position_frequency": 0.18062499999999998,
-            "position_delay": 0.0006013016411997737,
-            "overall_frequency": 0.10003713921901529,
-            "ordered_pair": 0.0016977928692699488,
-            "ordered_triplet": 0.0004951895868704018,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.904367,
+            "position_frequency": 0.09686660065072854,
+            "recent_position_frequency": 0.099375,
+            "position_delay": 0.0008841420285754704,
+            "overall_frequency": 0.09899738293959541,
+            "ordered_pair": 0.0016189622923248612,
+            "ordered_triplet": 0.0004597538548592446,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.959919,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.999353,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -2002,35 +2002,35 @@
         {
           "pattern_id": "B4",
           "numbers": [
-            0,
+            1,
             4,
             5,
-            7
+            8
           ],
           "digits": [
-            0,
+            1,
             4,
             5,
-            7
+            8
           ],
-          "number": "0457",
-          "representative_straight": "0547",
-          "score": 10.396228,
-          "model": "experience_numbers4_2",
+          "number": "1458",
+          "representative_straight": "5841",
+          "score": 10.503123,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.10066496887379739,
-            "recent_position_frequency": 0.21625000000000003,
-            "position_delay": 0.0003537068477645727,
-            "overall_frequency": 0.0999221844934918,
-            "ordered_pair": 0.0016781424888385838,
-            "ordered_triplet": 0.00042444821731748726,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.881416,
+            "position_frequency": 0.10029707172160136,
+            "recent_position_frequency": 0.08937500000000001,
+            "position_delay": 0.0006012165794313199,
+            "overall_frequency": 0.09998762201159994,
+            "ordered_pair": 0.0017604250168969365,
+            "ordered_triplet": 0.0004243881737162258,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.959919,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.999353,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -2038,35 +2038,35 @@
         {
           "pattern_id": "B5",
           "numbers": [
-            0,
-            3,
-            8,
+            1,
+            2,
+            6,
             9
           ],
           "digits": [
-            0,
-            3,
-            8,
+            1,
+            2,
+            6,
             9
           ],
-          "number": "0389",
-          "representative_straight": "0398",
-          "score": 10.380045,
-          "model": "experience_numbers4_2",
+          "number": "1269",
+          "representative_straight": "9612",
+          "score": 10.483835,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.10413129598189022,
-            "recent_position_frequency": 0.13125000000000003,
-            "position_delay": 0.0008135257498585173,
-            "overall_frequency": 0.10197368421052631,
-            "ordered_pair": 0.0018785763692385083,
-            "ordered_triplet": 0.0004951895868704018,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.904367,
+            "position_frequency": 0.09870561607016551,
+            "recent_position_frequency": 0.09875,
+            "position_delay": 0.0012377988400056584,
+            "overall_frequency": 0.09986384212759938,
+            "ordered_pair": 0.0015993146916898507,
+            "ordered_triplet": 0.0006365822605743387,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.99936,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.959965,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -2074,77 +2074,41 @@
         {
           "pattern_id": "B6",
           "numbers": [
-            3,
+            2,
             4,
             5,
-            8
+            7
           ],
           "digits": [
-            3,
+            2,
             4,
             5,
-            8
+            7
           ],
-          "number": "3458",
-          "representative_straight": "3584",
-          "score": 10.373388,
-          "model": "experience_numbers4_2",
+          "number": "2457",
+          "representative_straight": "7254",
+          "score": 10.474716,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.10186757215619693,
-            "recent_position_frequency": 0.15687500000000001,
-            "position_delay": 0.0009196378041878891,
-            "overall_frequency": 0.09990449915110357,
-            "ordered_pair": 0.0015327296736464817,
-            "ordered_triplet": 0.0002829654782116582,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.904367,
+            "position_frequency": 0.09644221247701229,
+            "recent_position_frequency": 0.096875,
+            "position_delay": 0.0007073136228603763,
+            "overall_frequency": 0.0984934219833074,
+            "ordered_pair": 0.0016503984533408778,
+            "ordered_triplet": 0.0006719479417173575,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.959919,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.959965,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
         },
         {
           "pattern_id": "B7",
-          "numbers": [
-            0,
-            4,
-            7,
-            9
-          ],
-          "digits": [
-            0,
-            4,
-            7,
-            9
-          ],
-          "number": "0479",
-          "representative_straight": "9740",
-          "score": 10.350762,
-          "model": "experience_numbers4_2",
-          "components": {
-            "position_frequency": 0.10009903791737408,
-            "recent_position_frequency": 0.1375,
-            "position_delay": 0.0009903791737408036,
-            "overall_frequency": 0.10123974250141483,
-            "ordered_pair": 0.0016113311953719425,
-            "ordered_triplet": 0.00045981890209394454,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.904367,
-            "odd_shape": 0.999437,
-            "high_shape": 0.999669,
-            "adjacent_difference": 0.959919,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
-          },
-          "exact_repeat_count": 0,
-          "unordered_repeat_count": 1
-        },
-        {
-          "pattern_id": "B8",
           "numbers": [
             2,
             2,
@@ -2158,23 +2122,59 @@
             9
           ],
           "number": "2259",
-          "representative_straight": "5922",
-          "score": 10.342159,
-          "model": "experience_numbers4_2",
+          "representative_straight": "9225",
+          "score": 10.427138,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.09861346915676289,
-            "recent_position_frequency": 0.079375,
-            "position_delay": 0.0015916808149405773,
-            "overall_frequency": 0.0993650962082626,
-            "ordered_pair": 0.0016152612714582153,
-            "ordered_triplet": 0.0004951895868704018,
-            "duplicate_pattern": 0.42855121675155633,
-            "sum_shape": 0.999567,
+            "position_frequency": 0.09488612250671948,
+            "recent_position_frequency": 0.12125,
+            "position_delay": 0.0006719479417173575,
+            "overall_frequency": 0.09935988117131135,
+            "ordered_pair": 0.0016228918124518632,
+            "ordered_triplet": 0.0005658508982883011,
+            "duplicate_pattern": 0.42849059272881596,
+            "sum_shape": 0.999572,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.938962,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.999353,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
+          },
+          "exact_repeat_count": 0,
+          "unordered_repeat_count": 1
+        },
+        {
+          "pattern_id": "B8",
+          "numbers": [
+            0,
+            4,
+            7,
+            7
+          ],
+          "digits": [
+            0,
+            4,
+            7,
+            7
+          ],
+          "number": "0477",
+          "representative_straight": "0774",
+          "score": 10.376408,
+          "model": "experience_numbers4_1",
+          "components": {
+            "position_frequency": 0.10040316876503041,
+            "recent_position_frequency": 0.0675,
+            "position_delay": 0.0020158438251520723,
+            "overall_frequency": 0.09969585514217004,
+            "ordered_pair": 0.0016779050942298925,
+            "ordered_triplet": 0.0006012165794313199,
+            "duplicate_pattern": 0.42849059272881596,
+            "sum_shape": 0.999572,
+            "odd_shape": 0.999437,
+            "high_shape": 0.999669,
+            "adjacent_difference": 0.999353,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -2182,35 +2182,35 @@
         {
           "pattern_id": "B9",
           "numbers": [
-            1,
+            2,
             4,
             5,
-            6
+            9
           ],
           "digits": [
-            1,
+            2,
             4,
             5,
-            6
+            9
           ],
-          "number": "1456",
-          "representative_straight": "4516",
-          "score": 10.338224,
-          "model": "experience_numbers4_2",
+          "number": "2459",
+          "representative_straight": "9245",
+          "score": 10.348891,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.0999221844934918,
-            "recent_position_frequency": 0.143125,
-            "position_delay": 0.0010611205432937182,
-            "overall_frequency": 0.09922361346915677,
-            "ordered_pair": 0.0016191913475444885,
-            "ordered_triplet": 0.0004951895868704018,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.881416,
+            "position_frequency": 0.09676050360729947,
+            "recent_position_frequency": 0.11875,
+            "position_delay": 0.0006365822605743387,
+            "overall_frequency": 0.10003182911302871,
+            "ordered_pair": 0.0015246538092768113,
+            "ordered_triplet": 0.00031829113028716935,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.904307,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.99936,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.999353,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
@@ -2219,34 +2219,34 @@
           "pattern_id": "B10",
           "numbers": [
             0,
-            1,
-            6,
+            4,
+            7,
             9
           ],
           "digits": [
             0,
-            1,
-            6,
+            4,
+            7,
             9
           ],
-          "number": "0169",
-          "representative_straight": "9610",
-          "score": 10.33528,
-          "model": "experience_numbers4_2",
+          "number": "0479",
+          "representative_straight": "0497",
+          "score": 10.308103,
+          "model": "experience_numbers4_1",
           "components": {
-            "position_frequency": 0.09850735710243351,
-            "recent_position_frequency": 0.165,
-            "position_delay": 0.00031833616298811547,
-            "overall_frequency": 0.10129279852857952,
-            "ordered_pair": 0.001544519901905301,
-            "ordered_triplet": 0.0005659309564233164,
-            "duplicate_pattern": 0.5087719298245614,
-            "sum_shape": 0.881416,
+            "position_frequency": 0.10086292261988966,
+            "recent_position_frequency": 0.11125,
+            "position_delay": 0.002121940868581129,
+            "overall_frequency": 0.10123426227189135,
+            "ordered_pair": 0.001607173731943855,
+            "ordered_triplet": 0.0005304852171452823,
+            "duplicate_pattern": 0.5088414202857547,
+            "sum_shape": 0.904307,
             "odd_shape": 0.999437,
             "high_shape": 0.999669,
-            "adjacent_difference": 0.959919,
-            "exact_repeat": 0.684388,
-            "unordered_repeat": 0.936451
+            "adjacent_difference": 0.938904,
+            "exact_repeat": 0.684433,
+            "unordered_repeat": 0.936389
           },
           "exact_repeat_count": 0,
           "unordered_repeat_count": 1
