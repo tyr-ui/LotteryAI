@@ -1,6 +1,6 @@
 {
   "schema_version": "1.5",
-  "updated_at": "2026-10-19T19:24:05.959345+00:00",
+  "updated_at": "2026-10-20T17:31:34.458599+00:00",
   "games": {
     "loto6": {
       "updated_at": "2026-10-19T19:24:05.896549+00:00",
@@ -3791,22 +3791,22 @@
       ]
     },
     "miniloto": {
-      "updated_at": "2026-10-13T20:00:59.490196+00:00",
-      "history_count": 18,
+      "updated_at": "2026-10-20T17:31:34.427310+00:00",
+      "history_count": 19,
       "legacy_history_count": 19,
       "history_limit": 20,
       "unique_config_count": 3,
-      "average_selection_score": 2.279504,
+      "average_selection_score": 2.279957,
       "config_statistics": [
         {
           "config_name": "experience_miniloto_1",
-          "wins": 16,
+          "wins": 17,
           "best_selection_score": 2.299294,
-          "average_selection_score": 2.287283,
-          "latest_selection_score": 2.292557,
-          "last_used": "2026-10-13T20:00:59.490196+00:00",
-          "trained_through_draw_no": 1378,
-          "experience_score": 2.406538
+          "average_selection_score": 2.287331,
+          "latest_selection_score": 2.28811,
+          "last_used": "2026-10-20T17:31:34.427310+00:00",
+          "trained_through_draw_no": 1379,
+          "experience_score": 2.40563
         },
         {
           "config_name": "local_01_experience_miniloto_1",
@@ -3842,11 +3842,11 @@
           "is_best_source": false
         },
         "experience": {
-          "count": 15,
+          "count": 16,
           "best_selection_score": 2.299294,
-          "average_selection_score": 2.28726,
-          "latest_selection_score": 2.292557,
-          "share": 0.833333,
+          "average_selection_score": 2.287313,
+          "latest_selection_score": 2.28811,
+          "share": 0.842105,
           "recent_count": 10,
           "recent_share": 1.0,
           "rank": 1,
@@ -3868,7 +3868,7 @@
           "best_selection_score": 2.224761,
           "average_selection_score": 2.224761,
           "latest_selection_score": 2.224761,
-          "share": 0.055556,
+          "share": 0.052632,
           "recent_count": 0,
           "recent_share": 0.0,
           "rank": 3,
@@ -3879,7 +3879,7 @@
           "best_selection_score": 2.287626,
           "average_selection_score": 2.248706,
           "latest_selection_score": 2.287626,
-          "share": 0.111111,
+          "share": 0.105263,
           "recent_count": 0,
           "recent_share": 0.0,
           "rank": 2,
@@ -3887,22 +3887,22 @@
         }
       },
       "best_experience_config_name": "experience_miniloto_1",
-      "best_experience_score": 2.406538,
+      "best_experience_score": 2.40563,
       "best_config_name": "experience_miniloto_1",
       "best_selection_score": 2.299294,
       "latest": {
-        "evaluated_at": "2026-10-13T20:00:59.490196+00:00",
+        "evaluated_at": "2026-10-20T17:31:34.427310+00:00",
         "config_name": "experience_miniloto_1",
-        "selection_score": 2.292557,
-        "avg_matches": 1.8963,
-        "average_matches_per_ticket": 0.822233,
-        "hit_rate_2match": 0.751867,
+        "selection_score": 2.28811,
+        "avg_matches": 1.8926,
+        "average_matches_per_ticket": 0.818533,
+        "hit_rate_2match": 0.748167,
         "hit_rate_3match": 0.140733,
         "hit_rate_4match": 0.0037,
-        "avg_matches_std": 0.0687,
+        "avg_matches_std": 0.066883,
         "random_uplift": 0.1926,
         "learning_strength": 0.35,
-        "trained_through_draw_no": 1378,
+        "trained_through_draw_no": 1379,
         "config": {
           "w": {
             "freq": 0.30529554,
@@ -4166,6 +4166,52 @@
             "diversity": 0.35
           },
           "trained_through_draw_no": 1373
+        },
+        {
+          "evaluated_at": "2026-10-20T17:31:34.427310+00:00",
+          "config_name": "experience_miniloto_1",
+          "selection_score": 2.28811,
+          "avg_matches": 1.8926,
+          "average_matches_per_ticket": 0.818533,
+          "hit_rate_2match": 0.748167,
+          "hit_rate_3match": 0.140733,
+          "hit_rate_4match": 0.0037,
+          "avg_matches_std": 0.066883,
+          "random_uplift": 0.1926,
+          "learning_strength": 0.35,
+          "config": {
+            "w": {
+              "freq": 0.30529554,
+              "recent": 0.2168172,
+              "pair": 0.21053601,
+              "triplet": 0.07597665,
+              "delay": 0.0,
+              "dist": 0.19137459,
+              "repeat": 0.0
+            },
+            "f": {
+              "max_block": 3,
+              "max_common": 3,
+              "max_con": 1,
+              "max_first": 2
+            }
+          },
+          "prediction_weights": {
+            "global_frequency": 0.305296,
+            "recent_frequency": 0.216817,
+            "delay": 0.0,
+            "pair": 0.210536,
+            "triplet": 0.075977,
+            "repeat": 0.0,
+            "sum_shape": 0.031896,
+            "odd_shape": 0.031896,
+            "low_shape": 0.031896,
+            "consecutive_shape": 0.031896,
+            "span_shape": 0.031896,
+            "block_shape": 0.031896,
+            "diversity": 0.35
+          },
+          "trained_through_draw_no": 1379
         },
         {
           "evaluated_at": "2026-08-05T00:06:59.581058+00:00",
@@ -5644,7 +5690,7 @@
       ]
     },
     "numbers3": {
-      "updated_at": "2026-10-19T19:24:05.927207+00:00",
+      "updated_at": "2026-10-20T17:31:34.458599+00:00",
       "history_count": 20,
       "legacy_history_count": 19,
       "history_limit": 20,
@@ -5764,18 +5810,18 @@
       "best_config_name": "local_06",
       "best_selection_score": 3.656939,
       "latest": {
-        "evaluated_at": "2026-10-19T19:24:05.927207+00:00",
+        "evaluated_at": "2026-10-20T17:31:34.458599+00:00",
         "config_name": "experience_numbers3_3",
-        "selection_score": 2.351387,
-        "avg_matches": 1.583333,
-        "average_matches_per_ticket": 0.345833,
-        "hit_rate_2match": 0.583333,
+        "selection_score": 2.301388,
+        "avg_matches": 1.541667,
+        "average_matches_per_ticket": 0.341667,
+        "hit_rate_2match": 0.541667,
         "hit_rate_3match": 0.0,
         "hit_rate_4match": 0.0,
         "avg_matches_std": 0.0,
-        "random_uplift": 0.538852,
+        "random_uplift": 0.493977,
         "learning_strength": 1.0,
-        "trained_through_draw_no": 7035,
+        "trained_through_draw_no": 7036,
         "config": {
           "w": {
             "position_frequency": 1.039748,
