@@ -1,6 +1,6 @@
 {
   "schema_version": "1.5",
-  "updated_at": "2026-11-09T22:56:58.003318+00:00",
+  "updated_at": "2026-11-10T20:30:01.618617+00:00",
   "games": {
     "loto6": {
       "updated_at": "2026-11-09T22:56:57.967953+00:00",
@@ -3883,12 +3883,12 @@
       ]
     },
     "miniloto": {
-      "updated_at": "2026-11-03T20:09:04.988296+00:00",
+      "updated_at": "2026-11-10T20:30:01.557531+00:00",
       "history_count": 20,
       "legacy_history_count": 19,
       "history_limit": 20,
-      "unique_config_count": 3,
-      "average_selection_score": 2.285487,
+      "unique_config_count": 2,
+      "average_selection_score": 2.289977,
       "config_statistics": [
         {
           "config_name": "experience_miniloto_1",
@@ -3902,23 +3902,13 @@
         },
         {
           "config_name": "experience_miniloto_2",
-          "wins": 2,
-          "best_selection_score": 2.310173,
-          "average_selection_score": 2.30017,
-          "latest_selection_score": 2.310173,
-          "last_used": "2026-11-03T20:09:04.988296+00:00",
-          "trained_through_draw_no": 1381,
-          "experience_score": 2.328223
-        },
-        {
-          "config_name": "local_01_experience_miniloto_1",
-          "wins": 1,
-          "best_selection_score": 2.224761,
-          "average_selection_score": 2.224761,
-          "latest_selection_score": 2.224761,
-          "last_used": "2026-08-04T15:14:30.491190+00:00",
-          "trained_through_draw_no": 1368,
-          "experience_score": 2.224761
+          "wins": 3,
+          "best_selection_score": 2.314576,
+          "average_selection_score": 2.304972,
+          "latest_selection_score": 2.314576,
+          "last_used": "2026-11-10T20:30:01.557531+00:00",
+          "trained_through_draw_no": 1382,
+          "experience_score": 2.355969
         }
       ],
       "search_source_statistics": {
@@ -3934,11 +3924,11 @@
           "is_best_source": false
         },
         "experience": {
-          "count": 17,
-          "best_selection_score": 2.310173,
-          "average_selection_score": 2.288658,
-          "latest_selection_score": 2.310173,
-          "share": 0.85,
+          "count": 18,
+          "best_selection_score": 2.314576,
+          "average_selection_score": 2.290098,
+          "latest_selection_score": 2.314576,
+          "share": 0.9,
           "recent_count": 9,
           "recent_share": 0.9,
           "rank": 1,
@@ -3956,14 +3946,14 @@
           "is_best_source": false
         },
         "local": {
-          "count": 1,
-          "best_selection_score": 2.224761,
-          "average_selection_score": 2.224761,
-          "latest_selection_score": 2.224761,
-          "share": 0.05,
+          "count": 0,
+          "best_selection_score": 0.0,
+          "average_selection_score": 0.0,
+          "latest_selection_score": 0.0,
+          "share": 0.0,
           "recent_count": 0,
           "recent_share": 0.0,
-          "rank": 3,
+          "rank": 0,
           "is_best_source": false
         },
         "evolution": {
@@ -3981,20 +3971,20 @@
       "best_experience_config_name": "experience_miniloto_1",
       "best_experience_score": 2.40563,
       "best_config_name": "experience_miniloto_2",
-      "best_selection_score": 2.310173,
+      "best_selection_score": 2.314576,
       "latest": {
-        "evaluated_at": "2026-11-03T20:09:04.988296+00:00",
+        "evaluated_at": "2026-11-10T20:30:01.557531+00:00",
         "config_name": "experience_miniloto_2",
-        "selection_score": 2.310173,
+        "selection_score": 2.314576,
         "avg_matches": 1.9,
-        "average_matches_per_ticket": 0.817767,
+        "average_matches_per_ticket": 0.8185,
         "hit_rate_2match": 0.748167,
         "hit_rate_3match": 0.148167,
         "hit_rate_4match": 0.0037,
-        "avg_matches_std": 0.036252,
-        "random_uplift": 0.2,
+        "avg_matches_std": 0.027189,
+        "random_uplift": 0.2074,
         "learning_strength": 0.35,
-        "trained_through_draw_no": 1381,
+        "trained_through_draw_no": 1382,
         "config": {
           "w": {
             "freq": 0.28217786,
@@ -4029,6 +4019,52 @@
         }
       },
       "history": [
+        {
+          "evaluated_at": "2026-11-10T20:30:01.557531+00:00",
+          "config_name": "experience_miniloto_2",
+          "selection_score": 2.314576,
+          "avg_matches": 1.9,
+          "average_matches_per_ticket": 0.8185,
+          "hit_rate_2match": 0.748167,
+          "hit_rate_3match": 0.148167,
+          "hit_rate_4match": 0.0037,
+          "avg_matches_std": 0.027189,
+          "random_uplift": 0.2074,
+          "learning_strength": 0.35,
+          "config": {
+            "w": {
+              "freq": 0.28217786,
+              "recent": 0.20786848,
+              "pair": 0.24147895,
+              "triplet": 0.07080064,
+              "delay": 0.0,
+              "dist": 0.19767408,
+              "repeat": 0.0
+            },
+            "f": {
+              "max_block": 3,
+              "max_common": 3,
+              "max_con": 1,
+              "max_first": 2
+            }
+          },
+          "prediction_weights": {
+            "global_frequency": 0.282178,
+            "recent_frequency": 0.207868,
+            "delay": 0.0,
+            "pair": 0.241479,
+            "triplet": 0.070801,
+            "repeat": 0.0,
+            "sum_shape": 0.032946,
+            "odd_shape": 0.032946,
+            "low_shape": 0.032946,
+            "consecutive_shape": 0.032946,
+            "span_shape": 0.032946,
+            "block_shape": 0.032946,
+            "diversity": 0.35
+          },
+          "trained_through_draw_no": 1382
+        },
         {
           "evaluated_at": "2026-11-03T20:09:04.988296+00:00",
           "config_name": "experience_miniloto_2",
@@ -4902,52 +4938,6 @@
             "diversity": 0.35
           },
           "trained_through_draw_no": 1375
-        },
-        {
-          "evaluated_at": "2026-08-04T15:14:30.491190+00:00",
-          "config_name": "local_01_experience_miniloto_1",
-          "selection_score": 2.224761,
-          "avg_matches": 1.855567,
-          "average_matches_per_ticket": 0.809633,
-          "hit_rate_2match": 0.718533,
-          "hit_rate_3match": 0.1333,
-          "hit_rate_4match": 0.0037,
-          "avg_matches_std": 0.059474,
-          "random_uplift": 0.155567,
-          "learning_strength": 0.35,
-          "config": {
-            "w": {
-              "freq": 0.27709188,
-              "recent": 0.20909659,
-              "pair": 0.2312426,
-              "triplet": 0.07104474,
-              "delay": 0.0,
-              "dist": 0.21152419,
-              "repeat": 0.0
-            },
-            "f": {
-              "max_block": 3,
-              "max_common": 3,
-              "max_con": 1,
-              "max_first": 2
-            }
-          },
-          "prediction_weights": {
-            "global_frequency": 0.277092,
-            "recent_frequency": 0.209097,
-            "delay": 0.0,
-            "pair": 0.231243,
-            "triplet": 0.071045,
-            "repeat": 0.0,
-            "sum_shape": 0.035254,
-            "odd_shape": 0.035254,
-            "low_shape": 0.035254,
-            "consecutive_shape": 0.035254,
-            "span_shape": 0.035254,
-            "block_shape": 0.035254,
-            "diversity": 0.35
-          },
-          "trained_through_draw_no": 1368
         }
       ],
       "legacy_history": [
@@ -5828,7 +5818,7 @@
       ]
     },
     "numbers3": {
-      "updated_at": "2026-11-09T22:56:57.986053+00:00",
+      "updated_at": "2026-11-10T20:30:01.588278+00:00",
       "history_count": 20,
       "legacy_history_count": 19,
       "history_limit": 20,
@@ -5948,7 +5938,7 @@
       "best_config_name": "local_06",
       "best_selection_score": 3.656939,
       "latest": {
-        "evaluated_at": "2026-11-09T22:56:57.986053+00:00",
+        "evaluated_at": "2026-11-10T20:30:01.588278+00:00",
         "config_name": "experience_numbers3_3",
         "selection_score": 2.779172,
         "avg_matches": 1.25,
@@ -5957,9 +5947,9 @@
         "hit_rate_3match": 0.041667,
         "hit_rate_4match": 0.0,
         "avg_matches_std": 0.0,
-        "random_uplift": 1.009231,
+        "random_uplift": 1.014354,
         "learning_strength": 1.0,
-        "trained_through_draw_no": 7050,
+        "trained_through_draw_no": 7051,
         "config": {
           "w": {
             "position_frequency": 1.039748,
@@ -7913,7 +7903,7 @@
       ]
     },
     "numbers4": {
-      "updated_at": "2026-11-09T22:56:58.003318+00:00",
+      "updated_at": "2026-11-10T20:30:01.618617+00:00",
       "history_count": 20,
       "legacy_history_count": 20,
       "history_limit": 20,
@@ -8063,18 +8053,18 @@
       "best_config_name": "experience_numbers4_1",
       "best_selection_score": 2.666666,
       "latest": {
-        "evaluated_at": "2026-11-09T22:56:58.003318+00:00",
-        "config_name": "local_06",
-        "selection_score": 2.433333,
-        "avg_matches": 2.0,
-        "average_matches_per_ticket": 0.441667,
-        "hit_rate_2match": 0.666667,
-        "hit_rate_3match": 0.333333,
+        "evaluated_at": "2026-11-10T20:30:01.618617+00:00",
+        "config_name": "experience_numbers4_4",
+        "selection_score": 2.208333,
+        "avg_matches": 1.833333,
+        "average_matches_per_ticket": 0.433333,
+        "hit_rate_2match": 0.583333,
+        "hit_rate_3match": 0.25,
         "hit_rate_4match": 0.0,
         "avg_matches_std": 0.0,
-        "random_uplift": 0.72958,
+        "random_uplift": 0.503052,
         "learning_strength": 1.0,
-        "trained_through_draw_no": 7050,
+        "trained_through_draw_no": 7051,
         "config": {
           "w": {
             "position_frequency": 1.269942,
@@ -8565,7 +8555,6 @@
           "avg_matches_std": 0.0,
           "random_uplift": 0.72958,
           "learning_strength": 1.0,
-          "trained_through_draw_no": 7050,
           "config": {
             "w": {
               "position_frequency": 1.269942,
@@ -8600,7 +8589,8 @@
             "exact_repeat": 0.366379,
             "unordered_repeat": 0.209618,
             "diversity": 0.292557
-          }
+          },
+          "trained_through_draw_no": 7050
         },
         {
           "evaluated_at": "2026-09-15T17:46:05.019813+00:00",
