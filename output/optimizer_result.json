@@ -1,17 +1,16 @@
 {
   "status": "ok",
   "note": "Only games with a changed latest draw number are recalculated unless LOTTERY_RUN_MODE=all is selected.",
-  "generated_at": "2026-11-12T20:52:26.389226+00:00",
+  "generated_at": "2026-11-13T03:31:09.687718+00:00",
   "run_metadata": {
     "mode": "auto",
-    "optimized_games": [
+    "optimized_games": [],
+    "reused_games": [
       "loto6",
+      "loto7",
+      "miniloto",
       "numbers3",
       "numbers4"
-    ],
-    "reused_games": [
-      "loto7",
-      "miniloto"
     ]
   },
   "previous_evaluation": {
@@ -1023,7 +1022,7 @@
   },
   "carryover": {
     "source": "official_multi_source",
-    "fetched_at": "2026-11-12T20:52:26.389211+00:00",
+    "fetched_at": "2026-11-13T03:31:09.687698+00:00",
     "games": {
       "loto6": {
         "game_key": "loto6",
@@ -1036,7 +1035,7 @@
         "amount_yen": null,
         "has_carryover": null,
         "display_amount": "未取得",
-        "message": "みずほ銀行の公式ページ取得に失敗しました: HTTPError"
+        "message": "みずほ銀行の公式ページ取得に失敗しました: HTTPError / 宝くじ公式サイトの取得に失敗しました: HTTPError"
       },
       "loto7": {
         "game_key": "loto7",
@@ -1049,14 +1048,14 @@
         "amount_yen": null,
         "has_carryover": null,
         "display_amount": "未取得",
-        "message": "みずほ銀行の公式ページ取得に失敗しました: HTTPError"
+        "message": "みずほ銀行の公式ページ取得に失敗しました: HTTPError / 宝くじ公式サイトの取得に失敗しました: HTTPError"
       }
     }
   },
   "operational_controls": {
     "loto6": {
       "target_draw_no": 2155,
-      "generated_at": "2026-11-12T20:52:26.389226+00:00",
+      "generated_at": "2026-11-13T03:31:09.687718+00:00",
       "generated_before_draw": true,
       "control_seed": 4032074633360727070,
       "evaluation_epoch": 1,
@@ -1260,7 +1259,7 @@
     },
     "loto7": {
       "target_draw_no": 703,
-      "generated_at": "2026-11-12T20:52:26.389226+00:00",
+      "generated_at": "2026-11-13T03:31:09.687718+00:00",
       "generated_before_draw": true,
       "control_seed": 8145738247951418801,
       "evaluation_epoch": 1,
@@ -1479,7 +1478,7 @@
     },
     "miniloto": {
       "target_draw_no": 1413,
-      "generated_at": "2026-11-12T20:52:26.389226+00:00",
+      "generated_at": "2026-11-13T03:31:09.687718+00:00",
       "generated_before_draw": true,
       "control_seed": 305788550324295195,
       "evaluation_epoch": 1,
@@ -1668,7 +1667,7 @@
     },
     "numbers3": {
       "target_draw_no": 7114,
-      "generated_at": "2026-11-12T20:52:26.389226+00:00",
+      "generated_at": "2026-11-13T03:31:09.687718+00:00",
       "generated_before_draw": true,
       "control_seed": 17108539375450407355,
       "evaluation_epoch": 1,
@@ -2454,7 +2453,7 @@
     },
     "numbers4": {
       "target_draw_no": 7114,
-      "generated_at": "2026-11-12T20:52:26.389226+00:00",
+      "generated_at": "2026-11-13T03:31:09.687718+00:00",
       "generated_before_draw": true,
       "control_seed": 16014169548948161605,
       "evaluation_epoch": 1,
@@ -3324,7 +3323,7 @@
       "draw_number_gap_count": 0,
       "missing_draw_numbers": [],
       "latest_draw_date": "2026-11-12",
-      "data_age_days": 0,
+      "data_age_days": 1,
       "max_staleness_days": 10,
       "hard_staleness_days": 30,
       "stale_data": false,
@@ -3333,7 +3332,7 @@
       "status": "ok"
     },
     "data_source": "mk-mode",
-    "data_loaded_at": "2026-11-12T20:16:12.666045+00:00",
+    "data_loaded_at": "2026-11-13T03:30:42.535726+00:00",
     "random_baseline": {
       "config": "uniform_random",
       "tested_periods": 90,
@@ -4746,7 +4745,7 @@
     },
     "operational_controls": {
       "target_draw_no": 2155,
-      "generated_at": "2026-11-12T20:52:26.389226+00:00",
+      "generated_at": "2026-11-13T03:31:09.687718+00:00",
       "generated_before_draw": true,
       "control_seed": 4032074633360727070,
       "evaluation_epoch": 1,
@@ -4965,7 +4964,7 @@
       "draw_number_gap_count": 0,
       "missing_draw_numbers": [],
       "latest_draw_date": "2026-11-06",
-      "data_age_days": 6,
+      "data_age_days": 7,
       "max_staleness_days": 10,
       "hard_staleness_days": 30,
       "stale_data": false,
@@ -4974,7 +4973,7 @@
       "status": "ok"
     },
     "data_source": "mk-mode",
-    "data_loaded_at": "2026-11-12T20:16:15.098351+00:00",
+    "data_loaded_at": "2026-11-13T03:30:45.697611+00:00",
     "random_baseline": {
       "config": "uniform_random",
       "tested_periods": 90,
@@ -6422,7 +6421,7 @@
     },
     "operational_controls": {
       "target_draw_no": 703,
-      "generated_at": "2026-11-12T20:52:26.389226+00:00",
+      "generated_at": "2026-11-13T03:31:09.687718+00:00",
       "generated_before_draw": true,
       "control_seed": 8145738247951418801,
       "evaluation_epoch": 1,
@@ -6656,7 +6655,7 @@
       "draw_number_gap_count": 0,
       "missing_draw_numbers": [],
       "latest_draw_date": "2026-11-10",
-      "data_age_days": 2,
+      "data_age_days": 3,
       "max_staleness_days": 10,
       "hard_staleness_days": 30,
       "stale_data": false,
@@ -6665,7 +6664,7 @@
       "status": "ok"
     },
     "data_source": "mk-mode",
-    "data_loaded_at": "2026-11-12T20:16:21.952479+00:00",
+    "data_loaded_at": "2026-11-13T03:30:49.027404+00:00",
     "random_baseline": {
       "config": "uniform_random",
       "tested_periods": 90,
@@ -8043,7 +8042,7 @@
     },
     "operational_controls": {
       "target_draw_no": 1413,
-      "generated_at": "2026-11-12T20:52:26.389226+00:00",
+      "generated_at": "2026-11-13T03:31:09.687718+00:00",
       "generated_before_draw": true,
       "control_seed": 305788550324295195,
       "evaluation_epoch": 1,
@@ -8248,7 +8247,7 @@
       "draw_number_gap_count": 0,
       "missing_draw_numbers": [],
       "latest_draw_date": "2026-11-12",
-      "data_age_days": 0,
+      "data_age_days": 1,
       "max_staleness_days": 4,
       "hard_staleness_days": 12,
       "stale_data": false,
@@ -8257,7 +8256,7 @@
       "status": "ok"
     },
     "data_source": "mk-mode",
-    "data_loaded_at": "2026-11-12T20:16:26.625545+00:00",
+    "data_loaded_at": "2026-11-13T03:30:52.391275+00:00",
     "random_baseline": {
       "config": "uniform_random",
       "source": "uniform_random",
@@ -84158,7 +84157,7 @@
     },
     "operational_controls": {
       "target_draw_no": 7114,
-      "generated_at": "2026-11-12T20:52:26.389226+00:00",
+      "generated_at": "2026-11-13T03:31:09.687718+00:00",
       "generated_before_draw": true,
       "control_seed": 17108539375450407355,
       "evaluation_epoch": 1,
@@ -84960,7 +84959,7 @@
       "draw_number_gap_count": 0,
       "missing_draw_numbers": [],
       "latest_draw_date": "2026-11-12",
-      "data_age_days": 0,
+      "data_age_days": 1,
       "max_staleness_days": 4,
       "hard_staleness_days": 12,
       "stale_data": false,
@@ -84969,7 +84968,7 @@
       "status": "ok"
     },
     "data_source": "mk-mode",
-    "data_loaded_at": "2026-11-12T20:16:33.042375+00:00",
+    "data_loaded_at": "2026-11-13T03:30:55.501365+00:00",
     "random_baseline": {
       "config": "uniform_random",
       "source": "uniform_random",
@@ -173510,7 +173509,7 @@
     },
     "operational_controls": {
       "target_draw_no": 7114,
-      "generated_at": "2026-11-12T20:52:26.389226+00:00",
+      "generated_at": "2026-11-13T03:31:09.687718+00:00",
       "generated_before_draw": true,
       "control_seed": 16014169548948161605,
       "evaluation_epoch": 1,
