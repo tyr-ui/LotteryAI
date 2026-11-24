@@ -2,18 +2,18 @@
   "schema_version": "1.0",
   "status": "ok",
   "note": "Only games with a changed latest draw number are recalculated unless LOTTERY_RUN_MODE=all is selected.",
-  "generated_at": "2026-11-20T21:14:58.901184+00:00",
-  "bundle_generated_at": "2026-11-20T21:14:59.227406+00:00",
+  "generated_at": "2026-11-24T00:47:59.196846+00:00",
+  "bundle_generated_at": "2026-11-24T00:47:59.532911+00:00",
   "top_configs_per_game": 5,
   "games": {
     "loto6": {
-      "latest_draw_no": 2156,
-      "next_draw_no": 2157,
-      "rows": 2156,
+      "latest_draw_no": 2157,
+      "next_draw_no": 2158,
+      "rows": 2157,
       "validation": {
         "family": "lotto",
-        "rows": 2156,
-        "latest_draw_no": 2156,
+        "rows": 2157,
+        "latest_draw_no": 2157,
         "missing_cells": 0,
         "duplicate_draw_no": 0,
         "duplicate_date": 0,
@@ -21,7 +21,7 @@
         "duplicate_main_numbers_rows": 0,
         "draw_number_gap_count": 0,
         "missing_draw_numbers": [],
-        "latest_draw_date": "2026-11-19",
+        "latest_draw_date": "2026-11-23",
         "data_age_days": 1,
         "max_staleness_days": 10,
         "hard_staleness_days": 30,
@@ -103,8 +103,8 @@
             "experience": {
               "count": 19,
               "best_selection_score": 2.519678,
-              "average_selection_score": 2.494232,
-              "latest_selection_score": 2.490013,
+              "average_selection_score": 2.495336,
+              "latest_selection_score": 2.497494,
               "share": 0.95,
               "recent_count": 10,
               "recent_share": 1.0,
@@ -170,8 +170,8 @@
             "experience": {
               "count": 19,
               "best_selection_score": 2.519678,
-              "average_selection_score": 2.494232,
-              "latest_selection_score": 2.490013,
+              "average_selection_score": 2.495336,
+              "latest_selection_score": 2.497494,
               "share": 0.95,
               "recent_count": 10,
               "recent_share": 1.0,
@@ -221,8 +221,8 @@
           2027
         ],
         "optimization_top_k": 5,
-        "selection_history_draws": 2126,
-        "trained_through_draw_no": 2126,
+        "selection_history_draws": 2127,
+        "trained_through_draw_no": 2127,
         "holdout_periods": 30,
         "holdout_enabled": true,
         "note": "Optimizer-specific max_block/max_first/max_con/max_common are retained for output compatibility, but predictor.py currently does not consume those keys. Therefore this version optimizes only effective prediction weights."
@@ -235,13 +235,13 @@
           "baseline_config": "experience_loto6_1",
           "ablated_config": "experience_loto6_1__without_recent",
           "baseline_avg_matches": 1.992567,
-          "ablated_avg_matches": 1.866667,
-          "avg_matches_drop": 0.1259,
-          "avg_matches_drop_percent": 6.318483,
-          "baseline_selection_score": 2.497494,
-          "ablated_selection_score": 2.252005,
-          "selection_score_drop": 0.245489,
-          "selection_score_drop_percent": 9.829413,
+          "ablated_avg_matches": 1.862967,
+          "avg_matches_drop": 0.1296,
+          "avg_matches_drop_percent": 6.504173,
+          "baseline_selection_score": 2.498789,
+          "ablated_selection_score": 2.245955,
+          "selection_score_drop": 0.252834,
+          "selection_score_drop_percent": 10.118261,
           "ablated_weights": {
             "freq": 0.18823608,
             "recent": 0.0,
@@ -262,13 +262,13 @@
           "baseline_config": "experience_loto6_1",
           "ablated_config": "experience_loto6_1__without_freq",
           "baseline_avg_matches": 1.992567,
-          "ablated_avg_matches": 1.874033,
-          "avg_matches_drop": 0.118534,
-          "avg_matches_drop_percent": 5.948809,
-          "baseline_selection_score": 2.497494,
-          "ablated_selection_score": 2.266436,
-          "selection_score_drop": 0.231058,
-          "selection_score_drop_percent": 9.251594,
+          "ablated_avg_matches": 1.866633,
+          "avg_matches_drop": 0.125934,
+          "avg_matches_drop_percent": 6.320189,
+          "baseline_selection_score": 2.498789,
+          "ablated_selection_score": 2.254478,
+          "selection_score_drop": 0.244311,
+          "selection_score_drop_percent": 9.777176,
           "ablated_weights": {
             "freq": 0.0,
             "recent": 0.06587301,
@@ -289,13 +289,13 @@
           "baseline_config": "experience_loto6_1",
           "ablated_config": "experience_loto6_1__without_repeat",
           "baseline_avg_matches": 1.992567,
-          "ablated_avg_matches": 1.8889,
-          "avg_matches_drop": 0.103667,
-          "avg_matches_drop_percent": 5.202686,
-          "baseline_selection_score": 2.497494,
-          "ablated_selection_score": 2.282816,
-          "selection_score_drop": 0.214678,
-          "selection_score_drop_percent": 8.595736,
+          "ablated_avg_matches": 1.885167,
+          "avg_matches_drop": 0.1074,
+          "avg_matches_drop_percent": 5.390032,
+          "baseline_selection_score": 2.498789,
+          "ablated_selection_score": 2.275071,
+          "selection_score_drop": 0.223718,
+          "selection_score_drop_percent": 8.953057,
           "ablated_weights": {
             "freq": 0.18823608,
             "recent": 0.06587301,
@@ -319,10 +319,10 @@
           "ablated_avg_matches": 1.918533,
           "avg_matches_drop": 0.074034,
           "avg_matches_drop_percent": 3.715509,
-          "baseline_selection_score": 2.497494,
-          "ablated_selection_score": 2.347003,
+          "baseline_selection_score": 2.498789,
+          "ablated_selection_score": 2.348298,
           "selection_score_drop": 0.150491,
-          "selection_score_drop_percent": 6.02568,
+          "selection_score_drop_percent": 6.022557,
           "ablated_weights": {
             "freq": 0.18823608,
             "recent": 0.06587301,
@@ -346,10 +346,10 @@
           "ablated_avg_matches": 1.948133,
           "avg_matches_drop": 0.044434,
           "avg_matches_drop_percent": 2.229988,
-          "baseline_selection_score": 2.497494,
-          "ablated_selection_score": 2.394325,
+          "baseline_selection_score": 2.498789,
+          "ablated_selection_score": 2.39562,
           "selection_score_drop": 0.103169,
-          "selection_score_drop_percent": 4.130901,
+          "selection_score_drop_percent": 4.12876,
           "ablated_weights": {
             "freq": 0.18823608,
             "recent": 0.06587301,
@@ -373,10 +373,10 @@
           "ablated_avg_matches": 1.970367,
           "avg_matches_drop": 0.0222,
           "avg_matches_drop_percent": 1.114141,
-          "baseline_selection_score": 2.497494,
-          "ablated_selection_score": 2.450119,
+          "baseline_selection_score": 2.498789,
+          "ablated_selection_score": 2.451414,
           "selection_score_drop": 0.047375,
-          "selection_score_drop_percent": 1.896901,
+          "selection_score_drop_percent": 1.895918,
           "ablated_weights": {
             "freq": 0.18823608,
             "recent": 0.06587301,
@@ -400,8 +400,8 @@
           "ablated_avg_matches": 1.992567,
           "avg_matches_drop": 0.0,
           "avg_matches_drop_percent": 0.0,
-          "baseline_selection_score": 2.497494,
-          "ablated_selection_score": 2.497494,
+          "baseline_selection_score": 2.498789,
+          "ablated_selection_score": 2.498789,
           "selection_score_drop": 0.0,
           "selection_score_drop_percent": 0.0,
           "ablated_weights": {
@@ -422,66 +422,66 @@
         {
           "pattern_id": "P1",
           "numbers": [
-            2,
             6,
+            15,
+            20,
             21,
-            24,
-            35,
-            37
+            37,
+            42
           ],
-          "score": 0.422033,
+          "score": 0.411655,
           "model": "experience_loto6_1"
         },
         {
           "pattern_id": "P2",
           "numbers": [
-            15,
-            19,
+            2,
+            16,
             22,
-            26,
-            36,
-            38
+            27,
+            35,
+            36
           ],
-          "score": 0.382123,
+          "score": 0.384923,
           "model": "experience_loto6_1"
         },
         {
           "pattern_id": "P3",
           "numbers": [
-            4,
-            8,
-            16,
-            27,
-            39,
-            42
+            1,
+            18,
+            19,
+            28,
+            38,
+            43
           ],
-          "score": 0.361539,
+          "score": 0.371121,
           "model": "experience_loto6_1"
         },
         {
           "pattern_id": "P4",
           "numbers": [
             5,
-            12,
-            18,
-            30,
-            40,
-            43
+            8,
+            10,
+            11,
+            32,
+            39
           ],
-          "score": 0.351547,
+          "score": 0.345957,
           "model": "experience_loto6_1"
         },
         {
           "pattern_id": "P5",
           "numbers": [
-            10,
+            3,
             13,
-            20,
-            23,
-            28,
-            29
+            24,
+            26,
+            30,
+            40
           ],
-          "score": 0.331546,
+          "score": 0.33604,
           "model": "experience_loto6_1"
         }
       ],
@@ -489,18 +489,18 @@
         "config": "uniform_random",
         "tested_periods": 90,
         "evaluated_seeds": 3,
-        "avg_matches": 1.7148,
-        "average_matches_per_ticket": 0.809633,
+        "avg_matches": 1.7111,
+        "average_matches_per_ticket": 0.8074,
         "hit_rate_1match": 0.9852,
-        "hit_rate_2match": 0.6111,
+        "hit_rate_2match": 0.6074,
         "hit_rate_3match": 0.1074,
         "hit_rate_4match": 0.0111,
         "hit_rate_5match": 0.0,
         "hit_rate_6match": 0.0,
         "hit_rate_7match": 0.0,
-        "avg_matches_std": 0.02093,
+        "avg_matches_std": 0.015698,
         "seed_avg_matches": [
-          1.7444,
+          1.7333,
           1.7,
           1.7
         ]
@@ -509,19 +509,19 @@
         "config": "filtered_random",
         "tested_periods": 90,
         "evaluated_seeds": 3,
-        "avg_matches": 1.7889,
-        "average_matches_per_ticket": 0.838533,
+        "avg_matches": 1.7963,
+        "average_matches_per_ticket": 0.842967,
         "hit_rate_1match": 0.9926,
-        "hit_rate_2match": 0.655567,
-        "hit_rate_3match": 0.137033,
+        "hit_rate_2match": 0.659267,
+        "hit_rate_3match": 0.140733,
         "hit_rate_4match": 0.0037,
         "hit_rate_5match": 0.0,
         "hit_rate_6match": 0.0,
         "hit_rate_7match": 0.0,
-        "avg_matches_std": 0.092061,
+        "avg_matches_std": 0.096138,
         "seed_avg_matches": [
-          1.7667,
-          1.9111,
+          1.7778,
+          1.9222,
           1.6889
         ]
       },
@@ -531,7 +531,7 @@
           "tested_periods": 90,
           "evaluated_seeds": 3,
           "avg_matches": 1.992567,
-          "average_matches_per_ticket": 0.853367,
+          "average_matches_per_ticket": 0.8511,
           "hit_rate_1match": 1.0,
           "hit_rate_2match": 0.770367,
           "hit_rate_3match": 0.1963,
@@ -545,10 +545,10 @@
             2.0333,
             1.9111
           ],
-          "selection_score": 2.497494,
-          "random_unfiltered_avg": 1.7148,
-          "random_filtered_avg": 1.7889,
-          "random_uplift": 0.277767,
+          "selection_score": 2.498789,
+          "random_unfiltered_avg": 1.7111,
+          "random_filtered_avg": 1.7963,
+          "random_uplift": 0.281467,
           "weights": {
             "freq": 0.18823608,
             "recent": 0.06587301,
@@ -572,7 +572,7 @@
           "tested_periods": 90,
           "evaluated_seeds": 3,
           "avg_matches": 1.962967,
-          "average_matches_per_ticket": 0.8563,
+          "average_matches_per_ticket": 0.857033,
           "hit_rate_1match": 1.0,
           "hit_rate_2match": 0.766667,
           "hit_rate_3match": 0.177767,
@@ -586,10 +586,10 @@
             1.9,
             1.9222
           ],
-          "selection_score": 2.429458,
-          "random_unfiltered_avg": 1.7148,
-          "random_filtered_avg": 1.7889,
-          "random_uplift": 0.248167,
+          "selection_score": 2.430753,
+          "random_unfiltered_avg": 1.7111,
+          "random_filtered_avg": 1.7963,
+          "random_uplift": 0.251867,
           "weights": {
             "freq": 0.3504952,
             "recent": 0.0196478,
@@ -612,25 +612,25 @@
           "config": "evolution_04_experience_loto6_1_random_05",
           "tested_periods": 90,
           "evaluated_seeds": 3,
-          "avg_matches": 1.944433,
-          "average_matches_per_ticket": 0.861467,
+          "avg_matches": 1.937033,
+          "average_matches_per_ticket": 0.859267,
           "hit_rate_1match": 0.9889,
-          "hit_rate_2match": 0.7593,
-          "hit_rate_3match": 0.1815,
+          "hit_rate_2match": 0.755567,
+          "hit_rate_3match": 0.177767,
           "hit_rate_4match": 0.0148,
           "hit_rate_5match": 0.0,
           "hit_rate_6match": 0.0,
           "hit_rate_7match": 0.0,
-          "avg_matches_std": 0.056645,
+          "avg_matches_std": 0.053151,
           "seed_avg_matches": [
-            2.0222,
+            2.0111,
             1.8889,
-            1.9222
+            1.9111
           ],
-          "selection_score": 2.404226,
-          "random_unfiltered_avg": 1.7148,
-          "random_filtered_avg": 1.7889,
-          "random_uplift": 0.229633,
+          "selection_score": 2.392123,
+          "random_unfiltered_avg": 1.7111,
+          "random_filtered_avg": 1.7963,
+          "random_uplift": 0.225933,
           "weights": {
             "freq": 0.24889335,
             "recent": 0.0041485,
@@ -656,22 +656,22 @@
           "avg_matches": 1.9296,
           "average_matches_per_ticket": 0.8674,
           "hit_rate_1match": 1.0,
-          "hit_rate_2match": 0.766667,
+          "hit_rate_2match": 0.7667,
           "hit_rate_3match": 0.148133,
           "hit_rate_4match": 0.0148,
           "hit_rate_5match": 0.0,
           "hit_rate_6match": 0.0,
           "hit_rate_7match": 0.0,
-          "avg_matches_std": 0.07822,
+          "avg_matches_std": 0.081817,
           "seed_avg_matches": [
             2.0333,
-            1.9111,
-            1.8444
+            1.9222,
+            1.8333
           ],
-          "selection_score": 2.355402,
-          "random_unfiltered_avg": 1.7148,
-          "random_filtered_avg": 1.7889,
-          "random_uplift": 0.2148,
+          "selection_score": 2.355988,
+          "random_unfiltered_avg": 1.7111,
+          "random_filtered_avg": 1.7963,
+          "random_uplift": 0.2185,
           "weights": {
             "freq": 0.24305292,
             "recent": 0.0,
@@ -695,117 +695,116 @@
       "previous_evaluation": {
         "draw_type": "loto6",
         "status": "evaluated",
-        "draw_no": 2156,
+        "draw_no": 2157,
         "actual_numbers": [
-          1,
-          5,
-          23,
-          26,
-          35,
-          42
+          13,
+          20,
+          22,
+          34,
+          38,
+          39
         ],
-        "evaluated_at": "2026-11-19T20:53:47.759817+00:00",
+        "evaluated_at": "2026-11-24T00:12:03.566172+00:00",
         "predictions": [
           {
             "pattern_id": "P1",
             "numbers": [
               2,
               6,
-              15,
-              28,
-              37,
-              43
+              21,
+              24,
+              35,
+              37
             ],
             "matches": 0,
             "matched_numbers": [],
-            "score": 0.41144,
+            "score": 0.422033,
             "model": "experience_loto6_1"
           },
           {
             "pattern_id": "P2",
             "numbers": [
-              1,
-              16,
-              21,
+              15,
+              19,
+              22,
               26,
-              35,
+              36,
               38
             ],
-            "matches": 3,
+            "matches": 2,
             "matched_numbers": [
-              1,
-              26,
-              35
+              22,
+              38
             ],
-            "score": 0.390088,
+            "score": 0.382123,
             "model": "experience_loto6_1"
           },
           {
             "pattern_id": "P3",
             "numbers": [
-              10,
-              19,
-              24,
+              4,
+              8,
+              16,
               27,
-              40,
+              39,
               42
             ],
             "matches": 1,
             "matched_numbers": [
-              42
+              39
             ],
-            "score": 0.3724,
+            "score": 0.361539,
             "model": "experience_loto6_1"
           },
           {
             "pattern_id": "P4",
             "numbers": [
-              4,
               5,
+              12,
               18,
-              23,
-              36,
-              39
+              30,
+              40,
+              43
             ],
-            "matches": 2,
-            "matched_numbers": [
-              5,
-              23
-            ],
-            "score": 0.346345,
+            "matches": 0,
+            "matched_numbers": [],
+            "score": 0.351547,
             "model": "experience_loto6_1"
           },
           {
             "pattern_id": "P5",
             "numbers": [
-              8,
+              10,
               13,
-              22,
-              29,
-              30,
-              32
+              20,
+              23,
+              28,
+              29
             ],
-            "matches": 0,
-            "matched_numbers": [],
-            "score": 0.321722,
+            "matches": 2,
+            "matched_numbers": [
+              13,
+              20
+            ],
+            "score": 0.331546,
             "model": "experience_loto6_1"
           }
         ],
-        "best_match_count": 3,
-        "avg_match_count": 1.2,
+        "best_match_count": 2,
+        "avg_match_count": 1.0,
         "hit_rate_1match": 0.6,
         "hit_rate_2match": 0.4,
-        "hit_rate_3match": 0.2,
+        "hit_rate_3match": 0.0,
         "hit_rate_4match": 0.0,
         "hit_rate_5match": 0.0
       },
       "evaluation_summary": {
-        "evaluated_draws": 40,
-        "avg_best_match_count": 1.825,
-        "avg_all_pattern_matches": 0.91,
+        "evaluated_draws": 41,
+        "avg_best_match_count": 1.8293,
+        "avg_all_pattern_matches": 0.9122,
         "max_best_match_count": 3,
         "best_draw_no": 2118,
-        "latest_evaluated_draw_no": 2156
+        "latest_evaluated_draw_no": 2157
       }
     },
     "loto7": {
@@ -824,7 +823,7 @@
         "draw_number_gap_count": 0,
         "missing_draw_numbers": [],
         "latest_draw_date": "2026-11-20",
-        "data_age_days": 0,
+        "data_age_days": 4,
         "max_staleness_days": 10,
         "hard_staleness_days": 30,
         "stale_data": false,
@@ -1637,7 +1636,7 @@
         "draw_number_gap_count": 0,
         "missing_draw_numbers": [],
         "latest_draw_date": "2026-11-17",
-        "data_age_days": 3,
+        "data_age_days": 7,
         "max_staleness_days": 10,
         "hard_staleness_days": 30,
         "stale_data": false,
@@ -2412,13 +2411,13 @@
       }
     },
     "numbers3": {
-      "latest_draw_no": 7119,
-      "next_draw_no": 7120,
-      "rows": 7119,
+      "latest_draw_no": 7120,
+      "next_draw_no": 7121,
+      "rows": 7120,
       "validation": {
         "family": "numbers",
-        "rows": 7119,
-        "latest_draw_no": 7119,
+        "rows": 7120,
+        "latest_draw_no": 7120,
         "missing_cells": 0,
         "duplicate_draw_no": 0,
         "duplicate_date": 0,
@@ -2427,8 +2426,8 @@
         "missing_digit_columns": [],
         "draw_number_gap_count": 0,
         "missing_draw_numbers": [],
-        "latest_draw_date": "2026-11-20",
-        "data_age_days": 0,
+        "latest_draw_date": "2026-11-23",
+        "data_age_days": 1,
         "max_staleness_days": 4,
         "hard_staleness_days": 12,
         "stale_data": false,
@@ -2607,8 +2606,8 @@
         "full_tested_periods": 180,
         "numbers_holdout_enabled": true,
         "numbers_holdout_periods": 60,
-        "selection_history_draws": 7059,
-        "trained_through_draw_no": 7059,
+        "selection_history_draws": 7060,
+        "trained_through_draw_no": 7060,
         "seed": 2025
       },
       "feature_ablation": [],
@@ -2616,101 +2615,101 @@
         {
           "pattern_id": "P1",
           "numbers": [
-            8,
             2,
-            3
+            3,
+            9
           ],
-          "score": 7.186783,
+          "score": 7.240325,
           "model": "experience_numbers3_3"
         },
         {
           "pattern_id": "P2",
           "numbers": [
-            3,
+            8,
             2,
-            8
+            3
           ],
-          "score": 7.154588,
+          "score": 7.171942,
           "model": "experience_numbers3_3"
         },
         {
           "pattern_id": "P3",
           "numbers": [
-            1,
-            4,
-            8
+            3,
+            7,
+            4
           ],
-          "score": 7.151441,
+          "score": 7.151464,
           "model": "experience_numbers3_3"
         },
         {
           "pattern_id": "P4",
           "numbers": [
             2,
-            5,
+            4,
             9
           ],
-          "score": 7.002548,
+          "score": 7.145759,
           "model": "experience_numbers3_3"
         },
         {
           "pattern_id": "P5",
           "numbers": [
-            7,
             4,
-            1
+            7,
+            3
           ],
-          "score": 6.996184,
+          "score": 7.140528,
           "model": "experience_numbers3_3"
         },
         {
           "pattern_id": "P6",
           "numbers": [
-            2,
-            2,
-            9
+            0,
+            5,
+            7
           ],
-          "score": 6.973706,
+          "score": 7.061979,
           "model": "experience_numbers3_3"
         },
         {
           "pattern_id": "P7",
           "numbers": [
-            0,
+            9,
             4,
-            7
+            2
           ],
-          "score": 6.955362,
+          "score": 7.015021,
           "model": "experience_numbers3_3"
         },
         {
           "pattern_id": "P8",
           "numbers": [
-            3,
+            8,
             6,
-            2
+            1
           ],
-          "score": 6.952675,
+          "score": 7.000069,
           "model": "experience_numbers3_3"
         },
         {
           "pattern_id": "P9",
           "numbers": [
+            1,
             6,
-            3,
-            7
+            8
           ],
-          "score": 6.90187,
+          "score": 6.996272,
           "model": "experience_numbers3_3"
         },
         {
           "pattern_id": "P10",
           "numbers": [
-            4,
-            8,
-            5
+            7,
+            5,
+            0
           ],
-          "score": 6.82267,
+          "score": 6.955456,
           "model": "experience_numbers3_3"
         }
       ],
@@ -2721,23 +2720,23 @@
         "digit_count": 3,
         "evaluated_seeds": 3,
         "average_best_position_matches": 1.212963,
-        "average_position_matches_per_ticket": 0.307407,
-        "average_best_unordered_matches": 1.753704,
-        "average_unordered_matches_per_ticket": 0.747593,
+        "average_position_matches_per_ticket": 0.307963,
+        "average_best_unordered_matches": 1.751852,
+        "average_unordered_matches_per_ticket": 0.748334,
         "straight_hit_rate": 0.007408,
         "box_hit_rate": 0.035185,
-        "hit_rate_1_position": 0.953704,
-        "hit_rate_2_position": 0.251852,
+        "hit_rate_1_position": 0.955556,
+        "hit_rate_2_position": 0.25,
         "hit_rate_3_position": 0.007408,
         "hit_rate_4_position": 0.0,
-        "selection_score": 1.760436
+        "selection_score": 1.758646
       },
       "selected_random_filtered_baseline": {},
       "top_ranked_configs": [
         {
           "config": "experience_numbers3_3",
           "tested_periods": 24,
-          "selection_score": 2.566671,
+          "selection_score": 2.551393,
           "weights": {
             "position_frequency": 1.039748,
             "recent_position_frequency": 0.591316,
@@ -2758,7 +2757,7 @@
         {
           "config": "local_01",
           "tested_periods": 24,
-          "selection_score": 2.551393,
+          "selection_score": 2.536115,
           "weights": {
             "position_frequency": 1.164145,
             "recent_position_frequency": 0.581022,
@@ -2779,7 +2778,7 @@
         {
           "config": "experience_numbers3_2",
           "tested_periods": 24,
-          "selection_score": 2.472221,
+          "selection_score": 2.456943,
           "weights": {
             "position_frequency": 1.231961,
             "recent_position_frequency": 1.674348,
@@ -2800,7 +2799,7 @@
         {
           "config": "evolution_04",
           "tested_periods": 24,
-          "selection_score": 2.434725,
+          "selection_score": 2.419448,
           "weights": {
             "position_frequency": 1.200381,
             "recent_position_frequency": 0.55823,
@@ -2844,77 +2843,17 @@
       "previous_evaluation": {
         "draw_type": "numbers3",
         "status": "evaluated",
-        "draw_no": 7119,
+        "draw_no": 7120,
         "actual_numbers": [
-          9,
-          3,
-          4
+          7,
+          6,
+          2
         ],
-        "actual_number": "934",
-        "evaluated_at": "2026-11-20T20:39:07.038040+00:00",
+        "actual_number": "762",
+        "evaluated_at": "2026-11-24T00:12:03.566737+00:00",
         "predictions": [
           {
             "pattern_id": "P1",
-            "numbers": [
-              5,
-              7,
-              2
-            ],
-            "number": "572",
-            "position_matches": 0,
-            "unordered_matches": 0,
-            "straight_hit": false,
-            "box_hit": false,
-            "score": 7.141965,
-            "model": "experience_numbers3_3"
-          },
-          {
-            "pattern_id": "P2",
-            "numbers": [
-              6,
-              2,
-              5
-            ],
-            "number": "625",
-            "position_matches": 0,
-            "unordered_matches": 0,
-            "straight_hit": false,
-            "box_hit": false,
-            "score": 7.127821,
-            "model": "experience_numbers3_3"
-          },
-          {
-            "pattern_id": "P3",
-            "numbers": [
-              8,
-              3,
-              2
-            ],
-            "number": "832",
-            "position_matches": 1,
-            "unordered_matches": 1,
-            "straight_hit": false,
-            "box_hit": false,
-            "score": 7.100178,
-            "model": "experience_numbers3_3"
-          },
-          {
-            "pattern_id": "P4",
-            "numbers": [
-              2,
-              7,
-              5
-            ],
-            "number": "275",
-            "position_matches": 0,
-            "unordered_matches": 0,
-            "straight_hit": false,
-            "box_hit": false,
-            "score": 7.074051,
-            "model": "experience_numbers3_3"
-          },
-          {
-            "pattern_id": "P5",
             "numbers": [
               8,
               2,
@@ -2925,121 +2864,155 @@
             "unordered_matches": 1,
             "straight_hit": false,
             "box_hit": false,
-            "score": 7.073657,
+            "score": 7.186783,
+            "model": "experience_numbers3_3"
+          },
+          {
+            "pattern_id": "P2",
+            "numbers": [
+              3,
+              2,
+              8
+            ],
+            "number": "328",
+            "position_matches": 0,
+            "unordered_matches": 1,
+            "straight_hit": false,
+            "box_hit": false,
+            "score": 7.154588,
+            "model": "experience_numbers3_3"
+          },
+          {
+            "pattern_id": "P3",
+            "numbers": [
+              1,
+              4,
+              8
+            ],
+            "number": "148",
+            "position_matches": 0,
+            "unordered_matches": 0,
+            "straight_hit": false,
+            "box_hit": false,
+            "score": 7.151441,
+            "model": "experience_numbers3_3"
+          },
+          {
+            "pattern_id": "P4",
+            "numbers": [
+              2,
+              5,
+              9
+            ],
+            "number": "259",
+            "position_matches": 0,
+            "unordered_matches": 1,
+            "straight_hit": false,
+            "box_hit": false,
+            "score": 7.002548,
+            "model": "experience_numbers3_3"
+          },
+          {
+            "pattern_id": "P5",
+            "numbers": [
+              7,
+              4,
+              1
+            ],
+            "number": "741",
+            "position_matches": 1,
+            "unordered_matches": 1,
+            "straight_hit": false,
+            "box_hit": false,
+            "score": 6.996184,
             "model": "experience_numbers3_3"
           },
           {
             "pattern_id": "P6",
             "numbers": [
-              9,
-              3,
-              4
+              2,
+              2,
+              9
             ],
-            "number": "934",
-            "position_matches": 3,
-            "unordered_matches": 3,
-            "straight_hit": true,
-            "box_hit": true,
-            "score": 6.977334,
+            "number": "229",
+            "position_matches": 0,
+            "unordered_matches": 1,
+            "straight_hit": false,
+            "box_hit": false,
+            "score": 6.973706,
             "model": "experience_numbers3_3"
           },
           {
             "pattern_id": "P7",
             "numbers": [
-              9,
+              0,
               4,
-              1
+              7
             ],
-            "number": "941",
-            "position_matches": 1,
-            "unordered_matches": 2,
+            "number": "047",
+            "position_matches": 0,
+            "unordered_matches": 1,
             "straight_hit": false,
             "box_hit": false,
-            "score": 6.948054,
+            "score": 6.955362,
             "model": "experience_numbers3_3"
           },
           {
             "pattern_id": "P8",
             "numbers": [
-              2,
-              5,
-              8
+              3,
+              6,
+              2
             ],
-            "number": "258",
-            "position_matches": 0,
-            "unordered_matches": 0,
+            "number": "362",
+            "position_matches": 2,
+            "unordered_matches": 2,
             "straight_hit": false,
             "box_hit": false,
-            "score": 6.924697,
+            "score": 6.952675,
             "model": "experience_numbers3_3"
           },
           {
             "pattern_id": "P9",
             "numbers": [
-              1,
-              4,
-              9
+              6,
+              3,
+              7
             ],
-            "number": "149",
+            "number": "637",
             "position_matches": 0,
             "unordered_matches": 2,
             "straight_hit": false,
             "box_hit": false,
-            "score": 6.854604,
+            "score": 6.90187,
             "model": "experience_numbers3_3"
           },
           {
             "pattern_id": "P10",
             "numbers": [
-              0,
-              6,
-              7
+              4,
+              8,
+              5
             ],
-            "number": "067",
+            "number": "485",
             "position_matches": 0,
             "unordered_matches": 0,
             "straight_hit": false,
             "box_hit": false,
-            "score": 6.616345,
+            "score": 6.82267,
             "model": "experience_numbers3_3"
           }
         ],
-        "best_match_count": 3,
-        "avg_match_count": 0.5,
-        "best_unordered_match_count": 3,
-        "straight_hit": true,
-        "box_hit": true,
+        "best_match_count": 2,
+        "avg_match_count": 0.3,
+        "best_unordered_match_count": 2,
+        "straight_hit": false,
+        "box_hit": false,
         "box_prediction_evaluation": {
           "status": "evaluated",
           "predictions": [
             {
               "pattern_id": "B1",
-              "numbers": [
-                2,
-                5,
-                7
-              ],
-              "number": "257",
-              "unordered_matches": 0,
-              "box_hit": false,
-              "score": 7.141965,
-              "model": "experience_numbers3_3"
-            },
-            {
-              "pattern_id": "B2",
-              "numbers": [
-                2,
-                5,
-                6
-              ],
-              "number": "256",
-              "unordered_matches": 0,
-              "box_hit": false,
-              "score": 7.127821,
-              "model": "experience_numbers3_3"
-            },
-            {
-              "pattern_id": "B3",
               "numbers": [
                 2,
                 3,
@@ -3048,33 +3021,59 @@
               "number": "238",
               "unordered_matches": 1,
               "box_hit": false,
-              "score": 7.100178,
+              "score": 7.186783,
               "model": "experience_numbers3_3"
             },
             {
-              "pattern_id": "B4",
+              "pattern_id": "B2",
               "numbers": [
-                2,
-                6,
-                7
+                1,
+                4,
+                8
               ],
-              "number": "267",
+              "number": "148",
               "unordered_matches": 0,
               "box_hit": false,
-              "score": 7.057304,
+              "score": 7.155962,
               "model": "experience_numbers3_3"
             },
             {
-              "pattern_id": "B5",
+              "pattern_id": "B3",
               "numbers": [
                 2,
                 4,
                 7
               ],
               "number": "247",
-              "unordered_matches": 1,
+              "unordered_matches": 2,
               "box_hit": false,
-              "score": 7.05505,
+              "score": 7.155278,
+              "model": "experience_numbers3_3"
+            },
+            {
+              "pattern_id": "B4",
+              "numbers": [
+                2,
+                3,
+                7
+              ],
+              "number": "237",
+              "unordered_matches": 2,
+              "box_hit": false,
+              "score": 7.027244,
+              "model": "experience_numbers3_3"
+            },
+            {
+              "pattern_id": "B5",
+              "numbers": [
+                2,
+                3,
+                6
+              ],
+              "number": "236",
+              "unordered_matches": 2,
+              "box_hit": false,
+              "score": 7.013231,
               "model": "experience_numbers3_3"
             },
             {
@@ -3082,93 +3081,93 @@
               "numbers": [
                 2,
                 5,
-                8
+                9
               ],
-              "number": "258",
-              "unordered_matches": 0,
+              "number": "259",
+              "unordered_matches": 1,
               "box_hit": false,
-              "score": 7.00606,
+              "score": 7.002548,
               "model": "experience_numbers3_3"
             },
             {
               "pattern_id": "B7",
               "numbers": [
-                3,
+                1,
                 4,
-                9
+                7
               ],
-              "number": "349",
-              "unordered_matches": 3,
-              "box_hit": true,
-              "score": 6.977334,
+              "number": "147",
+              "unordered_matches": 1,
+              "box_hit": false,
+              "score": 6.996184,
               "model": "experience_numbers3_3"
             },
             {
               "pattern_id": "B8",
               "numbers": [
-                2,
+                1,
                 3,
-                6
+                8
               ],
-              "number": "236",
-              "unordered_matches": 1,
+              "number": "138",
+              "unordered_matches": 0,
               "box_hit": false,
-              "score": 6.952759,
+              "score": 6.97871,
               "model": "experience_numbers3_3"
             },
             {
               "pattern_id": "B9",
               "numbers": [
-                1,
-                4,
+                2,
+                2,
                 9
               ],
-              "number": "149",
-              "unordered_matches": 2,
+              "number": "229",
+              "unordered_matches": 1,
               "box_hit": false,
-              "score": 6.948054,
+              "score": 6.973706,
               "model": "experience_numbers3_3"
             },
             {
               "pattern_id": "B10",
               "numbers": [
-                2,
-                3,
-                7
+                1,
+                4,
+                6
               ],
-              "number": "237",
+              "number": "146",
               "unordered_matches": 1,
               "box_hit": false,
-              "score": 6.913975,
+              "score": 6.955545,
               "model": "experience_numbers3_3"
             }
           ],
-          "best_unordered_match_count": 3,
-          "avg_unordered_match_count": 0.9,
-          "box_hit": true
+          "best_unordered_match_count": 2,
+          "avg_unordered_match_count": 1.1,
+          "box_hit": false
         },
-        "hit_rate_1match": 0.3,
+        "hit_rate_1match": 0.2,
         "hit_rate_2match": 0.1,
-        "hit_rate_3match": 0.1,
+        "hit_rate_3match": 0.0,
         "hit_rate_4match": 0.0
       },
       "evaluation_summary": {
-        "evaluated_draws": 76,
-        "avg_best_match_count": 1.3289,
-        "avg_all_pattern_matches": 0.3053,
+        "evaluated_draws": 77,
+        "avg_best_match_count": 1.3377,
+        "avg_all_pattern_matches": 0.3052,
         "max_best_match_count": 3,
         "best_draw_no": 7119,
-        "latest_evaluated_draw_no": 7119
+        "latest_evaluated_draw_no": 7120
       }
     },
     "numbers4": {
-      "latest_draw_no": 7119,
-      "next_draw_no": 7120,
-      "rows": 7119,
+      "latest_draw_no": 7120,
+      "next_draw_no": 7121,
+      "rows": 7120,
       "validation": {
         "family": "numbers",
-        "rows": 7119,
-        "latest_draw_no": 7119,
+        "rows": 7120,
+        "latest_draw_no": 7120,
         "missing_cells": 0,
         "duplicate_draw_no": 0,
         "duplicate_date": 0,
@@ -3177,8 +3176,8 @@
         "missing_digit_columns": [],
         "draw_number_gap_count": 0,
         "missing_draw_numbers": [],
-        "latest_draw_date": "2026-11-20",
-        "data_age_days": 0,
+        "latest_draw_date": "2026-11-23",
+        "data_age_days": 1,
         "max_staleness_days": 4,
         "hard_staleness_days": 12,
         "stale_data": false,
@@ -3186,22 +3185,22 @@
         "freshness_status": "ok",
         "status": "ok"
       },
-      "selected_config": "local_03",
+      "selected_config": "shape_balanced",
       "selected_weights": {
-        "position_frequency": 1.30612,
-        "recent_position_frequency": 1.177591,
-        "position_delay": 0.465822,
-        "overall_frequency": 0.235878,
-        "ordered_pair": 1.362547,
-        "ordered_triplet": 0.871311,
-        "duplicate_pattern": 0.407628,
-        "sum_shape": 0.255305,
-        "odd_shape": 0.25209,
-        "high_shape": 0.162873,
-        "adjacent_difference": 0.265335,
-        "exact_repeat": 0.314121,
-        "unordered_repeat": 0.204878,
-        "diversity": 0.298947
+        "position_frequency": 1.0,
+        "recent_position_frequency": 1.1,
+        "position_delay": 0.45,
+        "overall_frequency": 0.25,
+        "ordered_pair": 0.55,
+        "ordered_triplet": 0.15,
+        "duplicate_pattern": 0.95,
+        "sum_shape": 0.9,
+        "odd_shape": 0.65,
+        "high_shape": 0.65,
+        "adjacent_difference": 0.75,
+        "exact_repeat": 0.35,
+        "unordered_repeat": 0.25,
+        "diversity": 0.35
       },
       "selected_filters": {},
       "learning_summary": {
@@ -3226,36 +3225,36 @@
           "diversity": 0.3
         },
         "applied_prediction_weights": {
-          "position_frequency": 1.30612,
-          "recent_position_frequency": 1.177591,
-          "position_delay": 0.465822,
-          "overall_frequency": 0.235878,
-          "ordered_pair": 1.362547,
-          "ordered_triplet": 0.871311,
-          "duplicate_pattern": 0.407628,
-          "sum_shape": 0.255305,
-          "odd_shape": 0.25209,
-          "high_shape": 0.162873,
-          "adjacent_difference": 0.265335,
-          "exact_repeat": 0.314121,
-          "unordered_repeat": 0.204878,
-          "diversity": 0.298947
+          "position_frequency": 1.0,
+          "recent_position_frequency": 1.1,
+          "position_delay": 0.45,
+          "overall_frequency": 0.25,
+          "ordered_pair": 0.55,
+          "ordered_triplet": 0.15,
+          "duplicate_pattern": 0.95,
+          "sum_shape": 0.9,
+          "odd_shape": 0.65,
+          "high_shape": 0.65,
+          "adjacent_difference": 0.75,
+          "exact_repeat": 0.35,
+          "unordered_repeat": 0.25,
+          "diversity": 0.35
         },
         "weight_diff": {
-          "position_frequency": 0.10612,
-          "recent_position_frequency": -0.222409,
-          "position_delay": -0.234178,
-          "overall_frequency": -0.164122,
-          "ordered_pair": 0.562547,
-          "ordered_triplet": 0.621311,
-          "duplicate_pattern": -0.192372,
-          "sum_shape": -0.194695,
-          "odd_shape": -0.04791,
-          "high_shape": -0.137127,
-          "adjacent_difference": -0.084665,
-          "exact_repeat": -0.235879,
-          "unordered_repeat": -0.145122,
-          "diversity": -0.001053
+          "position_frequency": -0.2,
+          "recent_position_frequency": -0.3,
+          "position_delay": -0.25,
+          "overall_frequency": -0.15,
+          "ordered_pair": -0.25,
+          "ordered_triplet": -0.1,
+          "duplicate_pattern": 0.35,
+          "sum_shape": 0.45,
+          "odd_shape": 0.35,
+          "high_shape": 0.35,
+          "adjacent_difference": 0.4,
+          "exact_repeat": -0.2,
+          "unordered_repeat": -0.1,
+          "diversity": 0.05
         }
       },
       "search_metadata": {
@@ -3357,8 +3356,8 @@
         "full_tested_periods": 180,
         "numbers_holdout_enabled": true,
         "numbers_holdout_periods": 60,
-        "selection_history_draws": 7059,
-        "trained_through_draw_no": 7059,
+        "selection_history_draws": 7060,
+        "trained_through_draw_no": 7060,
         "seed": 2025
       },
       "feature_ablation": [],
@@ -3367,111 +3366,111 @@
           "pattern_id": "P1",
           "numbers": [
             1,
-            3,
-            8,
-            6
+            6,
+            4,
+            7
           ],
-          "score": 1.930312,
-          "model": "local_03"
+          "score": 4.265948,
+          "model": "shape_balanced"
         },
         {
           "pattern_id": "P2",
           "numbers": [
-            6,
+            5,
             8,
-            3,
-            1
+            2,
+            3
           ],
-          "score": 1.871606,
-          "model": "local_03"
+          "score": 4.245758,
+          "model": "shape_balanced"
         },
         {
           "pattern_id": "P3",
           "numbers": [
+            6,
             7,
-            9,
-            4,
-            0
+            1,
+            4
           ],
-          "score": 1.86542,
-          "model": "local_03"
+          "score": 4.237717,
+          "model": "shape_balanced"
         },
         {
           "pattern_id": "P4",
           "numbers": [
-            1,
-            6,
-            3,
-            6
+            9,
+            8,
+            0,
+            1
           ],
-          "score": 1.854563,
-          "model": "local_03"
+          "score": 4.225856,
+          "model": "shape_balanced"
         },
         {
           "pattern_id": "P5",
           "numbers": [
-            7,
-            7,
-            0,
-            4
+            3,
+            2,
+            8,
+            5
           ],
-          "score": 1.835157,
-          "model": "local_03"
+          "score": 4.203996,
+          "model": "shape_balanced"
         },
         {
           "pattern_id": "P6",
           "numbers": [
-            3,
-            8,
-            6,
-            3
+            4,
+            1,
+            7,
+            6
           ],
-          "score": 1.810516,
-          "model": "local_03"
+          "score": 4.191147,
+          "model": "shape_balanced"
         },
         {
           "pattern_id": "P7",
           "numbers": [
-            4,
-            0,
-            7,
-            7
+            8,
+            9,
+            1,
+            0
           ],
-          "score": 1.773586,
-          "model": "local_03"
+          "score": 4.180893,
+          "model": "shape_balanced"
         },
         {
           "pattern_id": "P8",
           "numbers": [
-            9,
-            1,
-            4,
-            4
+            2,
+            5,
+            3,
+            8
           ],
-          "score": 1.767472,
-          "model": "local_03"
+          "score": 4.168416,
+          "model": "shape_balanced"
         },
         {
           "pattern_id": "P9",
           "numbers": [
-            2,
-            7,
-            5,
-            2
+            0,
+            3,
+            6,
+            9
           ],
-          "score": 1.735363,
-          "model": "local_03"
+          "score": 4.13489,
+          "model": "shape_balanced"
         },
         {
           "pattern_id": "P10",
           "numbers": [
+            7,
+            7,
             0,
-            2,
-            9,
-            9
+            4
           ],
-          "score": 1.731487,
-          "model": "local_03"
+          "score": 4.119873,
+          "model": "shape_balanced"
         }
       ],
       "random_baseline": {
@@ -3480,66 +3479,24 @@
         "tested_periods": 180,
         "digit_count": 4,
         "evaluated_seeds": 3,
-        "average_best_position_matches": 1.451852,
-        "average_position_matches_per_ticket": 0.402593,
-        "average_best_unordered_matches": 2.438889,
-        "average_unordered_matches_per_ticket": 1.228703,
+        "average_best_position_matches": 1.453704,
+        "average_position_matches_per_ticket": 0.402222,
+        "average_best_unordered_matches": 2.437037,
+        "average_unordered_matches_per_ticket": 1.229259,
         "straight_hit_rate": 0.001852,
         "box_hit_rate": 0.018519,
         "hit_rate_1_position": 0.988889,
-        "hit_rate_2_position": 0.42963,
+        "hit_rate_2_position": 0.431481,
         "hit_rate_3_position": 0.031481,
         "hit_rate_4_position": 0.001852,
-        "selection_score": 1.719586
+        "selection_score": 1.721021
       },
       "selected_random_filtered_baseline": {},
       "top_ranked_configs": [
         {
-          "config": "local_03",
-          "tested_periods": 12,
-          "selection_score": 2.010417,
-          "weights": {
-            "position_frequency": 1.30612,
-            "recent_position_frequency": 1.177591,
-            "position_delay": 0.465822,
-            "overall_frequency": 0.235878,
-            "ordered_pair": 1.362547,
-            "ordered_triplet": 0.871311,
-            "duplicate_pattern": 0.407628,
-            "sum_shape": 0.255305,
-            "odd_shape": 0.25209,
-            "high_shape": 0.162873,
-            "adjacent_difference": 0.265335,
-            "exact_repeat": 0.314121,
-            "unordered_repeat": 0.204878,
-            "diversity": 0.298947
-          }
-        },
-        {
-          "config": "evolution_01",
-          "tested_periods": 12,
-          "selection_score": 2.002084,
-          "weights": {
-            "position_frequency": 1.30612,
-            "recent_position_frequency": 1.177591,
-            "position_delay": 0.488555,
-            "overall_frequency": 0.251646,
-            "ordered_pair": 0.522714,
-            "ordered_triplet": 0.144091,
-            "duplicate_pattern": 0.434204,
-            "sum_shape": 0.264842,
-            "odd_shape": 0.241869,
-            "high_shape": 0.162873,
-            "adjacent_difference": 0.736973,
-            "exact_repeat": 0.314121,
-            "unordered_repeat": 0.25248,
-            "diversity": 0.298947
-          }
-        },
-        {
           "config": "shape_balanced",
           "tested_periods": 12,
-          "selection_score": 1.929166,
+          "selection_score": 1.952083,
           "weights": {
             "position_frequency": 1.0,
             "recent_position_frequency": 1.1,
@@ -3560,7 +3517,7 @@
         {
           "config": "local_06",
           "tested_periods": 12,
-          "selection_score": 1.929166,
+          "selection_score": 1.952083,
           "weights": {
             "position_frequency": 1.154492,
             "recent_position_frequency": 1.035323,
@@ -3579,9 +3536,30 @@
           }
         },
         {
+          "config": "evolution_03",
+          "tested_periods": 12,
+          "selection_score": 1.937501,
+          "weights": {
+            "position_frequency": 1.269942,
+            "recent_position_frequency": 1.176503,
+            "position_delay": 0.488555,
+            "overall_frequency": 0.257824,
+            "ordered_pair": 1.516401,
+            "ordered_triplet": 0.841678,
+            "duplicate_pattern": 0.406776,
+            "sum_shape": 0.253579,
+            "odd_shape": 0.234436,
+            "high_shape": 0.184605,
+            "adjacent_difference": 0.300865,
+            "exact_repeat": 0.35,
+            "unordered_repeat": 0.207418,
+            "diversity": 0.295134
+          }
+        },
+        {
           "config": "local_01",
           "tested_periods": 12,
-          "selection_score": 1.90625,
+          "selection_score": 1.929166,
           "weights": {
             "position_frequency": 1.119641,
             "recent_position_frequency": 1.080851,
@@ -3598,186 +3576,207 @@
             "unordered_repeat": 0.259966,
             "diversity": 0.314397
           }
+        },
+        {
+          "config": "evolution_01",
+          "tested_periods": 12,
+          "selection_score": 1.929166,
+          "weights": {
+            "position_frequency": 1.0,
+            "recent_position_frequency": 1.1,
+            "position_delay": 0.484265,
+            "overall_frequency": 0.275702,
+            "ordered_pair": 0.565361,
+            "ordered_triplet": 0.154527,
+            "duplicate_pattern": 1.011936,
+            "sum_shape": 0.933619,
+            "odd_shape": 0.623645,
+            "high_shape": 0.65,
+            "adjacent_difference": 0.689077,
+            "exact_repeat": 0.35,
+            "unordered_repeat": 0.250499,
+            "diversity": 0.35
+          }
         }
       ],
       "ranked_config_count": 23,
       "previous_evaluation": {
         "draw_type": "numbers4",
         "status": "evaluated",
-        "draw_no": 7119,
+        "draw_no": 7120,
         "actual_numbers": [
-          6,
-          4,
           2,
-          5
+          9,
+          7,
+          9
         ],
-        "actual_number": "6425",
-        "evaluated_at": "2026-11-20T20:39:07.038537+00:00",
+        "actual_number": "2979",
+        "evaluated_at": "2026-11-24T00:12:03.567237+00:00",
         "predictions": [
           {
             "pattern_id": "P1",
             "numbers": [
               1,
-              7,
-              4,
+              3,
+              8,
               6
             ],
-            "number": "1746",
-            "position_matches": 0,
-            "unordered_matches": 2,
-            "straight_hit": false,
-            "box_hit": false,
-            "score": 3.578279,
-            "model": "evolution_01"
-          },
-          {
-            "pattern_id": "P2",
-            "numbers": [
-              1,
-              6,
-              4,
-              7
-            ],
-            "number": "1647",
-            "position_matches": 0,
-            "unordered_matches": 2,
-            "straight_hit": false,
-            "box_hit": false,
-            "score": 3.509516,
-            "model": "evolution_01"
-          },
-          {
-            "pattern_id": "P3",
-            "numbers": [
-              4,
-              7,
-              7,
-              0
-            ],
-            "number": "4770",
-            "position_matches": 0,
-            "unordered_matches": 1,
-            "straight_hit": false,
-            "box_hit": false,
-            "score": 3.497058,
-            "model": "evolution_01"
-          },
-          {
-            "pattern_id": "P4",
-            "numbers": [
-              6,
-              9,
-              3,
-              2
-            ],
-            "number": "6932",
-            "position_matches": 1,
-            "unordered_matches": 2,
-            "straight_hit": false,
-            "box_hit": false,
-            "score": 3.476471,
-            "model": "evolution_01"
-          },
-          {
-            "pattern_id": "P5",
-            "numbers": [
-              5,
-              9,
-              2,
-              2
-            ],
-            "number": "5922",
-            "position_matches": 1,
-            "unordered_matches": 2,
-            "straight_hit": false,
-            "box_hit": false,
-            "score": 3.47273,
-            "model": "evolution_01"
-          },
-          {
-            "pattern_id": "P6",
-            "numbers": [
-              8,
-              5,
-              1,
-              4
-            ],
-            "number": "8514",
-            "position_matches": 0,
-            "unordered_matches": 2,
-            "straight_hit": false,
-            "box_hit": false,
-            "score": 3.471614,
-            "model": "evolution_01"
-          },
-          {
-            "pattern_id": "P7",
-            "numbers": [
-              0,
-              7,
-              7,
-              4
-            ],
-            "number": "0774",
-            "position_matches": 0,
-            "unordered_matches": 1,
-            "straight_hit": false,
-            "box_hit": false,
-            "score": 3.47057,
-            "model": "evolution_01"
-          },
-          {
-            "pattern_id": "P8",
-            "numbers": [
-              3,
-              1,
-              6,
-              8
-            ],
-            "number": "3168",
-            "position_matches": 0,
-            "unordered_matches": 1,
-            "straight_hit": false,
-            "box_hit": false,
-            "score": 3.458653,
-            "model": "evolution_01"
-          },
-          {
-            "pattern_id": "P9",
-            "numbers": [
-              9,
-              8,
-              0,
-              1
-            ],
-            "number": "9801",
+            "number": "1386",
             "position_matches": 0,
             "unordered_matches": 0,
             "straight_hit": false,
             "box_hit": false,
-            "score": 3.448454,
-            "model": "evolution_01"
+            "score": 1.930312,
+            "model": "local_03"
           },
           {
-            "pattern_id": "P10",
+            "pattern_id": "P2",
             "numbers": [
-              5,
-              2,
-              2,
-              9
+              6,
+              8,
+              3,
+              1
             ],
-            "number": "5229",
+            "number": "6831",
+            "position_matches": 0,
+            "unordered_matches": 0,
+            "straight_hit": false,
+            "box_hit": false,
+            "score": 1.871606,
+            "model": "local_03"
+          },
+          {
+            "pattern_id": "P3",
+            "numbers": [
+              7,
+              9,
+              4,
+              0
+            ],
+            "number": "7940",
             "position_matches": 1,
             "unordered_matches": 2,
             "straight_hit": false,
             "box_hit": false,
-            "score": 3.442887,
-            "model": "evolution_01"
+            "score": 1.86542,
+            "model": "local_03"
+          },
+          {
+            "pattern_id": "P4",
+            "numbers": [
+              1,
+              6,
+              3,
+              6
+            ],
+            "number": "1636",
+            "position_matches": 0,
+            "unordered_matches": 0,
+            "straight_hit": false,
+            "box_hit": false,
+            "score": 1.854563,
+            "model": "local_03"
+          },
+          {
+            "pattern_id": "P5",
+            "numbers": [
+              7,
+              7,
+              0,
+              4
+            ],
+            "number": "7704",
+            "position_matches": 0,
+            "unordered_matches": 1,
+            "straight_hit": false,
+            "box_hit": false,
+            "score": 1.835157,
+            "model": "local_03"
+          },
+          {
+            "pattern_id": "P6",
+            "numbers": [
+              3,
+              8,
+              6,
+              3
+            ],
+            "number": "3863",
+            "position_matches": 0,
+            "unordered_matches": 0,
+            "straight_hit": false,
+            "box_hit": false,
+            "score": 1.810516,
+            "model": "local_03"
+          },
+          {
+            "pattern_id": "P7",
+            "numbers": [
+              4,
+              0,
+              7,
+              7
+            ],
+            "number": "4077",
+            "position_matches": 1,
+            "unordered_matches": 1,
+            "straight_hit": false,
+            "box_hit": false,
+            "score": 1.773586,
+            "model": "local_03"
+          },
+          {
+            "pattern_id": "P8",
+            "numbers": [
+              9,
+              1,
+              4,
+              4
+            ],
+            "number": "9144",
+            "position_matches": 0,
+            "unordered_matches": 1,
+            "straight_hit": false,
+            "box_hit": false,
+            "score": 1.767472,
+            "model": "local_03"
+          },
+          {
+            "pattern_id": "P9",
+            "numbers": [
+              2,
+              7,
+              5,
+              2
+            ],
+            "number": "2752",
+            "position_matches": 1,
+            "unordered_matches": 2,
+            "straight_hit": false,
+            "box_hit": false,
+            "score": 1.735363,
+            "model": "local_03"
+          },
+          {
+            "pattern_id": "P10",
+            "numbers": [
+              0,
+              2,
+              9,
+              9
+            ],
+            "number": "0299",
+            "position_matches": 1,
+            "unordered_matches": 3,
+            "straight_hit": false,
+            "box_hit": false,
+            "score": 1.731487,
+            "model": "local_03"
           }
         ],
         "best_match_count": 1,
-        "avg_match_count": 0.3,
-        "best_unordered_match_count": 2,
+        "avg_match_count": 0.4,
+        "best_unordered_match_count": 3,
         "straight_hit": false,
         "box_hit": false,
         "box_prediction_evaluation": {
@@ -3787,46 +3786,116 @@
               "pattern_id": "B1",
               "numbers": [
                 1,
-                4,
+                3,
                 6,
-                7
+                8
               ],
-              "number": "1467",
-              "unordered_matches": 2,
+              "number": "1368",
+              "unordered_matches": 0,
               "box_hit": false,
-              "score": 3.578279,
-              "model": "evolution_01"
+              "score": 1.930312,
+              "model": "local_03"
             },
             {
               "pattern_id": "B2",
               "numbers": [
-                0,
                 1,
-                8,
-                9
+                4,
+                7,
+                8
               ],
-              "number": "0189",
-              "unordered_matches": 0,
+              "number": "1478",
+              "unordered_matches": 1,
               "box_hit": false,
-              "score": 3.532217,
-              "model": "evolution_01"
+              "score": 1.906824,
+              "model": "local_03"
             },
             {
               "pattern_id": "B3",
               "numbers": [
                 1,
-                2,
+                4,
                 6,
-                9
+                7
               ],
-              "number": "1269",
-              "unordered_matches": 2,
+              "number": "1467",
+              "unordered_matches": 1,
               "box_hit": false,
-              "score": 3.514278,
-              "model": "evolution_01"
+              "score": 1.883719,
+              "model": "local_03"
             },
             {
               "pattern_id": "B4",
+              "numbers": [
+                1,
+                2,
+                7,
+                8
+              ],
+              "number": "1278",
+              "unordered_matches": 2,
+              "box_hit": false,
+              "score": 1.874384,
+              "model": "local_03"
+            },
+            {
+              "pattern_id": "B5",
+              "numbers": [
+                1,
+                1,
+                6,
+                8
+              ],
+              "number": "1168",
+              "unordered_matches": 0,
+              "box_hit": false,
+              "score": 1.870545,
+              "model": "local_03"
+            },
+            {
+              "pattern_id": "B6",
+              "numbers": [
+                0,
+                4,
+                7,
+                9
+              ],
+              "number": "0479",
+              "unordered_matches": 2,
+              "box_hit": false,
+              "score": 1.86542,
+              "model": "local_03"
+            },
+            {
+              "pattern_id": "B7",
+              "numbers": [
+                2,
+                3,
+                7,
+                8
+              ],
+              "number": "2378",
+              "unordered_matches": 2,
+              "box_hit": false,
+              "score": 1.854646,
+              "model": "local_03"
+            },
+            {
+              "pattern_id": "B8",
+              "numbers": [
+                1,
+                3,
+                6,
+                6
+              ],
+              "number": "1366",
+              "unordered_matches": 0,
+              "box_hit": false,
+              "score": 1.854563,
+              "model": "local_03"
+            },
+            {
+              "pattern_id": "B9",
               "numbers": [
                 1,
                 4,
@@ -3834,112 +3903,42 @@
                 8
               ],
               "number": "1458",
-              "unordered_matches": 2,
+              "unordered_matches": 0,
               "box_hit": false,
-              "score": 3.509946,
-              "model": "evolution_01"
-            },
-            {
-              "pattern_id": "B5",
-              "numbers": [
-                0,
-                4,
-                7,
-                7
-              ],
-              "number": "0477",
-              "unordered_matches": 1,
-              "box_hit": false,
-              "score": 3.497058,
-              "model": "evolution_01"
-            },
-            {
-              "pattern_id": "B6",
-              "numbers": [
-                1,
-                3,
-                6,
-                8
-              ],
-              "number": "1368",
-              "unordered_matches": 1,
-              "box_hit": false,
-              "score": 3.494969,
-              "model": "evolution_01"
-            },
-            {
-              "pattern_id": "B7",
-              "numbers": [
-                2,
-                3,
-                6,
-                9
-              ],
-              "number": "2369",
-              "unordered_matches": 2,
-              "box_hit": false,
-              "score": 3.476471,
-              "model": "evolution_01"
-            },
-            {
-              "pattern_id": "B8",
-              "numbers": [
-                3,
-                4,
-                6,
-                7
-              ],
-              "number": "3467",
-              "unordered_matches": 2,
-              "box_hit": false,
-              "score": 3.473269,
-              "model": "evolution_01"
-            },
-            {
-              "pattern_id": "B9",
-              "numbers": [
-                2,
-                2,
-                5,
-                9
-              ],
-              "number": "2259",
-              "unordered_matches": 2,
-              "box_hit": false,
-              "score": 3.47273,
-              "model": "evolution_01"
+              "score": 1.8442,
+              "model": "local_03"
             },
             {
               "pattern_id": "B10",
               "numbers": [
                 0,
                 3,
-                8,
-                9
+                5,
+                8
               ],
-              "number": "0389",
+              "number": "0358",
               "unordered_matches": 0,
               "box_hit": false,
-              "score": 3.467332,
-              "model": "evolution_01"
+              "score": 1.842917,
+              "model": "local_03"
             }
           ],
           "best_unordered_match_count": 2,
-          "avg_unordered_match_count": 1.4,
+          "avg_unordered_match_count": 0.8,
           "box_hit": false
         },
-        "hit_rate_1match": 0.3,
+        "hit_rate_1match": 0.4,
         "hit_rate_2match": 0.0,
         "hit_rate_3match": 0.0,
         "hit_rate_4match": 0.0
       },
       "evaluation_summary": {
-        "evaluated_draws": 78,
-        "avg_best_match_count": 1.5385,
+        "evaluated_draws": 79,
+        "avg_best_match_count": 1.5316,
         "avg_all_pattern_matches": 0.4051,
         "max_best_match_count": 3,
         "best_draw_no": 7065,
-        "latest_evaluated_draw_no": 7119
+        "latest_evaluated_draw_no": 7120
       }
     }
   }
